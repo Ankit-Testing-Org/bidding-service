@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  mysql-local:
+    image: mysql:8.0.33
+    container_name: mysql-local
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: client
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      retries: 20
+    networks:
+      - app-net
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: mysql-local
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "8082:8082"
+    depends_on:
+      - mysql-local
+    networks:
+      - app-net
+
+networks:
+  app-net:
+    external: true
+
+volumes:
+  mysql-data:

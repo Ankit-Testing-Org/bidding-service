@@ -1,0 +1,32 @@
+services:
+  spring-app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: spring-app
+    ports:
+      - "8083:8083"
+    networks:
+      app-net:
+        aliases:
+          - spring-app
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-local:3306/client?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      LOG_PATH: /app/logs
+      APP_NAME: spring-app
+      FILE_STORAGE_BASE_PATH: /app/storage
+      KEYCLOAK_CLIENT_ID: evatech
+      KEYCLOAK_CLIENT_SECRET: TEST
+      keycloak.url: https://kai-struck-grocery-redhead.trycloudflare.com
+      GITHUB_TOKEN: TEST
+    volumes:
+      - ./logs:/app/logs
+      - bid-platform-storage:/app/storage
+networks:
+  app-net:
+    external: true
+
+volumes:
+  bid-platform-storage:
