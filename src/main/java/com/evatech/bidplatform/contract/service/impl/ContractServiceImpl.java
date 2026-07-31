@@ -56,6 +56,12 @@ public class ContractServiceImpl implements ContractService {
 
     @Override
     @Transactional(readOnly = true)
+    public ContractDocument saveContract(ContractDocument contractDocument) {
+        return contractDocumentRepository.save(contractDocument);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<ContractPageText> getContractPages(
             Long contractId,
             Integer pageNumber

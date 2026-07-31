@@ -11,7 +11,9 @@ public interface ContractService {
 
     ContractDocument uploadContract(MultipartFile file, String uploadedBy);
 
-    ContractDocument getContract(Long contractId);
+    public ContractDocument getContract(Long contractId);
+
+    public ContractDocument saveContract(ContractDocument contractDocument);
 
     List<ContractPageText> getContractPages(Long contractId, Integer pageNumber);
 

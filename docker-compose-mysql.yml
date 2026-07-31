@@ -6,7 +6,7 @@ services:
     container_name: mysql-local
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: client
+      MYSQL_DATABASE: bidding
     ports:
       - "3306:3306"
     healthcheck:
@@ -27,7 +27,7 @@ services:
       PMA_PORT: 3306
       MYSQL_ROOT_PASSWORD: root
     ports:
-      - "8082:8082"
+      - "8081:80"
     depends_on:
       - mysql-local
     networks:

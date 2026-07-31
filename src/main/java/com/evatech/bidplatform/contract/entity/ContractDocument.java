@@ -42,7 +42,7 @@ public class ContractDocument {
     @Column(name = "file_type", nullable = false)
     private String fileType;
 
-    @Column(name = "storage_path", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "storage_path", nullable = false)
     private String storagePath;
 
     @Column(name = "page_count")

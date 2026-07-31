@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8083
 
 logging:
   level:
@@ -7,12 +7,11 @@ logging:
 
 spring:
   datasource:
-    url: jdbc:mysql://mysql-local:3306/evatech?createDatabaseIfNotExist=true
+    url: jdbc:mysql://mysql-local:3306/bidding?createDatabaseIfNotExist=true
     username: root
     password: root
     initialization-mode: always
     driver-class-name: com.mysql.cj.jdbc.Driver
-
     hikari:
       connection-timeout: 30000
       maximum-pool-size: 10
@@ -21,8 +20,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: https://kai-struck-grocery-redhead.trycloudflare.com/realms/master
-
+          issuer-uri: ${keycloak.url}/realms/master
   mail:
     host: smtp.gmail.com
     port: 587
@@ -36,16 +34,11 @@ spring:
             enable: true
   jpa:
     show-sql: false
-
-
     hibernate:
       ddl-auto: update
-
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
         format_sql: true
-        globally_quoted_identifiers: true
 
   sql:
     init:
@@ -77,9 +70,13 @@ parameter:
 
 # KEYCLOAK
 keycloak:
-  url: https://kai-struck-grocery-redhead.trycloudflare.com
+  url: ${keycloak.url}
   realm: master
   clientid: evatech
   username: admin
   password: admin
-  clientsecret: TEST
+  clientsecret: iX1xrfeAO6VkdkwmKPNqdxsP7JUrrfEm
+
+self:
+  service:
+    url: http://localhost:8083/

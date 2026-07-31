@@ -23,7 +23,7 @@ public class GeneratedDocument {
     @Column(name = "file_name", nullable = false)
     private String fileName;
 
-    @Column(name = "storage_path", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "storage_path", nullable = false)
     private String storagePath;
 
     @Enumerated(EnumType.STRING)

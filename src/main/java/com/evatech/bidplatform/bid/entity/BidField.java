@@ -30,7 +30,7 @@ public class BidField {
     private String fieldName;
 
     @Lob
-    @Column(name = "field_value", columnDefinition = "TEXT")
+    @Column(name = "field_value")
     private String fieldValue;
 
     @Column(name = "source_page_number")

@@ -31,7 +31,7 @@ public class ApprovalTask {
     private ApprovalStatus status;
 
     @Lob
-    @Column(name = "comment", columnDefinition = "TEXT")
+    @Column(name = "comment")
     private String comment;
 
     @Column(name = "created_at", nullable = false)

@@ -25,7 +25,7 @@ public class ContractHighlight {
     private String title;
 
     @Lob
-    @Column(name = "description", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "description", nullable = false)
     private String description;
 
     @Column(name = "page_number")
@@ -36,7 +36,7 @@ public class ContractHighlight {
     private RiskLevel riskLevel;
 
     @Lob
-    @Column(name = "recommended_action", columnDefinition = "TEXT")
+    @Column(name = "recommended_action")
     private String recommendedAction;
 
     @Column(name = "confidence_score")

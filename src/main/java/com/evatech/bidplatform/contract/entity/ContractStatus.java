@@ -8,5 +8,6 @@ public enum ContractStatus {
     TEXT_EXTRACTED,
     ANALYSIS_IN_PROGRESS,
     ANALYSED,
-    FAILED
+    FAILED,
+    SUBMITTED_FOR_REVIEW
 }

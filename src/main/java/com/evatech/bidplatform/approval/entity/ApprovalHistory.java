@@ -30,7 +30,7 @@ public class ApprovalHistory {
     private ApprovalStage stage;
 
     @Lob
-    @Column(name = "comment", columnDefinition = "TEXT")
+    @Column(name = "comment")
     private String comment;
 
     @Column(name = "action_at", nullable = false)
