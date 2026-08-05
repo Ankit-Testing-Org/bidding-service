@@ -1,16 +1,12 @@
 package com.evatech.bidplatform.contract.service.impl;
 
-import com.evatech.bidplatform.contract.entity.ContractAssignmentHistory;
-import com.evatech.bidplatform.contract.entity.ContractAssignmentStatus;
-import com.evatech.bidplatform.contract.entity.ContractDocument;
-import com.evatech.bidplatform.contract.entity.ContractHighlight;
-import com.evatech.bidplatform.contract.entity.ContractPageText;
-import com.evatech.bidplatform.contract.entity.ContractStatus;
+import com.evatech.bidplatform.contract.entity.*;
 import com.evatech.bidplatform.contract.repository.ContractAssignmentHistoryRepository;
 import com.evatech.bidplatform.contract.repository.ContractDocumentRepository;
 import com.evatech.bidplatform.contract.repository.ContractHighlightRepository;
-import com.evatech.bidplatform.contract.repository.ContractPageTextRepository;
 import com.evatech.bidplatform.contract.service.ContractService;
+import com.evatech.bidplatform.contract.service.ContractTextExtractionService;
+import com.evatech.bidplatform.contract.service.LotExtractionService;
 import com.evatech.bidplatform.document.service.FileStorageService;
 import com.evatech.bidplatform.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -27,40 +23,46 @@ import java.util.List;
 public class ContractServiceImpl implements ContractService {
 
     private final ContractDocumentRepository contractDocumentRepository;
-    private final ContractPageTextRepository contractPageTextRepository;
     private final ContractHighlightRepository contractHighlightRepository;
     private final ContractAssignmentHistoryRepository contractAssignmentHistoryRepository;
     private final FileStorageService fileStorageService;
+    private final LotExtractionService lotExtractionService;
+    private final ContractTextExtractionService contractTextExtractionService;
 
     @Override
-    public ContractDocument uploadContract(MultipartFile file, String uploadedBy) {
-        if (file == null || file.isEmpty()) {
-            throw new IllegalArgumentException("Contract file must not be empty");
-        }
-        if (uploadedBy == null || uploadedBy.isBlank()) {
-            throw new IllegalArgumentException("Uploaded by must not be empty");
-        }
-        String originalFileName = file.getOriginalFilename();
-        if (originalFileName == null || originalFileName.isBlank()) {
-            throw new IllegalArgumentException("Original file name must not be empty");
-        }
-        String fileType = file.getContentType();
-        if (fileType == null || fileType.isBlank()) {
-            throw new IllegalArgumentException("File type must not be empty");
-        }
-        String storagePath = fileStorageService.storeContract(file);
-        ContractDocument contractDocument = ContractDocument.builder()
-                .originalFileName(originalFileName)
-                .fileType(fileType)
-                .storagePath(storagePath)
-                .uploadedBy(uploadedBy)
-                .uploadedAt(LocalDateTime.now())
-                .status(ContractStatus.UPLOADED)
-                .assignmentStatus(ContractAssignmentStatus.UNASSIGNED)
-                .build();
+    public ContractDocument uploadContract(
+            MultipartFile file,
+            User user) {
 
-        return contractDocumentRepository.save(contractDocument);
+        // STEP 1) VALIDATE FILE
+        validateFile(file, user.getEmail());
+
+        // STEP 2) STORE FILE
+        String storagePath = fileStorageService.storeContract(file);
+
+        // STEP 3) UPDATE CONTRACT DOCUMENT DB
+        ContractDocument contractDocument = ContractDocument.builder()
+                        .originalFileName(file.getOriginalFilename())
+                        .fileType(file.getContentType())
+                        .storagePath(storagePath)
+                        .uploadedBy(user.getEmail())
+                        .status(ContractStatus.UPLOADED)
+                        .assignmentStatus(
+                                ContractAssignmentStatus.UNASSIGNED
+                        )
+                        .build();
+
+        contractDocument = contractDocumentRepository.save(contractDocument);
+
+        // STEP 4) Extract text and save pages
+        contractTextExtractionService.extractText(contractDocument.getId(), user);
+
+        // STEP 5) Extract lots and save them
+        lotExtractionService.extractLots(contractDocument, user);
+
+        return contractDocumentRepository.findById(contractDocument.getId()).orElse(null);
     }
+
 
     @Override
     @Transactional(readOnly = true)
@@ -85,24 +87,19 @@ public class ContractServiceImpl implements ContractService {
             Integer pageNumber,
             User user) {
 
-        validateUser(user);
-        validateContractId(contractId);
+        ContractDocument contractDocument = getContract(contractId, user);
+        return contractTextExtractionService.getContractPages(contractDocument, pageNumber, user);
+    }
 
-        if (pageNumber == null) {
-            return contractPageTextRepository
-                    .findByContractDocumentIdOrderByPageNumberAsc(contractId);
-        }
+    @Override
+    @Transactional(readOnly = true)
+    public List<ContractLot> getContractLots(
+            Long contractId,
+            User user,
+            String lotNumber) {
 
-        ContractPageText pageText = contractPageTextRepository
-                .findByContractDocumentIdAndPageNumber(contractId, pageNumber)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Page not found for contract id: "
-                                + contractId
-                                + " and page number: "
-                                + pageNumber
-                ));
-
-        return List.of(pageText);
+        ContractDocument contractDocument = getContract(contractId, user);
+        return lotExtractionService.extractLots(contractDocument, user, lotNumber);
     }
 
     @Override
@@ -110,9 +107,7 @@ public class ContractServiceImpl implements ContractService {
     public List<ContractHighlight> getHighlights(Long contractId, User user) {
         validateUser(user);
         validateContractId(contractId);
-
-        return contractHighlightRepository
-                .findByContractDocumentIdOrderByPageNumberAsc(contractId);
+        return contractHighlightRepository.findByContractDocumentIdOrderByPageNumberAsc(contractId);
     }
 
     @Override
@@ -343,5 +338,25 @@ public class ContractServiceImpl implements ContractService {
         }
 
         return user.getEmail();
+    }
+
+    private void validateFile(MultipartFile file, String uploadedBy) {
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("Contract file must not be empty");
+        }
+
+        if (uploadedBy == null || uploadedBy.isBlank()) {
+            throw new IllegalArgumentException("Uploaded by must not be empty");
+        }
+
+        String originalFileName = file.getOriginalFilename();
+        if (originalFileName == null || originalFileName.isBlank()) {
+            throw new IllegalArgumentException("Original file name must not be empty");
+        }
+
+        String fileType = file.getContentType();
+        if (fileType == null || fileType.isBlank()) {
+            throw new IllegalArgumentException("File type must not be empty");
+        }
     }
 }

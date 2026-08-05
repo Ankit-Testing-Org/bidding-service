@@ -78,35 +78,24 @@ public class ContractDocument {
     private LocalDateTime assignedAt;
 
     @Builder.Default
-    @OneToMany(
-            mappedBy = "contractDocument",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+    @OneToMany(mappedBy = "contractDocument", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ContractAssignmentHistory> assignmentHistory =
             new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(
-            mappedBy = "contractDocument",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+    @OneToMany(mappedBy = "contractDocument", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ContractLot> lots = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "contractDocument", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ContractPageText> pages = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(
-            mappedBy = "contractDocument",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+    @OneToMany(mappedBy = "contractDocument", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ContractHighlight> highlights = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(
-            mappedBy = "contractDocument",
-            fetch = FetchType.LAZY
-    )
+    @OneToMany(mappedBy = "contractDocument", fetch = FetchType.LAZY)
     private List<Bid> bids = new ArrayList<>();
 
     @PrePersist

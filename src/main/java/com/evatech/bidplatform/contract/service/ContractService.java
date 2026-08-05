@@ -1,9 +1,6 @@
 package com.evatech.bidplatform.contract.service;
 
-import com.evatech.bidplatform.contract.entity.ContractAssignmentHistory;
-import com.evatech.bidplatform.contract.entity.ContractDocument;
-import com.evatech.bidplatform.contract.entity.ContractHighlight;
-import com.evatech.bidplatform.contract.entity.ContractPageText;
+import com.evatech.bidplatform.contract.entity.*;
 import com.evatech.bidplatform.user.entity.User;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,7 +8,7 @@ import java.util.List;
 
 public interface ContractService {
 
-    ContractDocument uploadContract(MultipartFile file, String uploadedBy);
+    ContractDocument uploadContract(MultipartFile file, User uploadedBy);
 
     public ContractDocument getContract(Long contractId, User user);
 
@@ -50,4 +47,9 @@ public interface ContractService {
             Long contractId,
             User user
     );
+
+    List<ContractLot>  getContractLots(
+            Long contractId,
+            User user,
+            String lotNumber);
 }
