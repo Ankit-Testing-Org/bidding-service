@@ -3,75 +3,39 @@ package com.evatech.bidplatform.contract.controller;
 import com.evatech.bidplatform.ApiResponse;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
 import com.evatech.bidplatform.contract.service.ContractService;
+import com.evatech.bidplatform.user.entity.User;
+import com.evatech.bidplatform.user.repository.UserRepository;
+import jakarta.annotation.Nullable;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/contracts")
-public class ContractAssignmentController {
+@RequiredArgsConstructor
+public class ContractAssignmentController extends AbstractController {
 
     private final ContractService contractService;
-
-    public ContractAssignmentController(
-            ContractService contractService
-    ) {
-        this.contractService = contractService;
-    }
-
-    @PostMapping("/{contractId}/assign-to-me")
-    public ApiResponse<ContractDocument> assignToMe(
-            @PathVariable Long contractId,
-            Authentication authentication
-    ) {
-        if (authentication == null || authentication.getName() == null) {
-            throw new IllegalStateException("Authenticated user not found");
-        }
-
-        ContractDocument contractDocument = contractService.assignContract(
-                contractId,
-                authentication.getName()
-        );
-
-        return ApiResponse.success(
-                "Contract assigned to current user successfully",
-                contractDocument
-        );
-    }
-
-    @GetMapping("/unassigned")
-    public ApiResponse<List<ContractDocument>> getUnassignedContracts() {
-        List<ContractDocument> contracts = contractService.getUnassignedContracts();
-
-        return ApiResponse.success(
-                "Unassigned contracts fetched successfully",
-                contracts
-        );
-    }
-
-    @GetMapping("/assigned")
-    public ApiResponse<List<ContractDocument>> getAssignedContracts(
-            @RequestParam String assignedTo
-    ) {
-        List<ContractDocument> contracts = contractService.getAssignedContracts(
-                assignedTo
-        );
-
-        return ApiResponse.success(
-                "Assigned contracts fetched successfully",
-                contracts
-        );
-    }
+    private final UserRepository userRepo;
 
     @PostMapping("/{contractId}/assign")
     public ApiResponse<ContractDocument> assignContract(
+            Authentication authentication,
             @PathVariable Long contractId,
-            @RequestParam String assignedTo
+            @Nullable @RequestParam String assignedTo
     ) {
+        User user = authenticateAndFetchUser(userRepo,authentication);
+
+        if(!StringUtils.hasText(assignedTo)) {
+            assignedTo = user.getEmail();
+        }
         ContractDocument contractDocument = contractService.assignContract(
                 contractId,
-                assignedTo
+                assignedTo,
+                user
         );
 
         return ApiResponse.success(
@@ -82,15 +46,46 @@ public class ContractAssignmentController {
 
     @PostMapping("/{contractId}/unassign")
     public ApiResponse<ContractDocument> unassignContract(
+            Authentication authentication,
             @PathVariable Long contractId
     ) {
+        User user = authenticateAndFetchUser(userRepo,authentication);
         ContractDocument contractDocument = contractService.unassignContract(
-                contractId
+                contractId,
+                user
         );
 
         return ApiResponse.success(
                 "Contract unassigned successfully",
                 contractDocument
+        );
+    }
+
+
+    @GetMapping("/unassigned")
+    public ApiResponse<List<ContractDocument>> getUnassignedContracts(Authentication authentication) {
+        User user = authenticateAndFetchUser(userRepo,authentication);
+        List<ContractDocument> contracts = contractService.getUnassignedContracts(user);
+
+        return ApiResponse.success(
+                "Unassigned contracts fetched successfully",
+                contracts
+        );
+    }
+
+    @GetMapping("/assigned")
+    public ApiResponse<List<ContractDocument>> getAssignedContracts(
+            Authentication authentication,
+            @RequestParam String assignedTo
+    ) {
+        User user = authenticateAndFetchUser(userRepo,authentication);
+        List<ContractDocument> contracts = contractService.getAssignedContracts(
+                assignedTo, user
+        );
+
+        return ApiResponse.success(
+                "Assigned contracts fetched successfully",
+                contracts
         );
     }
 }

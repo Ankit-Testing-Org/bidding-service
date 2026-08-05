@@ -62,11 +62,29 @@ public class ContractDocument {
     @Column(name = "assignment_status", nullable = false)
     private ContractAssignmentStatus assignmentStatus;
 
+    /**
+     * Current owner of the contract.
+     */
     @Column(name = "assigned_to")
     private String assignedTo;
 
+    /**
+     * User who performed the latest assignment/reassignment.
+     */
+    @Column(name = "assigned_by")
+    private String assignedBy;
+
     @Column(name = "assigned_at")
     private LocalDateTime assignedAt;
+
+    @Builder.Default
+    @OneToMany(
+            mappedBy = "contractDocument",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<ContractAssignmentHistory> assignmentHistory =
+            new ArrayList<>();
 
     @Builder.Default
     @OneToMany(
@@ -85,12 +103,18 @@ public class ContractDocument {
     private List<ContractHighlight> highlights = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "contractDocument", fetch = FetchType.LAZY)
+    @OneToMany(
+            mappedBy = "contractDocument",
+            fetch = FetchType.LAZY
+    )
     private List<Bid> bids = new ArrayList<>();
 
     @PrePersist
     public void prePersist() {
-        this.uploadedAt = LocalDateTime.now();
+
+        if (this.uploadedAt == null) {
+            this.uploadedAt = LocalDateTime.now();
+        }
 
         if (this.status == null) {
             this.status = ContractStatus.UPLOADED;
@@ -101,15 +125,34 @@ public class ContractDocument {
         }
     }
 
-    public void assignTo(String assignedTo) {
-        this.assignedTo = assignedTo;
+    /**
+     * Initial assignment or reassignment.
+     */
+    public void assignTo(String assignee, String assignedBy) {
+        this.assignedTo = assignee;
+        this.assignedBy = assignedBy;
         this.assignedAt = LocalDateTime.now();
         this.assignmentStatus = ContractAssignmentStatus.ASSIGNED;
     }
 
-    public void unassign() {
+    /**
+     * Used when owner changes.
+     */
+    public void reassignTo(String newAssignee, String assignedBy) {
+        this.assignedTo = newAssignee;
+        this.assignedBy = assignedBy;
+        this.assignedAt = LocalDateTime.now();
+        this.assignmentStatus = ContractAssignmentStatus.ASSIGNED;
+    }
+
+    public void unassign(String assignedBy) {
         this.assignedTo = null;
-        this.assignedAt = null;
+        this.assignedBy = assignedBy;
+        this.assignedAt = LocalDateTime.now();
         this.assignmentStatus = ContractAssignmentStatus.UNASSIGNED;
+    }
+
+    public boolean isAssigned() {
+        return this.assignmentStatus == ContractAssignmentStatus.ASSIGNED;
     }
 }

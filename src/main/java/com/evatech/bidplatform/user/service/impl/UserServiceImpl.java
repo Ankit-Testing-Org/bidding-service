@@ -55,7 +55,8 @@ public class UserServiceImpl implements UserService {
         );
 
         //   Assigning role to user.
-        keycloakService.assignRealmRoles(keycloakUserId, List.of("user"));
+        keycloakService.assignRealmRoles(keycloakUserId,
+                List.of(request.getRoleType().name()));
 
         //  Create local DB user (PROFILE SOURCE)
         User user = new User();
@@ -72,9 +73,6 @@ public class UserServiceImpl implements UserService {
         user.setState(request.getState());
         user.setCountry(request.getCountry());
         user.setPhoneNumber(request.getPhoneNumber());
-        user.setTermsAccepted(request.getTermsAccepted());
-        // App-specific fields
-        user.setBarcodeValue(UUID.randomUUID().toString());
         user.setEnabled(false); // enabled after email verification
 
         //  Save everything
@@ -117,11 +115,6 @@ public class UserServiceImpl implements UserService {
                         new CustomException("User not found", 400)
                 );
              }
-             case BARCODE -> {
-                 return userRepo.findByBarcodeValue(value).orElseThrow(() ->
-                        new CustomException("User not found", 400)
-                );
-             }
          }
          return null;
     }
@@ -142,7 +135,6 @@ public class UserServiceImpl implements UserService {
 
         return userRepo.save(user);
     }
-
 
     private void updateIfChanged(String oldValue, String newValue,
                                  @NonNull Consumer<String> setter) {

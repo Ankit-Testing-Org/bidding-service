@@ -22,7 +22,7 @@ public class AiBidFormFillPersistenceServiceImpl implements AiBidFormFillPersist
     private final BidFieldRepository bidFieldRepository;
 
     @Override
-    public List<BidField> fillBidFormUsingAi(Long bidId) {
+    public List<BidField> fillBidFormUsingAi(Long bidId, String userName) {
         Bid bid = bidRepository.findById(bidId)
                 .orElseThrow(() -> new IllegalArgumentException("Bid not found with id: " + bidId));
 

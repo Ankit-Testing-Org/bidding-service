@@ -8,7 +8,6 @@ public class UserResponse {
     private String email;
     private String firstName;
     private String lastName;
-    private String barcodeValue;
     private String addressLine1;
     private String addressLine2;
     private String postCode;

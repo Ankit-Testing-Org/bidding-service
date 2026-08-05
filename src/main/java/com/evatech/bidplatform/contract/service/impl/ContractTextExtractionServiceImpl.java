@@ -6,6 +6,7 @@ import com.evatech.bidplatform.contract.entity.ContractStatus;
 import com.evatech.bidplatform.contract.repository.ContractDocumentRepository;
 import com.evatech.bidplatform.contract.repository.ContractPageTextRepository;
 import com.evatech.bidplatform.contract.service.ContractTextExtractionService;
+import com.evatech.bidplatform.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +23,7 @@ public class ContractTextExtractionServiceImpl implements ContractTextExtraction
 
 
     @Override
-    public List<ContractPageText> extractText(Long contractId) {
+    public List<ContractPageText> extractText(Long contractId, User user) {
         ContractDocument contractDocument = contractDocumentRepository.findById(contractId)
                 .orElseThrow(() -> new IllegalArgumentException("Contract not found with id: " + contractId));
 

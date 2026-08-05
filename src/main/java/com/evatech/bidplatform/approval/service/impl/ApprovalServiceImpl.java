@@ -51,7 +51,7 @@ public class ApprovalServiceImpl implements ApprovalService {
         task.approve(comment);
         approvalTaskRepository.save(task);
 
-        saveHistory(task.getBid(), approver, "APPROVED", task.getStage(), comment);
+        saveHistory(task.getBid(), approver, ApprovalStatus.APPROVED.name(), task.getStage(), comment);
 
         createNextApprovalTaskOrApproveBid(task.getBid(), task.getStage());
 
@@ -74,9 +74,32 @@ public class ApprovalServiceImpl implements ApprovalService {
         bid.setStatus(BidStatus.REJECTED);
         bidRepository.save(bid);
 
-        saveHistory(bid, approver, "REJECTED", task.getStage(), comment);
+        saveHistory(bid, approver, ApprovalStatus.REJECTED.name(), task.getStage(), comment);
 
         return task;
+    }
+
+    @Override
+    @Transactional
+    public ApprovalTask requestChanges(
+            Long taskId,
+            String approver,
+            String comment
+    ) {
+
+        ApprovalTask task = approvalTaskRepository.findById(taskId).orElseThrow();
+
+        Bid bid = task.getBid();
+
+        task.setStatus(ApprovalStatus.CHANGES_REQUESTED);
+        task.setComment(comment);
+        task.setCompletedAt(LocalDateTime.now());
+        task.setAssignedTo(bid.getSubmittedBy());
+        ApprovalTask approvalTask = approvalTaskRepository.save(task);
+
+        saveHistory(task.getBid(), approver, ApprovalStatus.CHANGES_REQUESTED.name(), task.getStage(), comment);
+
+        return approvalTask;
     }
 
     @Override

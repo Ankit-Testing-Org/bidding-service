@@ -6,6 +6,7 @@ import com.evatech.bidplatform.user.entity.User;
 import com.evatech.bidplatform.user.exception.CustomException;
 import com.evatech.bidplatform.user.repository.EmailVerificationTokenRepository;
 import com.evatech.bidplatform.user.repository.UserRepository;
+import com.evatech.bidplatform.user.service.KeycloakService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -24,7 +25,7 @@ public class EmailVerificationController {
 
     private final EmailVerificationTokenRepository tokenRepo;
     private final UserRepository userRepo;
-
+    private final KeycloakService keycloakService;
 
     @GetMapping("/verify")
     public ResponseEntity<?> verifyEmail(@RequestParam String token) {
@@ -36,6 +37,7 @@ public class EmailVerificationController {
         User user = ev.getUser();
         user.setEnabled(true);
         userRepo.save(user);
+        keycloakService.requireTotpSetup(user.getKeycloakUserId());
         tokenRepo.delete(ev);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.ALL_VALUE)

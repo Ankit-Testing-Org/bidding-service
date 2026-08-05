@@ -17,6 +17,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
@@ -37,9 +38,7 @@ public class UserController {
             try {
                 user = userService.fetchUser(UserLookupType.EMAIL, request.getEmail());
             } catch (CustomException ex) {
-                if(ex.getMessage().equalsIgnoreCase("User not found")) {
-
-                } else {
+                if(!ex.getMessage().equalsIgnoreCase("User not found")) {
                     throw ex;
                 }
             }
@@ -78,16 +77,16 @@ public class UserController {
 
 
 
-    @GetMapping
     @PostMapping("/resend/token")
-    public ResponseEntity<?> resendToken(@RequestBody LoginRequest req) {
+    public ResponseEntity<?> resendToken(
+            @RequestBody LoginRequest req
+    ) {
         User user = userService.fetchUser(UserLookupType.EMAIL, req.getEmail());
 
         userService.sendVerificationToken(user);
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.ALL_VALUE)
-                .body("Token Resent Successfully");
+        return ResponseEntity.ok(
+                "Token Resent Successfully"
+        );
     }
 
     @PostMapping("/login")
@@ -103,7 +102,6 @@ public class UserController {
         if(!response.isEnabled()) {
             return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                     .body("User is not enabled yet, Please verify email");
-
         }
         UserResponse userResponse = mapper.toResponse(response);
         return ResponseEntity.ok().
@@ -112,25 +110,19 @@ public class UserController {
     }
 
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/fetch")
-    public ResponseEntity<UserResponse> fetchUser(@RequestParam("barcode") String barcode,
-                                                  @RequestParam("carNumber") String carNumber,
-                                                  @RequestParam("phoneNumber") String phoneNumber,
+    public ResponseEntity<UserResponse> fetchUser(@RequestParam("phoneNumber") String phoneNumber,
                                                   @RequestParam("email") String email,
                                                   @RequestParam("username") String username) {
-        if (barcode == null && carNumber == null
-                && phoneNumber == null && email == null && username == null) {
+        if (phoneNumber == null && email == null && username == null) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "At least one search parameter is required"
             );
         }
         User user;
-        if (barcode != null) {
-            user = userService.fetchUser(UserLookupType.BARCODE, barcode);
-        } else if (carNumber != null) {
-            user = userService.fetchUser(UserLookupType.CAR_NUMBER, carNumber);
-        } else if (phoneNumber != null) {
+       if (phoneNumber != null) {
             user = userService.fetchUser(UserLookupType.PHONE,phoneNumber);
         } else if (email != null) {
             user = userService.fetchUser(UserLookupType.EMAIL,email);
@@ -146,26 +138,19 @@ public class UserController {
         return ResponseEntity.notFound().build();
     }
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/delete")
-    public ResponseEntity<?> deleteUser(@RequestParam("barcode") String barcode,
-                                        @RequestParam("carNumber") String carNumber,
-                                        @RequestParam("phoneNumber") String phoneNumber,
+    public ResponseEntity<?> deleteUser(@RequestParam("phoneNumber") String phoneNumber,
                                         @RequestParam("email") String email,
                                         @RequestParam("username") String username) {
-        if (barcode == null && carNumber == null
-                && phoneNumber == null && email == null && username == null) {
+        if (phoneNumber == null && email == null && username == null) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "At least one search parameter is required"
             );
         }
         User user;
-        if (barcode != null) {
-            user = userService.fetchUser(UserLookupType.BARCODE, barcode);
-        } else if (carNumber != null) {
-            user = userService.fetchUser(UserLookupType.CAR_NUMBER, carNumber);
-        } else if (phoneNumber != null) {
+        if (phoneNumber != null) {
             user = userService.fetchUser(UserLookupType.PHONE,phoneNumber);
         } else if (email != null) {
             user = userService.fetchUser(UserLookupType.EMAIL,email);

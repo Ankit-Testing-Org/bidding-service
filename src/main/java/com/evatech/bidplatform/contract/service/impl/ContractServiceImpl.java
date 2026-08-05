@@ -1,15 +1,22 @@
 package com.evatech.bidplatform.contract.service.impl;
 
-import com.evatech.bidplatform.contract.entity.*;
+import com.evatech.bidplatform.contract.entity.ContractAssignmentHistory;
+import com.evatech.bidplatform.contract.entity.ContractAssignmentStatus;
+import com.evatech.bidplatform.contract.entity.ContractDocument;
+import com.evatech.bidplatform.contract.entity.ContractHighlight;
+import com.evatech.bidplatform.contract.entity.ContractPageText;
+import com.evatech.bidplatform.contract.entity.ContractStatus;
+import com.evatech.bidplatform.contract.repository.ContractAssignmentHistoryRepository;
 import com.evatech.bidplatform.contract.repository.ContractDocumentRepository;
 import com.evatech.bidplatform.contract.repository.ContractHighlightRepository;
 import com.evatech.bidplatform.contract.repository.ContractPageTextRepository;
+import com.evatech.bidplatform.contract.service.ContractService;
 import com.evatech.bidplatform.document.service.FileStorageService;
+import com.evatech.bidplatform.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import com.evatech.bidplatform.contract.service.ContractService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,6 +29,7 @@ public class ContractServiceImpl implements ContractService {
     private final ContractDocumentRepository contractDocumentRepository;
     private final ContractPageTextRepository contractPageTextRepository;
     private final ContractHighlightRepository contractHighlightRepository;
+    private final ContractAssignmentHistoryRepository contractAssignmentHistoryRepository;
     private final FileStorageService fileStorageService;
 
     @Override
@@ -29,12 +37,18 @@ public class ContractServiceImpl implements ContractService {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("Contract file must not be empty");
         }
-
+        if (uploadedBy == null || uploadedBy.isBlank()) {
+            throw new IllegalArgumentException("Uploaded by must not be empty");
+        }
         String originalFileName = file.getOriginalFilename();
+        if (originalFileName == null || originalFileName.isBlank()) {
+            throw new IllegalArgumentException("Original file name must not be empty");
+        }
         String fileType = file.getContentType();
-
+        if (fileType == null || fileType.isBlank()) {
+            throw new IllegalArgumentException("File type must not be empty");
+        }
         String storagePath = fileStorageService.storeContract(file);
-
         ContractDocument contractDocument = ContractDocument.builder()
                 .originalFileName(originalFileName)
                 .fileType(fileType)
@@ -50,13 +64,17 @@ public class ContractServiceImpl implements ContractService {
 
     @Override
     @Transactional(readOnly = true)
-    public ContractDocument getContract(Long contractId) {
-       return getContractOrThrow(contractId);
+    public ContractDocument getContract(Long contractId, User user) {
+        validateUser(user);
+        return getContractOrThrow(contractId);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public ContractDocument saveContract(ContractDocument contractDocument) {
+        if (contractDocument == null) {
+            throw new IllegalArgumentException("Contract document must not be null");
+        }
+
         return contractDocumentRepository.save(contractDocument);
     }
 
@@ -64,13 +82,17 @@ public class ContractServiceImpl implements ContractService {
     @Transactional(readOnly = true)
     public List<ContractPageText> getContractPages(
             Long contractId,
-            Integer pageNumber
-    ) {
-        ContractDocument contractDocument = getContractOrThrow(contractId);
+            Integer pageNumber,
+            User user) {
+
+        validateUser(user);
+        validateContractId(contractId);
+
         if (pageNumber == null) {
             return contractPageTextRepository
                     .findByContractDocumentIdOrderByPageNumberAsc(contractId);
         }
+
         ContractPageText pageText = contractPageTextRepository
                 .findByContractDocumentIdAndPageNumber(contractId, pageNumber)
                 .orElseThrow(() -> new IllegalArgumentException(
@@ -79,17 +101,21 @@ public class ContractServiceImpl implements ContractService {
                                 + " and page number: "
                                 + pageNumber
                 ));
+
         return List.of(pageText);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ContractHighlight> getHighlights(Long contractId) {
-        return contractHighlightRepository.findByContractDocumentIdOrderByPageNumberAsc(contractId);
+    public List<ContractHighlight> getHighlights(Long contractId, User user) {
+        validateUser(user);
+        validateContractId(contractId);
+
+        return contractHighlightRepository
+                .findByContractDocumentIdOrderByPageNumberAsc(contractId);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public ContractDocument markAnalysisInProgress(Long contractId) {
         ContractDocument contractDocument = getContractOrThrow(contractId);
 
@@ -99,12 +125,13 @@ public class ContractServiceImpl implements ContractService {
                     "Contract text must be extracted before analysis can start"
             );
         }
+
         contractDocument.setStatus(ContractStatus.ANALYSIS_IN_PROGRESS);
+
         return contractDocumentRepository.save(contractDocument);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public ContractDocument markAnalysed(Long contractId) {
         ContractDocument contractDocument = getContractOrThrow(contractId);
 
@@ -113,13 +140,15 @@ public class ContractServiceImpl implements ContractService {
                     "Contract must be in analysis progress before marking as analysed"
             );
         }
+
         contractDocument.setStatus(ContractStatus.ANALYSED);
+
         return contractDocumentRepository.save(contractDocument);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ContractDocument> getUnassignedContracts() {
+    public List<ContractDocument> getUnassignedContracts(User user) {
         return contractDocumentRepository.findByAssignmentStatus(
                 ContractAssignmentStatus.UNASSIGNED
         );
@@ -127,7 +156,7 @@ public class ContractServiceImpl implements ContractService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ContractDocument> getAssignedContracts(String assignedTo) {
+    public List<ContractDocument> getAssignedContracts(String assignedTo, User user) {
         if (assignedTo == null || assignedTo.isBlank()) {
             throw new IllegalArgumentException("Assigned to must not be empty");
         }
@@ -141,30 +170,178 @@ public class ContractServiceImpl implements ContractService {
     @Override
     public ContractDocument assignContract(
             Long contractId,
-            String assignedTo
-    ) {
-        if (assignedTo == null || assignedTo.isBlank()) {
-            throw new IllegalArgumentException("Assigned to must not be empty");
-        }
+            String assignedTo,
+            User user) {
 
+        String assignedBy = getUserEmail(user);
+
+        if (assignedTo == null || assignedTo.isBlank()) {
+            assignedTo = assignedBy;
+        }
         ContractDocument contractDocument = getContractOrThrow(contractId);
-        contractDocument.assignTo(assignedTo);
+
+        String oldAssignee = contractDocument.getAssignedTo();
+
+        contractDocument.assignTo(
+                assignedTo,
+                assignedBy
+        );
+
+        String remarks = resolveAssignmentRemarks(
+                oldAssignee,
+                assignedTo
+        );
+
+        createAssignmentHistory(
+                contractDocument,
+                oldAssignee,
+                assignedTo,
+                assignedBy,
+                remarks
+        );
 
         return contractDocumentRepository.save(contractDocument);
     }
 
     @Override
-    public ContractDocument unassignContract(Long contractId) {
+    public ContractDocument reassignContract(
+            Long contractId,
+            String newAssignee,
+            User user) {
+
+        if (newAssignee == null || newAssignee.isBlank()) {
+            throw new IllegalArgumentException("New assignee must not be empty");
+        }
+
+        String assignedBy = getUserEmail(user);
+
         ContractDocument contractDocument = getContractOrThrow(contractId);
-        contractDocument.unassign();
+
+        String oldAssignee = contractDocument.getAssignedTo();
+
+        if (oldAssignee == null || oldAssignee.isBlank()) {
+            throw new IllegalStateException(
+                    "Contract is not currently assigned. Please assign it first."
+            );
+        }
+
+        contractDocument.reassignTo(
+                newAssignee,
+                assignedBy
+        );
+
+        String remarks = oldAssignee.equals(newAssignee)
+                ? "Assignment updated"
+                : "Contract reassigned";
+
+        createAssignmentHistory(
+                contractDocument,
+                oldAssignee,
+                newAssignee,
+                assignedBy,
+                remarks
+        );
 
         return contractDocumentRepository.save(contractDocument);
     }
 
+    @Override
+    public ContractDocument unassignContract(Long contractId, User user) {
+        String assignedBy = getUserEmail(user);
+
+        ContractDocument contractDocument = getContractOrThrow(contractId);
+
+        String oldAssignee = contractDocument.getAssignedTo();
+
+        if (oldAssignee == null || oldAssignee.isBlank()) {
+            throw new IllegalStateException("Contract is already unassigned");
+        }
+
+        contractDocument.unassign(assignedBy);
+
+        createAssignmentHistory(
+                contractDocument,
+                oldAssignee,
+                null,
+                assignedBy,
+                "Contract unassigned"
+        );
+
+        return contractDocumentRepository.save(contractDocument);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ContractAssignmentHistory> getAssignmentHistory(Long contractId, User user) {
+        validateUser(user);
+        validateContractId(contractId);
+
+        return contractAssignmentHistoryRepository
+                .findByContractDocumentIdOrderByAssignedAtDesc(contractId);
+    }
+
+    private void createAssignmentHistory(
+            ContractDocument contractDocument,
+            String oldAssignee,
+            String newAssignee,
+            String assignedBy,
+            String remarks) {
+
+        ContractAssignmentHistory history = ContractAssignmentHistory.builder()
+                .contractDocument(contractDocument)
+                .oldAssignee(oldAssignee)
+                .newAssignee(newAssignee)
+                .assignedBy(assignedBy)
+                .assignedAt(LocalDateTime.now())
+                .remarks(remarks)
+                .build();
+
+        contractAssignmentHistoryRepository.save(history);
+    }
+
+    private String resolveAssignmentRemarks(
+            String oldAssignee,
+            String newAssignee) {
+
+        if (oldAssignee == null || oldAssignee.isBlank()) {
+            return "Initial assignment";
+        }
+
+        if (oldAssignee.equals(newAssignee)) {
+            return "Assignment updated";
+        }
+
+        return "Contract reassigned";
+    }
+
     private ContractDocument getContractOrThrow(Long contractId) {
+        validateContractId(contractId);
+
         return contractDocumentRepository.findById(contractId)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Contract not found with id: " + contractId
                 ));
+    }
+
+    private void validateContractId(Long contractId) {
+        if (contractId == null) {
+            throw new IllegalArgumentException("Contract id must not be null");
+        }
+    }
+
+    private String validateUser(User user) {
+        return getUserEmail(user);
+    }
+
+    private String getUserEmail(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("User must not be null");
+        }
+
+        if (user.getEmail() == null || user.getEmail().isBlank()) {
+            throw new IllegalArgumentException("User email must not be empty");
+        }
+
+        return user.getEmail();
     }
 }

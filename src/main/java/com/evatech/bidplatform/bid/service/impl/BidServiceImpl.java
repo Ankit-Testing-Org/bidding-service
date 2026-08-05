@@ -27,7 +27,7 @@ public class BidServiceImpl implements BidService {
     private final ContractDocumentRepository contractDocumentRepository;
 
     @Override
-    public Bid createBid(Long contractId, String title, String createdBy) {
+    public Bid createBid(Long contractId, String title, String createdBy, String userName) {
         ContractDocument contractDocument = contractDocumentRepository.findById(contractId)
                 .orElseThrow(() -> new IllegalArgumentException("Contract not found with id: " + contractId));
 
@@ -36,6 +36,7 @@ public class BidServiceImpl implements BidService {
                 .bidReferenceNumber(generateBidReferenceNumber())
                 .title(title)
                 .createdBy(createdBy)
+                .currentOwner(userName)
                 .createdAt(LocalDateTime.now())
                 .status(BidStatus.DRAFT)
                 .build();
@@ -45,14 +46,14 @@ public class BidServiceImpl implements BidService {
 
     @Override
     @Transactional(readOnly = true)
-    public Bid getBid(Long bidId) {
+    public Bid getBid(Long bidId, String userName) {
         return bidRepository.findById(bidId)
                 .orElseThrow(() -> new IllegalArgumentException("Bid not found with id: " + bidId));
     }
 
     @Override
-    public Bid updateBidFields(Long bidId, Map<String, String> fields) {
-        Bid bid = getBid(bidId);
+    public Bid updateBidFields(Long bidId, Map<String, String> fields, String userName) {
+        Bid bid = getBid(bidId, userName);
 
         for (Map.Entry<String, String> entry : fields.entrySet()) {
             String fieldName = entry.getKey();
@@ -68,7 +69,6 @@ public class BidServiceImpl implements BidService {
             bidField.setFieldValue(fieldValue);
             bidField.setManuallyEdited(true);
             bidField.setUpdatedAt(LocalDateTime.now());
-
             bidFieldRepository.save(bidField);
         }
 
@@ -77,14 +77,14 @@ public class BidServiceImpl implements BidService {
     }
 
     @Override
-    public Bid submitBid(Long bidId) {
-        Bid bid = getBid(bidId);
+    public Bid submitBid(Long bidId, String userName) {
+        Bid bid = getBid(bidId, userName);
 
         if (bid.getStatus() != BidStatus.USER_REVIEWED
                 && bid.getStatus() != BidStatus.AI_FORM_FILLED) {
             throw new IllegalStateException("Only reviewed or AI-filled bid can be submitted");
         }
-
+        bid.setSubmittedBy(userName);
         bid.setStatus(BidStatus.SUBMITTED_FOR_APPROVAL);
         bid.setSubmittedAt(LocalDateTime.now());
 
@@ -103,7 +103,7 @@ public class BidServiceImpl implements BidService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<BidField> getBidFields(Long bidId) {
+    public List<BidField> getBidFields(Long bidId, String userName) {
         Bid bid = bidRepository.findById(bidId)
                 .orElseThrow(() -> new IllegalArgumentException("Bid not found with id: " + bidId));
 

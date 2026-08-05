@@ -8,15 +8,17 @@ import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -59,29 +61,29 @@ public class KeycloakServiceImpl implements KeycloakService {
 
     @Override
     public void assignRealmRoles(String userId, List<String> roles) {
-
-        for (RoleRepresentation master : keycloak.realm("master")
-                .roles().list()) {
-            log.info("master name "+master.getName());
+        if (roles == null || roles.isEmpty()) {
+            throw new CustomException("At least one role must be provided");
         }
-
-        // Get the realm roles
-        RoleRepresentation roleToAssign = keycloak.realm("master")
-                .roles()
-                .get("admin") // role name
-                .toRepresentation();
-        log.info(" roleToAssign "+roleToAssign);
-        if (roleToAssign == null) {
-            throw new CustomException("No matching realm roles found for user");
+        List<RoleRepresentation> roleRepresentations = new ArrayList<>();
+        for (String roleName : roles) {
+            RoleRepresentation role =
+                    keycloak.realm("master")
+                            .roles()
+                            .get(roleName)
+                            .toRepresentation();
+            if (role == null) {
+                throw new CustomException(
+                        "Role not found: " + roleName
+                );
+            }
+            roleRepresentations.add(role);
         }
-
-        // Assign roles to user
         keycloak.realm("master")
                 .users()
                 .get(userId)
                 .roles()
                 .realmLevel()
-                .add(List.of(roleToAssign));
+                .add(roleRepresentations);
     }
 
     @Override
@@ -129,13 +131,92 @@ public class KeycloakServiceImpl implements KeycloakService {
     }
 
     @Override
-    public String getAccessToken() {
-        JwtAuthenticationToken authentication =
-                (JwtAuthenticationToken) SecurityContextHolder
-                        .getContext()
-                        .getAuthentication();
-
-        return authentication.getToken().getTokenValue();
+    public void requireTotpSetup(String userId) {
+        UserResource userResource = keycloak.realm("master").users().get(userId);
+        UserRepresentation userRepresentation =
+                userResource.toRepresentation();
+        userRepresentation.setRequiredActions(List.of("CONFIGURE_TOTP"));
+        userResource.update(userRepresentation);
     }
 
+    @Override
+    public void removeRealmRoles(
+            String keycloakUserId,
+            List<String> roles
+    ) {
+
+        UserResource userResource = keycloak
+                .realm("master")
+                .users()
+                .get(keycloakUserId);
+
+        List<RoleRepresentation> roleRepresentations =
+                roles.stream()
+                        .map(role ->
+                                keycloak.realm("master")
+                                        .roles()
+                                        .get(role)
+                                        .toRepresentation()
+                        )
+                        .toList();
+
+        userResource.roles()
+                .realmLevel()
+                .remove(roleRepresentations);
+    }
+
+    @Override
+    public void replaceRealmRoles(
+            String keycloakUserId,
+            List<String> roles
+    ) {
+
+        UserResource userResource = keycloak
+                .realm("master")
+                .users()
+                .get(keycloakUserId);
+
+        List<RoleRepresentation> existingRoles =
+                userResource.roles()
+                        .realmLevel()
+                        .listAll();
+
+        if (!existingRoles.isEmpty()) {
+            userResource.roles()
+                    .realmLevel()
+                    .remove(existingRoles);
+        }
+
+        List<RoleRepresentation> newRoles =
+                roles.stream()
+                        .map(role ->
+                                keycloak.realm("master")
+                                        .roles()
+                                        .get(role)
+                                        .toRepresentation()
+                        )
+                        .toList();
+
+        userResource.roles()
+                .realmLevel()
+                .add(newRoles);
+    }
+
+    @Override
+    public Set<String> getUserRoles(
+            String keycloakUserId
+    ) {
+
+        UserResource userResource = keycloak
+                .realm("master")
+                .users()
+                .get(keycloakUserId);
+
+        return userResource.roles()
+                .realmLevel()
+                .listAll()
+                .stream()
+                .map(RoleRepresentation::getName)
+                .collect(Collectors.toSet());
+    }
 }

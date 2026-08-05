@@ -34,11 +34,17 @@ public class Bid {
     @Column(name = "created_by", nullable = false)
     private String createdBy;
 
+    @Column(name = "current_owner")
+    private String currentOwner;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "submitted_at")
     private LocalDateTime submittedAt;
+
+    @Column(name = "submitted_by")
+    private String submittedBy;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)

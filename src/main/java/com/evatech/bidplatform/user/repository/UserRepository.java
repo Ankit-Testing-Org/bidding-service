@@ -15,7 +15,5 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     Optional<User> findByEmail(String email);
 
-    Optional<User> findByBarcodeValue(String barcodeValue);
-
     Optional<User> findByKeycloakUserId(String keycloakUserId);
 }

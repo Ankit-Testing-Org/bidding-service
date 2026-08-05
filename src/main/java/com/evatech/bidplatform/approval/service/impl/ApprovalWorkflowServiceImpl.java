@@ -7,6 +7,7 @@ import com.evatech.bidplatform.approval.service.WorkflowNotificationService;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
 import com.evatech.bidplatform.contract.entity.ContractStatus;
 import com.evatech.bidplatform.contract.service.ContractService;
+import com.evatech.bidplatform.user.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,9 +32,9 @@ public class ApprovalWorkflowServiceImpl implements ApprovalWorkflowService {
     @Override
     public ContractDocument submitForReview(
             Long contractId,
-            String userId
-    ) {
-        ContractDocument contractDocument = contractService.getContract(contractId);
+            String userId,
+            User user) {
+        ContractDocument contractDocument = contractService.getContract(contractId, user);
         startWorkflow("CONTRACT_APPROVAL", "CONTRACT_DOCUMENT", contractId, userId);
         contractDocument.setStatus(ContractStatus.SUBMITTED_FOR_REVIEW);
         return contractService.saveContract(contractDocument);

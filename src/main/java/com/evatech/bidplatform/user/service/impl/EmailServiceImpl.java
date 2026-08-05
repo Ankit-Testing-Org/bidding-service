@@ -26,14 +26,30 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendVerificationEmail(String email, String token) {
+    public void sendVerificationEmail(
+            String email,
+            String token
+    ) {
 
-        String link = baseUrl+"user/email/verify?token=" + token;
+        String link =
+                baseUrl +
+                        "/user/email/verify?token=" +
+                        token;
 
-        SimpleMailMessage message = new SimpleMailMessage();
+        SimpleMailMessage message =
+                new SimpleMailMessage();
+
         message.setTo(email);
         message.setSubject("Verify your email");
-        message.setText("Click the link to verify your account:\n" + link);
+
+        message.setText(
+                """
+                Click the link below to verify your account:
+    
+                %s
+                """.formatted(link)
+        );
+
         mailSender.send(message);
     }
 }

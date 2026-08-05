@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 import java.util.List;
+import java.util.Set;
 
 public interface KeycloakService {
 
@@ -17,5 +18,19 @@ public interface KeycloakService {
 
     void deleteUser(User user);
 
-    String getAccessToken();
+    void requireTotpSetup(String keycloakUserId);
+
+    void removeRealmRoles(
+            String keycloakUserId,
+            List<String> roles
+    );
+
+    void replaceRealmRoles(
+            String keycloakUserId,
+            List<String> roles
+    );
+
+    Set<String> getUserRoles(
+            String keycloakUserId
+    );
 }

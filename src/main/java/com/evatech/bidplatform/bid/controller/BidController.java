@@ -5,6 +5,12 @@ import com.evatech.bidplatform.bid.entity.Bid;
 import com.evatech.bidplatform.bid.entity.BidField;
 import com.evatech.bidplatform.bid.service.AiBidFormFillPersistenceService;
 import com.evatech.bidplatform.bid.service.BidService;
+import com.evatech.bidplatform.user.entity.User;
+import com.evatech.bidplatform.user.exception.CustomException;
+import com.evatech.bidplatform.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,26 +25,22 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/bids")
+@RequiredArgsConstructor
 public class BidController {
 
     private final BidService bidService;
     private final AiBidFormFillPersistenceService aiBidFormFillPersistenceService;
-
-    public BidController(
-            BidService bidService,
-            AiBidFormFillPersistenceService aiBidFormFillPersistenceService
-    ) {
-        this.bidService = bidService;
-        this.aiBidFormFillPersistenceService = aiBidFormFillPersistenceService;
-    }
+    private final UserRepository userRepo;
 
     @PostMapping
     public ApiResponse<Bid> createBid(
+            Authentication authentication,
             @RequestParam Long contractId,
             @RequestParam String title,
             @RequestParam String createdBy
     ) {
-        Bid bid = bidService.createBid(contractId, title, createdBy);
+        User user =  authenticateAndFetchUser(authentication);
+        Bid bid = bidService.createBid(contractId, title, createdBy, user.getUserName());
 
         return ApiResponse.success(
                 "Bid created successfully",
@@ -48,9 +50,11 @@ public class BidController {
 
     @GetMapping("/{bidId}")
     public ApiResponse<Bid> getBid(
+            Authentication authentication,
             @PathVariable Long bidId
     ) {
-        Bid bid = bidService.getBid(bidId);
+        User user =  authenticateAndFetchUser(authentication);
+        Bid bid = bidService.getBid(bidId, user.getUserName());
 
         return ApiResponse.success(
                 "Bid fetched successfully",
@@ -60,10 +64,11 @@ public class BidController {
 
     @GetMapping("/{bidId}/fields")
     public ApiResponse<List<BidField>> getBidFields(
+            Authentication authentication,
             @PathVariable Long bidId
     ) {
-        List<BidField> fields = bidService.getBidFields(bidId);
-
+        User user =  authenticateAndFetchUser(authentication);
+        List<BidField> fields = bidService.getBidFields(bidId, user.getUserName());
         return ApiResponse.success(
                 "Bid fields fetched successfully",
                 fields
@@ -72,9 +77,11 @@ public class BidController {
 
     @PostMapping("/{bidId}/fill-form")
     public ApiResponse<List<BidField>> fillBidFormUsingAi(
+            Authentication authentication,
             @PathVariable Long bidId
     ) {
-        List<BidField> fields = aiBidFormFillPersistenceService.fillBidFormUsingAi(bidId);
+        User user =  authenticateAndFetchUser(authentication);
+        List<BidField> fields = aiBidFormFillPersistenceService.fillBidFormUsingAi(bidId, user.getUserName());
 
         return ApiResponse.success(
                 "Bid form filled using AI",
@@ -84,10 +91,12 @@ public class BidController {
 
     @PutMapping("/{bidId}/fields")
     public ApiResponse<Bid> updateBidFields(
+            Authentication authentication,
             @PathVariable Long bidId,
             @RequestBody Map<String, String> fields
     ) {
-        Bid bid = bidService.updateBidFields(bidId, fields);
+        User user =  authenticateAndFetchUser(authentication);
+        Bid bid = bidService.updateBidFields(bidId, fields, user.getUserName());
 
         return ApiResponse.success(
                 "Bid fields updated successfully",
@@ -97,13 +106,24 @@ public class BidController {
 
     @PostMapping("/{bidId}/submit")
     public ApiResponse<Bid> submitBid(
+            Authentication authentication,
             @PathVariable Long bidId
     ) {
-        Bid bid = bidService.submitBid(bidId);
+        User user =  authenticateAndFetchUser(authentication);
+        Bid bid = bidService.submitBid(bidId, user.getUserName());
 
         return ApiResponse.success(
                 "Bid submitted for approval successfully",
                 bid
         );
+    }
+
+    private User authenticateAndFetchUser(Authentication authentication) {
+        Jwt jwt = (Jwt) authentication.getPrincipal();
+
+        String keycloakUserId = jwt.getSubject(); // UUID
+
+        return userRepo.findByKeycloakUserId(keycloakUserId)
+                .orElseThrow(() -> new CustomException("User not found"));
     }
 }

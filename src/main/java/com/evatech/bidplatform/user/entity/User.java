@@ -5,8 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -37,12 +35,6 @@ public class User {
     private String state;
     private String country;
     private String phoneNumber;
-
-    private Boolean termsAccepted;
-
-    @Column(unique = true, nullable = false)
-    private String barcodeValue;
-
     private boolean enabled = false;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)

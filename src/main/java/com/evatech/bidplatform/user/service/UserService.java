@@ -14,6 +14,5 @@ public interface UserService {
     void sendVerificationToken(@NonNull User user);
     User fetchUser(@NonNull UserLookupType type, @NonNull String value);
     User updateDetails(@NonNull User user, @NonNull UpdateUserRequest updateUserRequest);
-
 }
 

@@ -13,5 +13,4 @@ public class UpdateUserRequest {
     private String state;
     private String phoneNumber;
     private String country;
-    private String barcodeValue;
 }

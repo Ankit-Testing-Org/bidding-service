@@ -11,4 +11,5 @@ public interface ApprovalService {
     ApprovalTask approve(Long taskId, String approver, String comment);
     ApprovalTask reject(Long taskId, String approver, String comment);
     List<ApprovalHistory> getApprovalHistory(Long bidId);
+    ApprovalTask requestChanges(Long taskId, String approver, String comment);
 }
