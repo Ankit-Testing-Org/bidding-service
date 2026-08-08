@@ -1,17 +1,9 @@
 package com.evatech.bidplatform.contract.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
+import com.evatech.bidplatform.contract.dto.LotAnalysisStatus;
+import com.evatech.bidplatform.contract.entity.analysis.ContractLotAnalysis;
+import com.evatech.bidplatform.contract.entity.analysis.ContractLotHighlight;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,6 +12,8 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -53,9 +47,12 @@ public class ContractLot {
     @Column(name = "end_page")
     private Integer endPage;
 
+    @Column(name = "valuation")
+    private double valuation;
+
     @Enumerated(EnumType.STRING)
-    @Column(name = "participation_status", nullable = false)
-    private LotParticipationStatus participationStatus;
+    @Column(name = "qualification_status", nullable = false)
+    private LotQualificationStatus qualificationStatus;
 
     @Column(name = "selected_by")
     private String selectedBy;
@@ -67,41 +64,94 @@ public class ContractLot {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "qualified_by")
+    private String qualifiedBy;
+
+    @Column(name = "qualified_at")
+    private LocalDateTime qualifiedAt;
+
+    @Column(name = "qualification_comment")
+    private String qualificationComment;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "analysis_status", nullable = false)
+    private LotAnalysisStatus analysisStatus;
+
+    @Column(name = "analysis_started_at")
+    private LocalDateTime analysisStartedAt;
+
+    @Column(name = "analysed_at")
+    private LocalDateTime analysedAt;
+
+    @Column(name = "analysis_failed_at")
+    private LocalDateTime analysisFailedAt;
+
+    @Lob
+    @Column(name = "analysis_error")
+    private String analysisError;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "contractLot", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ContractLotHighlight> highlights = new ArrayList<>();
+
+    @OneToOne(mappedBy = "contractLot", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ContractLotAnalysis analysis;
+
     @PrePersist
     public void prePersist() {
-        if (this.participationStatus == null) {
-            this.participationStatus = LotParticipationStatus.OPEN;
+        if (this.qualificationStatus == null) {
+            this.qualificationStatus = LotQualificationStatus.PENDING;
+        }
+
+        if (this.analysisStatus == null) {
+            this.analysisStatus = LotAnalysisStatus.NOT_ANALYSED;
         }
     }
 
-    public void selectForBid(String selectedBy) {
-        this.participationStatus =
-                LotParticipationStatus.SELECTED_FOR_BID;
-        this.selectedBy = selectedBy;
-        this.selectedAt = LocalDateTime.now();
+    public void markAnalysisInProgress() {
+        this.analysisStatus = LotAnalysisStatus.ANALYSIS_IN_PROGRESS;
+        this.analysisStartedAt = LocalDateTime.now();
+        this.analysisFailedAt = null;
+        this.analysisError = null;
     }
 
-    public void markNotApplicable(String selectedBy) {
-        this.participationStatus =
-                LotParticipationStatus.NOT_APPLICABLE;
-        this.selectedBy = selectedBy;
-        this.selectedAt = LocalDateTime.now();
+    public void markAnalysed() {
+        this.analysisStatus = LotAnalysisStatus.ANALYSED;
+        this.analysedAt = LocalDateTime.now();
+        this.analysisFailedAt = null;
+        this.analysisError = null;
+    }
+
+    public void markAnalysisFailed(String errorMessage) {
+        this.analysisStatus = LotAnalysisStatus.ANALYSIS_FAILED;
+        this.analysisFailedAt = LocalDateTime.now();
+        this.analysisError = errorMessage;
+    }
+
+    public void qualify(String qualifiedBy) {
+        this.qualificationStatus = LotQualificationStatus.QUALIFIED;
+        this.qualifiedBy = qualifiedBy;
+        this.qualifiedAt = LocalDateTime.now();
+    }
+
+    public void unqualify(String qualifiedBy) {
+        this.qualificationStatus = LotQualificationStatus.UNQUALIFIED;
+        this.qualifiedBy = qualifiedBy;
+        this.qualifiedAt = LocalDateTime.now();
     }
 
     public void reopen() {
-        this.participationStatus =
-                LotParticipationStatus.OPEN;
-        this.selectedBy = null;
-        this.selectedAt = null;
+        this.qualificationStatus = LotQualificationStatus.PENDING;
+        this.qualifiedBy = null;
+        this.qualifiedAt = null;
+        this.qualificationComment = null;
     }
 
-    public boolean isSelectedForBid() {
-        return LotParticipationStatus.SELECTED_FOR_BID
-                .equals(this.participationStatus);
+    public boolean isQualified() {
+        return LotQualificationStatus.QUALIFIED.equals(this.qualificationStatus);
     }
 
-    public boolean isNotApplicable() {
-        return LotParticipationStatus.NOT_APPLICABLE
-                .equals(this.participationStatus);
+    public boolean isUnqualified() {
+        return LotQualificationStatus.UNQUALIFIED.equals(this.qualificationStatus);
     }
 }

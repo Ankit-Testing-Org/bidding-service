@@ -28,9 +28,9 @@ public class ContractTextExtractionServiceImpl
     @Override
     public List<ContractPageText> extractText(
             Long contractId,
-            User user) {
+            User user, List<String> roles) {
 
-        ContractDocument contractDocument = contractService.getContract(contractId, user);
+        ContractDocument contractDocument = contractService.getContract(contractId, user, roles);
 
         // TODO : NEED TO HAVE LOGIC OF REEXTRACT.
         contractPageTextRepository.deleteByContractDocumentId(contractId);

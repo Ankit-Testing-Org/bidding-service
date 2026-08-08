@@ -6,12 +6,14 @@ import com.evatech.bidplatform.approval.entity.workflow.WorkflowTask;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
 import com.evatech.bidplatform.user.entity.User;
 
+import java.util.List;
+
 public interface ApprovalWorkflowService {
 
     ContractDocument submitForReview(
             Long contractId,
             String userId,
-            User user);
+            User user, List<String> roles);
 
     WorkflowInstance startWorkflow(
             String workflowKey,

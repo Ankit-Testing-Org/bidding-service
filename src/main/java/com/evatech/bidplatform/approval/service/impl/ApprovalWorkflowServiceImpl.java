@@ -14,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Slf4j
 @Service
 @Transactional
@@ -33,8 +35,8 @@ public class ApprovalWorkflowServiceImpl implements ApprovalWorkflowService {
     public ContractDocument submitForReview(
             Long contractId,
             String userId,
-            User user) {
-        ContractDocument contractDocument = contractService.getContract(contractId, user);
+            User user, List<String> roles) {
+        ContractDocument contractDocument = contractService.getContract(contractId, user, roles);
         startWorkflow("CONTRACT_APPROVAL", "CONTRACT_DOCUMENT", contractId, userId);
         contractDocument.setStatus(ContractStatus.SUBMITTED_FOR_REVIEW);
         return contractService.saveContract(contractDocument);

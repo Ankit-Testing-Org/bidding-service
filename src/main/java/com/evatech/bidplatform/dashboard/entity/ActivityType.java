@@ -1,0 +1,28 @@
+package com.evatech.bidplatform.dashboard.entity;
+
+public enum ActivityType {
+
+    CONTRACT_UPLOADED,
+
+    CONTRACT_ANALYZED,
+
+    LOT_ANALYZED,
+
+    PROPOSAL_CREATED,
+
+    PROPOSAL_SUBMITTED,
+
+    PROPOSAL_WON,
+
+    PROPOSAL_LOST,
+
+    REVIEW_ASSIGNED,
+
+    REVIEW_COMPLETED,
+
+    APPROVAL_REQUESTED,
+
+    APPROVAL_APPROVED,
+
+    APPROVAL_REJECTED
+}

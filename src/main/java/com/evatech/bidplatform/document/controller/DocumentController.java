@@ -24,12 +24,10 @@ public class DocumentController extends AbstractController {
     @PostMapping("/bids/{bidId}/generate")
     public ApiResponse<GeneratedDocument> generateBidDocument(
             Authentication authentication,
-            @PathVariable Long bidId,
-            @RequestParam String generatedBy
-    ) {
-        authenticateAndFetchUser(userRepo,authentication);
+            @PathVariable Long bidId) {
+        User user = authenticateAndFetchUser(userRepo,authentication);
         GeneratedDocument generatedDocument =
-                documentService.generateBidDocument(bidId, generatedBy);
+                documentService.generateBidDocument(bidId, user);
 
         return ApiResponse.success(
                 "Bid document generated successfully",
@@ -42,9 +40,9 @@ public class DocumentController extends AbstractController {
             Authentication authentication,
             @PathVariable Long documentId
     ) {
-        authenticateAndFetchUser(userRepo,authentication);
+        User user = authenticateAndFetchUser(userRepo,authentication);
         GeneratedDocument generatedDocument =
-                documentService.getDocument(documentId);
+                documentService.getDocument(documentId, user);
 
         return ApiResponse.success(
                 "Generated document fetched successfully",
@@ -57,12 +55,12 @@ public class DocumentController extends AbstractController {
             Authentication authentication,
             @PathVariable Long documentId
     ) {
-        authenticateAndFetchUser(userRepo,authentication);
+        User user = authenticateAndFetchUser(userRepo,authentication);
         GeneratedDocument generatedDocument =
-                documentService.getDocument(documentId);
+                documentService.getDocument(documentId, user);
 
         Resource resource =
-                documentService.downloadDocument(documentId);
+                documentService.downloadDocument(documentId, user);
 
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)

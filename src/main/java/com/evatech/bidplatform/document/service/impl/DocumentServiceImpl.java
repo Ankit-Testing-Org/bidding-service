@@ -9,6 +9,7 @@ import com.evatech.bidplatform.document.entity.GeneratedDocument;
 import com.evatech.bidplatform.document.repository.DocumentTemplateRepository;
 import com.evatech.bidplatform.document.repository.GeneratedDocumentRepository;
 import com.evatech.bidplatform.document.service.DocumentService;
+import com.evatech.bidplatform.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,7 @@ public class DocumentServiceImpl implements DocumentService {
     private final BidRepository bidRepository;
 
     @Override
-    public GeneratedDocument generateBidDocument(Long bidId, String generatedBy) {
+    public GeneratedDocument generateBidDocument(Long bidId, User user) {
         Bid bid = bidRepository.findById(bidId)
                 .orElseThrow(() -> new IllegalArgumentException("Bid not found with id: " + bidId));
 
@@ -46,7 +47,7 @@ public class DocumentServiceImpl implements DocumentService {
                 .fileName(generatedFileName)
                 .storagePath(generatedStoragePath)
                 .documentType(DocumentType.BID_DOCX)
-                .generatedBy(generatedBy)
+                .generatedBy(user.getEmail())
                 .generatedAt(LocalDateTime.now())
                 .build();
 
@@ -60,8 +61,8 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     @Transactional(readOnly = true)
-    public Resource downloadDocument(Long documentId) {
-        GeneratedDocument generatedDocument = getDocument(documentId);
+    public Resource downloadDocument(Long documentId, User user) {
+        GeneratedDocument generatedDocument = getDocument(documentId, user);
 
         throw new UnsupportedOperationException(
                 "File loading from storage path not implemented yet: " + generatedDocument.getStoragePath()
@@ -70,7 +71,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     @Transactional(readOnly = true)
-    public GeneratedDocument getDocument(Long documentId) {
+    public GeneratedDocument getDocument(Long documentId, User user) {
         return generatedDocumentRepository.findById(documentId)
                 .orElseThrow(() -> new IllegalArgumentException("Generated document not found with id: " + documentId));
     }

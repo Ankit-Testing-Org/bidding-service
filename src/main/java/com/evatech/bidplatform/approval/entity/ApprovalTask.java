@@ -1,6 +1,7 @@
 package com.evatech.bidplatform.approval.entity;
 
 import com.evatech.bidplatform.bid.entity.Bid;
+import com.evatech.bidplatform.user.dto.RoleType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -40,9 +41,15 @@ public class ApprovalTask {
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "assigned_role")
+    private RoleType assignedRole;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "bid_id", nullable = false)
     private Bid bid;
+
+
 
     @PrePersist
     public void prePersist() {

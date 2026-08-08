@@ -1,31 +1,20 @@
 package com.evatech.bidplatform.contract.entity;
 
 import com.evatech.bidplatform.bid.entity.Bid;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.evatech.bidplatform.contract.entity.analysis.ContractAnalysisSummary;
+import com.evatech.bidplatform.contract.entity.analysis.ContractHighlight;
+import jakarta.persistence.*;
+import lombok.*;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Builder
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -77,24 +66,43 @@ public class ContractDocument {
     @Column(name = "assigned_at")
     private LocalDateTime assignedAt;
 
-    @Builder.Default
+    @Column(name = "client_name")
+    private String clientName;
+
+    @Column(name = "contract_value", precision = 19, scale = 2)
+    private BigDecimal contractValue;
+
+    @Column(name = "currency", length = 10)
+    private String currency;
+
+    @Column(name = "submission_deadline")
+    private LocalDate submissionDeadline;
+
+    @Column(name = "contract_start_date")
+    private LocalDate contractStartDate;
+
+    @Column(name = "contract_end_date")
+    private LocalDate contractEndDate;
+
+    @Column(name = "estimated_bid_count")
+    private Integer estimatedBidCount;
+
     @OneToMany(mappedBy = "contractDocument", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ContractAssignmentHistory> assignmentHistory =
             new ArrayList<>();
 
-    @Builder.Default
     @OneToMany(mappedBy = "contractDocument", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ContractLot> lots = new ArrayList<>();
 
-    @Builder.Default
     @OneToMany(mappedBy = "contractDocument", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ContractPageText> pages = new ArrayList<>();
 
-    @Builder.Default
     @OneToMany(mappedBy = "contractDocument", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ContractHighlight> highlights = new ArrayList<>();
 
-    @Builder.Default
+    @OneToOne(mappedBy = "contractDocument", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ContractAnalysisSummary analysisSummary;
+
     @OneToMany(mappedBy = "contractDocument", fetch = FetchType.LAZY)
     private List<Bid> bids = new ArrayList<>();
 

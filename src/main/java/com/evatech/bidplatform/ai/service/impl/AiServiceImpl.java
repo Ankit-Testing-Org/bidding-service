@@ -4,10 +4,16 @@ import com.evatech.bidplatform.ai.model.AiContractAnalysisResponse;
 import com.evatech.bidplatform.ai.service.AiClient;
 import com.evatech.bidplatform.ai.service.AiService;
 import com.evatech.bidplatform.ai.service.ContractAnalysisPromptBuilder;
+import com.evatech.bidplatform.contract.dto.ContractLotAnalysisResult;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
-import com.evatech.bidplatform.contract.entity.ContractHighlight;
+import com.evatech.bidplatform.contract.entity.ContractLot;
+import com.evatech.bidplatform.contract.entity.analysis.AnalysisStatus;
+import com.evatech.bidplatform.contract.entity.analysis.ContractAnalysisSummary;
+import com.evatech.bidplatform.contract.entity.analysis.ContractHighlight;
 import com.evatech.bidplatform.contract.entity.ContractPageText;
 import com.evatech.bidplatform.contract.entity.RiskLevel;
+import com.evatech.bidplatform.contract.dto.ContractAnalysisResult;
+import com.evatech.bidplatform.user.entity.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -22,41 +28,43 @@ public class AiServiceImpl implements AiService {
 
     private final AiClient aiClient;
     private final ContractAnalysisPromptBuilder contractAnalysisPromptBuilder;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-
     @Override
-    public List<ContractHighlight> analyseContract(ContractDocument contractDocument, List<ContractPageText> pages) {
+    public ContractAnalysisResult analyseContract(ContractDocument contractDocument, List<ContractPageText> pages) {
 
-        String prompt = contractAnalysisPromptBuilder.buildPrompt(
-                contractDocument,
-                pages
-        );
+        String prompt = contractAnalysisPromptBuilder.buildPrompt(contractDocument, pages);
 
         String aiResponse = aiClient.analysePrompt(prompt);
-        AiContractAnalysisResponse analysisResponse  = parseAiResponse(aiResponse);
 
-        return mapToContractHighlights(contractDocument, analysisResponse);
+        AiContractAnalysisResponse analysisResponse = parseAiResponse(aiResponse);
+
+        List<ContractHighlight> highlights = mapToContractHighlights(contractDocument, analysisResponse);
+
+        ContractAnalysisSummary summary = mapToAnalysisSummary(contractDocument, analysisResponse);
+
+        return ContractAnalysisResult.builder().highlights(highlights).summary(summary).build();
     }
 
+    @Override
+    public ContractLotAnalysisResult analyseContractLot(ContractDocument contractDocument, ContractLot contractLot, List<ContractPageText> lotPages) {
+        return null;
+    }
+
+
     private AiContractAnalysisResponse parseAiResponse(String aiResponse) {
+
         try {
-            return objectMapper.readValue(
-                    aiResponse,
-                    AiContractAnalysisResponse.class
-            );
+            return objectMapper.readValue(aiResponse, AiContractAnalysisResponse.class);
         } catch (JsonProcessingException exception) {
-            throw new IllegalStateException(
-                    "Failed to parse AI contract analysis response",
-                    exception
-            );
+
+            throw new IllegalStateException("Failed to parse AI contract analysis response", exception);
         }
     }
 
-    private List<ContractHighlight> mapToContractHighlights(
-            ContractDocument contractDocument,
-            AiContractAnalysisResponse analysisResponse
-    ) {
+    private List<ContractHighlight> mapToContractHighlights(ContractDocument contractDocument, AiContractAnalysisResponse analysisResponse) {
+
         List<ContractHighlight> highlights = new ArrayList<>();
 
         if (analysisResponse == null || analysisResponse.highlights() == null) {
@@ -64,16 +72,8 @@ public class AiServiceImpl implements AiService {
         }
 
         for (ContractHighlight highlightResponse : analysisResponse.highlights()) {
-            ContractHighlight highlight = ContractHighlight.builder()
-                    .contractDocument(contractDocument)
-                    .category(defaultString(highlightResponse.getCategory(), "GENERAL"))
-                    .title(defaultString(highlightResponse.getTitle(), "Contract highlight"))
-                    .description(defaultString(highlightResponse.getDescription(), "No description provided"))
-                    .pageNumber(highlightResponse.getPageNumber())
-                    .riskLevel(parseRiskLevel(highlightResponse.getRiskLevel()))
-                    .recommendedAction(defaultString(highlightResponse.getRecommendedAction(), "Review manually"))
-                    .confidenceScore(defaultConfidenceScore(highlightResponse.getConfidenceScore()))
-                    .build();
+
+            ContractHighlight highlight = ContractHighlight.builder().contractDocument(contractDocument).category(highlightResponse.getCategory()).title(defaultString(highlightResponse.getTitle(), "Contract Highlight")).description(defaultString(highlightResponse.getDescription(), "No description provided")).pageNumber(highlightResponse.getPageNumber()).reference(highlightResponse.getReference()).riskLevel(parseRiskLevel(highlightResponse.getRiskLevel())).severityScore(highlightResponse.getSeverityScore()).mandatory(highlightResponse.getMandatory()).recommendedAction(defaultString(highlightResponse.getRecommendedAction(), "Review manually")).confidenceScore(defaultConfidenceScore(highlightResponse.getConfidenceScore())).build();
 
             highlights.add(highlight);
         }
@@ -81,7 +81,37 @@ public class AiServiceImpl implements AiService {
         return highlights;
     }
 
+    private ContractAnalysisSummary mapToAnalysisSummary(ContractDocument contractDocument, AiContractAnalysisResponse response) {
+
+        if (response == null) {
+            return null;
+        }
+
+        return ContractAnalysisSummary.builder().contractDocument(contractDocument)
+                .clientName(response.clientName()).
+                contractValue(response.contractValue()).
+                currency(response.currency())
+                .submissionDeadline(response.submissionDeadline())
+                .contractStartDate(response.contractStartDate())
+                .contractEndDate(response.contractEndDate())
+                .executiveSummary(response.executiveSummary())
+                .recommendation(response.recommendation())
+                .overallBidScore(response.overallBidScore())
+                .overallRiskLevel(response.overallRiskLevel())
+                .legalScore(response.legalScore())
+                .complianceScore(response.complianceScore())
+                .commercialScore(response.commercialScore())
+                .penaltyScore(response.penaltyScore())
+                .criticalClauses(response.criticalClauses())
+                .mandatoryDocuments(response.mandatoryDocuments())
+                .durationMonths(response.durationMonths())
+                .totalLots(response.totalLots())
+                .qualifiedLots(response.qualifiedLots()).status(AnalysisStatus.COMPLETED)
+                .build();
+    }
+
     private RiskLevel parseRiskLevel(RiskLevel riskLevel) {
+
         if (riskLevel == null) {
             return RiskLevel.LOW;
         }
@@ -94,6 +124,7 @@ public class AiServiceImpl implements AiService {
     }
 
     private String defaultString(String value, String defaultValue) {
+
         if (value == null || value.isBlank()) {
             return defaultValue;
         }
@@ -102,9 +133,11 @@ public class AiServiceImpl implements AiService {
     }
 
     private Double defaultConfidenceScore(Double confidenceScore) {
+
         if (confidenceScore == null) {
             return 0.0;
         }
+
         return confidenceScore;
     }
 }

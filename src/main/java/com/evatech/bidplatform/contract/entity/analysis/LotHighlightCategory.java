@@ -1,0 +1,60 @@
+package com.evatech.bidplatform.contract.entity.analysis;
+
+public enum LotHighlightCategory {
+
+    // Requirements
+
+    TECHNICAL_REQUIREMENT,
+
+    FUNCTIONAL_REQUIREMENT,
+
+    RESOURCE_REQUIREMENT,
+
+    EXPERIENCE_REQUIREMENT,
+
+    CERTIFICATION_REQUIREMENT,
+
+    CUSTOMER_REFERENCE_REQUIREMENT,
+
+    COMPLIANCE_REQUIREMENT,
+
+    SECURITY_REQUIREMENT,
+
+    FINANCIAL_REQUIREMENT,
+
+    COMMERCIAL_REQUIREMENT,
+
+    DELIVERY_REQUIREMENT,
+
+    SERVICE_LEVEL_REQUIREMENT,
+
+    // Risks
+
+    DELIVERY_RISK,
+
+    RESOURCE_RISK,
+
+    COMMERCIAL_RISK,
+
+    FINANCIAL_RISK,
+
+    TECHNICAL_RISK,
+
+    COMPLIANCE_RISK,
+
+    // Capability Assessment
+
+    CAPABILITY_MATCH,
+
+    CAPABILITY_GAP,
+
+    STRENGTH,
+
+    WEAKNESS,
+
+    OPPORTUNITY,
+
+    // AI Recommendation
+
+    BID_RECOMMENDATION
+}

@@ -1,5 +1,7 @@
-package com.evatech.bidplatform.contract.entity;
+package com.evatech.bidplatform.contract.entity.analysis;
 
+import com.evatech.bidplatform.contract.entity.ContractLot;
+import com.evatech.bidplatform.contract.entity.RiskLevel;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,15 +13,20 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "contract_highlight")
-public class ContractHighlight {
+@Table(name = "contract_lot_highlight")
+public class ContractLotHighlight {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "contract_lot_id", nullable = false)
+    private ContractLot contractLot;
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "category", nullable = false)
-    private String category;
+    private LotHighlightCategory category;
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -35,22 +42,21 @@ public class ContractHighlight {
     @Column(name = "risk_level")
     private RiskLevel riskLevel;
 
+    @Column(name = "confidence_score")
+    private Double confidenceScore;
+
     @Lob
     @Column(name = "recommended_action")
     private String recommendedAction;
 
-    @Column(name = "confidence_score")
-    private Double confidenceScore;
+    @Column(name = "is_bid_capable")
+    private Boolean bidCapable;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "contract_document_id", nullable = false)
-    private ContractDocument contractDocument;
-
     @PrePersist
     public void prePersist() {
-        this.createdAt = LocalDateTime.now();
+        createdAt = LocalDateTime.now();
     }
 }

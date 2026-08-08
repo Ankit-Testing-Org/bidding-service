@@ -28,6 +28,7 @@ public class ContractAssignmentController extends AbstractController {
             @Nullable @RequestParam String assignedTo
     ) {
         User user = authenticateAndFetchUser(userRepo,authentication);
+        List<String> roles = fetchRolesForUser(authentication);
 
         if(!StringUtils.hasText(assignedTo)) {
             assignedTo = user.getEmail();
@@ -35,7 +36,8 @@ public class ContractAssignmentController extends AbstractController {
         ContractDocument contractDocument = contractService.assignContract(
                 contractId,
                 assignedTo,
-                user
+                user,
+                roles
         );
 
         return ApiResponse.success(
@@ -50,9 +52,11 @@ public class ContractAssignmentController extends AbstractController {
             @PathVariable Long contractId
     ) {
         User user = authenticateAndFetchUser(userRepo,authentication);
+        List<String> roles = fetchRolesForUser(authentication);
         ContractDocument contractDocument = contractService.unassignContract(
                 contractId,
-                user
+                user,
+                roles
         );
 
         return ApiResponse.success(
@@ -65,7 +69,9 @@ public class ContractAssignmentController extends AbstractController {
     @GetMapping("/unassigned")
     public ApiResponse<List<ContractDocument>> getUnassignedContracts(Authentication authentication) {
         User user = authenticateAndFetchUser(userRepo,authentication);
-        List<ContractDocument> contracts = contractService.getUnassignedContracts(user);
+        List<String> roles = fetchRolesForUser(authentication);
+
+        List<ContractDocument> contracts = contractService.getUnassignedContracts(user,roles);
 
         return ApiResponse.success(
                 "Unassigned contracts fetched successfully",
@@ -79,8 +85,9 @@ public class ContractAssignmentController extends AbstractController {
             @RequestParam String assignedTo
     ) {
         User user = authenticateAndFetchUser(userRepo,authentication);
+        List<String> roles = fetchRolesForUser(authentication);
         List<ContractDocument> contracts = contractService.getAssignedContracts(
-                assignedTo, user
+                assignedTo, user, roles
         );
 
         return ApiResponse.success(

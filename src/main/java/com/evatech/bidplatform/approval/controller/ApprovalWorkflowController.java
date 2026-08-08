@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/workflow")
 @RequiredArgsConstructor
@@ -25,10 +27,13 @@ public class ApprovalWorkflowController extends AbstractController {
             Authentication authentication
     ) {
         User user = authenticateAndFetchUser(userRepo, authentication);
+        List<String> roles = fetchRolesForUser(authentication);
+
         return approvalWorkflowService.submitForReview(
                 contractId,
                 authentication.getName(),
-                user
+                user,
+                roles
         );
     }
 

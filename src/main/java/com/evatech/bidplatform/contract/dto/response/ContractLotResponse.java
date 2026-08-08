@@ -1,6 +1,6 @@
 package com.evatech.bidplatform.contract.dto.response;
 
-import com.evatech.bidplatform.contract.entity.LotParticipationStatus;
+import com.evatech.bidplatform.contract.entity.LotQualificationStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,7 +28,9 @@ public class ContractLotResponse {
 
     private Integer endPage;
 
-    private LotParticipationStatus participationStatus;
+    private double valuation;
+
+    private LotQualificationStatus participationStatus;
 
     private String selectedBy;
 

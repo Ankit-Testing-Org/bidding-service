@@ -10,14 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface BidRepository extends JpaRepository<Bid, Long> {
-
-    Optional<Bid> findByBidReferenceNumber(String bidReferenceNumber);
-
+    boolean existsByContractLotId(Long contractLotId);
     List<Bid> findByContractDocumentId(Long contractDocumentId);
-
-    List<Bid> findByCreatedBy(String createdBy);
-
-    List<Bid> findByStatus(BidStatus status);
-
-    boolean existsByBidReferenceNumber(String bidReferenceNumber);
+    List<Bid> findByContractLotId(Long contractLotId);
 }

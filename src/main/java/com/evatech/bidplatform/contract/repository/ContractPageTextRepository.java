@@ -12,7 +12,15 @@ public interface ContractPageTextRepository extends JpaRepository<ContractPageTe
 
     List<ContractPageText> findByContractDocumentIdOrderByPageNumberAsc(Long contractDocumentId);
 
+    List<ContractPageText> findByContractDocumentIdAndPageNumberBetweenOrderByPageNumberAsc(
+            Long contractDocumentId,
+            Integer startPage,
+            Integer endPage
+    );
+
     Optional<ContractPageText> findByContractDocumentIdAndPageNumber(Long contractDocumentId, Integer pageNumber);
 
     void deleteByContractDocumentId(Long contractDocumentId);
+
 }
+

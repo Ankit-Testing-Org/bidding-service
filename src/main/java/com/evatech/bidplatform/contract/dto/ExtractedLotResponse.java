@@ -17,4 +17,6 @@ public class ExtractedLotResponse {
     private Integer startPage;
 
     private Integer endPage;
+
+    private double valuation;
 }

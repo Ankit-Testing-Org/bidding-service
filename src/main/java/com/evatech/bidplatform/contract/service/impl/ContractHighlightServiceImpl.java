@@ -2,10 +2,13 @@ package com.evatech.bidplatform.contract.service.impl;
 
 import com.evatech.bidplatform.ai.service.AiRequestLoggerService;
 import com.evatech.bidplatform.ai.service.AiService;
+import com.evatech.bidplatform.contract.dto.ContractAnalysisResult;
 import com.evatech.bidplatform.contract.entity.*;
-import com.evatech.bidplatform.contract.repository.ContractDocumentRepository;
-import com.evatech.bidplatform.contract.repository.ContractHighlightRepository;
-import com.evatech.bidplatform.contract.repository.ContractPageTextRepository;
+import com.evatech.bidplatform.contract.entity.analysis.ContractAnalysisSummary;
+import com.evatech.bidplatform.contract.entity.analysis.ContractHighlight;
+import com.evatech.bidplatform.contract.entity.analysis.ContractLotAnalysis;
+import com.evatech.bidplatform.contract.entity.analysis.ContractLotHighlight;
+import com.evatech.bidplatform.contract.repository.*;
 import com.evatech.bidplatform.contract.service.ContractHighlightService;
 import com.evatech.bidplatform.contract.service.ContractService;
 import com.evatech.bidplatform.user.entity.User;
@@ -26,16 +29,16 @@ public class ContractHighlightServiceImpl implements ContractHighlightService {
     private final ContractService contractService;
     private final AiService aiService;
     private final AiRequestLoggerService aiRequestLoggerService;
+    private final ContractAnalysisSummaryRepository contractAnalysisSummaryRepository;
+    private final ContractLotHighlightRepository contractLotHighlightRepository;
+    private final ContractLotAnalysisRepository contractLotAnalysisRepository;
+
 
     @Override
-    public List<ContractHighlight> analyseContract(
-            Long contractId,
-            boolean reanalyse,
-            User user) {
-        ContractDocument contractDocument = contractDocumentRepository.findById(contractId)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Contract not found with id: " + contractId
-                ));
+    @Transactional
+    public List<ContractHighlight> analyseContract(Long contractId, boolean reanalyse, User user, List<String> roles) {
+
+        ContractDocument contractDocument = contractDocumentRepository.findById(contractId).orElseThrow(() -> new IllegalArgumentException("Contract not found with id: " + contractId));
 
         boolean alreadyAnalysed = contractHighlightRepository.existsByContractDocumentId(contractId);
 
@@ -48,43 +51,84 @@ public class ContractHighlightServiceImpl implements ContractHighlightService {
         if (pages.isEmpty()) {
             throw new IllegalStateException("Contract text must be extracted before analysis");
         }
-        contractService.markAnalysisInProgress(contractId);
 
-        // START : Below is AI logic.
-        if (reanalyse) {
-            contractHighlightRepository.deleteByContractDocumentId(contractId);
+        contractService.markAnalysisInProgress(contractId, user, roles);
+
+        try {
+
+            ContractAnalysisResult analysisResult = aiService.analyseContract(contractDocument, pages);
+            aiRequestLoggerService.logRequest(contractId, contractDocument.getAssignedTo());
+
+            if (alreadyAnalysed || reanalyse) {
+                contractHighlightRepository.deleteByContractDocumentId(contractId);
+
+                contractAnalysisSummaryRepository.deleteByContractDocumentId(contractId);
+            }
+
+            List<ContractHighlight> savedHighlights = saveHighlights(contractDocument, analysisResult.getHighlights());
+
+            saveAnalysisSummary(contractDocument, analysisResult.getSummary());
+
+            contractService.markAnalysed(contractId, user, roles);
+
+            return savedHighlights;
+
+        } catch (RuntimeException ex) {
+
+            contractService.markAnalysisFailed(contractId, ex.getMessage(), user, roles);
+            throw ex;
         }
-
-        // This method will be used to analyse contract.
-        List<ContractHighlight> highlights = aiService.analyseContract(contractDocument, pages);
-        aiRequestLoggerService.logRequest(contractId, contractDocument.getAssignedTo());
-
-        contractHighlightRepository.deleteByContractDocumentId(contractId);
-
-        List<ContractHighlight> contractHighlights = saveHighlights(contractId, highlights);
-        // END : Below is AI logic.
-
-        contractService.markAnalysed(contractId);
-        return contractHighlights;
     }
 
-    private List<ContractHighlight> saveHighlights(Long contractId, List<ContractHighlight> highlights) {
-        ContractDocument contractDocument = contractDocumentRepository.findById(contractId)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Contract not found with id: " + contractId
-                ));
+    private List<ContractHighlight> saveHighlights(ContractDocument contractDocument, List<ContractHighlight> highlights) {
 
-        contractHighlightRepository.deleteByContractDocumentId(contractId);
-
-        for (ContractHighlight highlight : highlights) {
-            highlight.setContractDocument(contractDocument);
-            contractHighlightRepository.save(highlight);
+        if (highlights == null || highlights.isEmpty()) {
+            return List.of();
         }
 
+        highlights.forEach(highlight -> highlight.setContractDocument(contractDocument));
+
+        return contractHighlightRepository.saveAll(highlights);
+    }
+
+    private List<ContractLotHighlight> saveLotHighlights(ContractLot contractLot, List<ContractLotHighlight> highlights) {
+
+        if (highlights == null || highlights.isEmpty()) {
+            return List.of();
+        }
+
+        highlights.forEach(highlight -> highlight.setContractLot(contractLot));
+
+        return contractLotHighlightRepository.saveAll(highlights);
+    }
+
+    private ContractLotAnalysis saveLotAnalysis(ContractLot contractLot, ContractLotAnalysis analysis) {
+
+        if (analysis == null) {
+            throw new IllegalStateException("AI did not return lot analysis for lot: " + contractLot.getLotNumber());
+        }
+        analysis.setContractLot(contractLot);
+        return contractLotAnalysisRepository.save(analysis);
+    }
+
+    private ContractAnalysisSummary saveAnalysisSummary(ContractDocument contractDocument, ContractAnalysisSummary summary) {
+
+        if (summary == null) {
+            throw new IllegalStateException("AI did not return contract analysis summary");
+        }
+        summary.setContractDocument(contractDocument);
+        ContractAnalysisSummary saved = contractAnalysisSummaryRepository.save(summary);
+        updateContractFromAnalysis(contractDocument, saved);
+        return saved;
+    }
+
+    private void updateContractFromAnalysis(ContractDocument contractDocument, ContractAnalysisSummary summary) {
+
+        contractDocument.setClientName(summary.getClientName());
+        contractDocument.setContractValue(summary.getContractValue());
+        contractDocument.setCurrency(summary.getCurrency());
+        contractDocument.setSubmissionDeadline(summary.getSubmissionDeadline());
         contractDocument.setStatus(ContractStatus.ANALYSED);
         contractDocumentRepository.save(contractDocument);
-
-        return contractHighlightRepository
-                .findByContractDocumentIdOrderByPageNumberAsc(contractId);
     }
 }

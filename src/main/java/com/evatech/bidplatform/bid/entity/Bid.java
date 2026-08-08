@@ -4,6 +4,7 @@ package com.evatech.bidplatform.bid.entity;
 import com.evatech.bidplatform.approval.entity.ApprovalHistory;
 import com.evatech.bidplatform.approval.entity.ApprovalTask;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
+import com.evatech.bidplatform.contract.entity.ContractLot;
 import com.evatech.bidplatform.document.entity.GeneratedDocument;
 import jakarta.persistence.*;
 import lombok.*;
@@ -53,6 +54,10 @@ public class Bid {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "contract_document_id", nullable = false)
     private ContractDocument contractDocument;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "contract_lot_id", nullable = false)
+    private ContractLot contractLot;
 
     @Builder.Default
     @OneToMany(
