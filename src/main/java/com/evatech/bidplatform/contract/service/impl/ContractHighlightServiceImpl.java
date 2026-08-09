@@ -4,10 +4,7 @@ import com.evatech.bidplatform.ai.service.AiRequestLoggerService;
 import com.evatech.bidplatform.ai.service.AiService;
 import com.evatech.bidplatform.contract.dto.ContractAnalysisResult;
 import com.evatech.bidplatform.contract.entity.*;
-import com.evatech.bidplatform.contract.entity.analysis.ContractAnalysisSummary;
-import com.evatech.bidplatform.contract.entity.analysis.ContractHighlight;
-import com.evatech.bidplatform.contract.entity.analysis.ContractLotAnalysis;
-import com.evatech.bidplatform.contract.entity.analysis.ContractLotHighlight;
+import com.evatech.bidplatform.contract.entity.analysis.*;
 import com.evatech.bidplatform.contract.repository.*;
 import com.evatech.bidplatform.contract.service.ContractHighlightService;
 import com.evatech.bidplatform.contract.service.ContractService;
@@ -89,26 +86,6 @@ public class ContractHighlightServiceImpl implements ContractHighlightService {
         highlights.forEach(highlight -> highlight.setContractDocument(contractDocument));
 
         return contractHighlightRepository.saveAll(highlights);
-    }
-
-    private List<ContractLotHighlight> saveLotHighlights(ContractLot contractLot, List<ContractLotHighlight> highlights) {
-
-        if (highlights == null || highlights.isEmpty()) {
-            return List.of();
-        }
-
-        highlights.forEach(highlight -> highlight.setContractLot(contractLot));
-
-        return contractLotHighlightRepository.saveAll(highlights);
-    }
-
-    private ContractLotAnalysis saveLotAnalysis(ContractLot contractLot, ContractLotAnalysis analysis) {
-
-        if (analysis == null) {
-            throw new IllegalStateException("AI did not return lot analysis for lot: " + contractLot.getLotNumber());
-        }
-        analysis.setContractLot(contractLot);
-        return contractLotAnalysisRepository.save(analysis);
     }
 
     private ContractAnalysisSummary saveAnalysisSummary(ContractDocument contractDocument, ContractAnalysisSummary summary) {

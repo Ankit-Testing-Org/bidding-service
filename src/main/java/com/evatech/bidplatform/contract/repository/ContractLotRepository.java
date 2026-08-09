@@ -1,6 +1,6 @@
 package com.evatech.bidplatform.contract.repository;
 
-import com.evatech.bidplatform.contract.entity.ContractLot;
+import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
 import com.evatech.bidplatform.contract.entity.LotQualificationStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 

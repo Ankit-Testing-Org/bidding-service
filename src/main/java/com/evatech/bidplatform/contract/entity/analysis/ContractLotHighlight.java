@@ -1,6 +1,5 @@
 package com.evatech.bidplatform.contract.entity.analysis;
 
-import com.evatech.bidplatform.contract.entity.ContractLot;
 import com.evatech.bidplatform.contract.entity.RiskLevel;
 import jakarta.persistence.*;
 import lombok.*;

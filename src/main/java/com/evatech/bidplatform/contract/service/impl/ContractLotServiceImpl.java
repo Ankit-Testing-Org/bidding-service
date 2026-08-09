@@ -5,7 +5,7 @@ import com.evatech.bidplatform.ai.service.AiService;
 import com.evatech.bidplatform.contract.dto.ContractLotAnalysisResult;
 import com.evatech.bidplatform.contract.dto.ExtractedLotResponse;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
-import com.evatech.bidplatform.contract.entity.ContractLot;
+import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
 import com.evatech.bidplatform.contract.entity.ContractPageText;
 import com.evatech.bidplatform.contract.entity.LotQualificationStatus;
 import com.evatech.bidplatform.contract.entity.analysis.ContractLotAnalysis;
@@ -130,90 +130,55 @@ public class ContractLotServiceImpl implements ContractLotService {
 
     @Override
     @Transactional
-    public ContractLotAnalysisResult analyseContractLot(
-            Long contractLotId,
-            boolean reanalyse,
-            User user,
-            List<String> roles
-    ) {
-        ContractLot contractLot = contractLotRepository.findById(contractLotId)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Contract lot not found with id: " + contractLotId
-                ));
-
+    public ContractLotAnalysisResult analyseContractLot(Long contractLotId,
+                                                        boolean reanalyse,
+                                                        User user, List<String> roles,
+                                                        String userComment) {
+        ContractLot contractLot = contractLotRepository.findById(contractLotId).orElseThrow(() -> new IllegalArgumentException("Contract lot not found with id: " + contractLotId));
         ContractDocument contractDocument = contractLot.getContractDocument();
-
-        boolean alreadyAnalysed =
-                contractLotAnalysisRepository.existsByContractLotId(contractLotId)
-                        || contractLotHighlightRepository.existsByContractLotId(contractLotId);
-
+        boolean alreadyAnalysed = contractLotAnalysisRepository.existsByContractLotId(contractLotId) || contractLotHighlightRepository.existsByContractLotId(contractLotId);
         if (alreadyAnalysed && !reanalyse) {
             return getExistingLotAnalysisResult(contractLotId);
         }
-
         List<ContractPageText> lotPages = resolveLotPages(contractLot);
-
         if (lotPages.isEmpty() && isBlank(contractLot.getDescription())) {
-            throw new IllegalStateException(
-                    "Lot text must be available before analysis. Either start/end pages or lot description is required."
-            );
+            throw new IllegalStateException("Lot text must be available before analysis. Either start/end pages or lot description is required.");
         }
-
         contractLot.markAnalysisInProgress();
-
         try {
-            ContractLotAnalysisResult analysisResult = aiService.analyseContractLot(
-                    contractDocument,
-                    contractLot,
-                    lotPages
-            );
-
-            aiRequestLoggerService.logRequest(
-                    contractDocument.getId(),
-                    contractDocument.getAssignedTo()
-            );
-
+            ContractLotAnalysisResult analysisResult = aiService.analyseContractLot(contractDocument, contractLot, lotPages,
+                    userComment);
+            aiRequestLoggerService.logRequest(contractDocument.getId(), contractDocument.getAssignedTo());
             if (alreadyAnalysed || reanalyse) {
                 contractLotHighlightRepository.deleteByContractLotId(contractLotId);
                 contractLotAnalysisRepository.deleteByContractLotId(contractLotId);
                 entityManager.flush();
             }
-
-            ContractLotAnalysis savedAnalysis = saveLotAnalysis(
-                    contractLot,
-                    analysisResult.getAnalysis()
-            );
-
-            List<ContractLotHighlight> savedHighlights = saveLotHighlights(
-                    contractLot,
-                    analysisResult.getHighlights()
-            );
-
+            ContractLotAnalysis savedAnalysis = saveLotAnalysis(contractLot, analysisResult.getAnalysis());
+            List<ContractLotHighlight> savedHighlights = saveLotHighlights(contractLot, analysisResult.getHighlights());
             contractLot.markAnalysed();
-
-            return ContractLotAnalysisResult.builder()
-                    .analysis(savedAnalysis)
-                    .highlights(savedHighlights)
-                    .build();
-
+            return ContractLotAnalysisResult.builder().analysis(savedAnalysis).highlights(savedHighlights).build();
         } catch (RuntimeException ex) {
             contractLot.markAnalysisFailed(ex.getMessage());
             throw ex;
         }
     }
 
+    @Transactional
+    @Override
+    public ContractLotAnalysisResult reanalyseLot(Long lotId, String userComment, User user, List<String> roles) {
+        ContractLot lot = contractLotRepository.findById(lotId).orElseThrow();
+        lot.requestReanalysis(user.getEmail(), userComment);
+        return analyseContractLot(lotId, true, user, roles, userComment);
+    }
+
+
     private ContractLotAnalysisResult getExistingLotAnalysisResult(Long contractLotId) {
-        ContractLotAnalysis existingAnalysis = contractLotAnalysisRepository
-                .findByContractLotId(contractLotId)
-                .orElse(null);
+        ContractLotAnalysis existingAnalysis = contractLotAnalysisRepository.findByContractLotId(contractLotId).orElse(null);
 
-        List<ContractLotHighlight> existingHighlights =
-                contractLotHighlightRepository.findByContractLotIdOrderByPageNumberAsc(contractLotId);
+        List<ContractLotHighlight> existingHighlights = contractLotHighlightRepository.findByContractLotIdOrderByPageNumberAsc(contractLotId);
 
-        return ContractLotAnalysisResult.builder()
-                .analysis(existingAnalysis)
-                .highlights(existingHighlights)
-                .build();
+        return ContractLotAnalysisResult.builder().analysis(existingAnalysis).highlights(existingHighlights).build();
     }
 
     private List<ContractPageText> resolveLotPages(ContractLot contractLot) {
@@ -224,23 +189,13 @@ public class ContractLotServiceImpl implements ContractLotService {
         }
 
         if (contractLot.getStartPage() > contractLot.getEndPage()) {
-            throw new IllegalStateException(
-                    "Invalid lot page range. Start page cannot be greater than end page."
-            );
+            throw new IllegalStateException("Invalid lot page range. Start page cannot be greater than end page.");
         }
 
-        return contractPageTextRepository
-                .findByContractDocumentIdAndPageNumberBetweenOrderByPageNumberAsc(
-                        contractDocumentId,
-                        contractLot.getStartPage(),
-                        contractLot.getEndPage()
-                );
+        return contractPageTextRepository.findByContractDocumentIdAndPageNumberBetweenOrderByPageNumberAsc(contractDocumentId, contractLot.getStartPage(), contractLot.getEndPage());
     }
 
-    private ContractLotAnalysis saveLotAnalysis(
-            ContractLot contractLot,
-            ContractLotAnalysis analysis
-    ) {
+    private ContractLotAnalysis saveLotAnalysis(ContractLot contractLot, ContractLotAnalysis analysis) {
         if (analysis == null) {
             return null;
         }
@@ -260,30 +215,14 @@ public class ContractLotServiceImpl implements ContractLotService {
         return savedAnalysis;
     }
 
-    private List<ContractLotHighlight> saveLotHighlights(
-            ContractLot contractLot,
-            List<ContractLotHighlight> highlights
-    ) {
+    private List<ContractLotHighlight> saveLotHighlights(ContractLot contractLot, List<ContractLotHighlight> highlights) {
         if (highlights == null || highlights.isEmpty()) {
             return new ArrayList<>();
         }
 
-        List<ContractLotHighlight> lotHighlights = highlights.stream()
-                .map(highlight -> ContractLotHighlight.builder()
-                        .contractLot(contractLot)
-                        .category(highlight.getCategory())
-                        .title(highlight.getTitle())
-                        .description(highlight.getDescription())
-                        .pageNumber(highlight.getPageNumber())
-                        .riskLevel(highlight.getRiskLevel())
-                        .confidenceScore(highlight.getConfidenceScore())
-                        .recommendedAction(highlight.getRecommendedAction())
-                        .bidCapable(highlight.getBidCapable())
-                        .build())
-                .toList();
+        List<ContractLotHighlight> lotHighlights = highlights.stream().map(highlight -> ContractLotHighlight.builder().contractLot(contractLot).category(highlight.getCategory()).title(highlight.getTitle()).description(highlight.getDescription()).pageNumber(highlight.getPageNumber()).riskLevel(highlight.getRiskLevel()).confidenceScore(highlight.getConfidenceScore()).recommendedAction(highlight.getRecommendedAction()).bidCapable(highlight.getBidCapable()).build()).toList();
 
-        List<ContractLotHighlight> savedHighlights =
-                contractLotHighlightRepository.saveAll(lotHighlights);
+        List<ContractLotHighlight> savedHighlights = contractLotHighlightRepository.saveAll(lotHighlights);
 
         contractLot.getHighlights().clear();
         contractLot.getHighlights().addAll(savedHighlights);
@@ -302,17 +241,7 @@ public class ContractLotServiceImpl implements ContractLotService {
         for (ExtractedLotResponse extractedLot : extractedLots) {
             validateExtractedLot(extractedLot);
 
-            ContractLot contractLot = ContractLot.builder().
-                    contractDocument(contractDocument).
-                    lotNumber(extractedLot.getLotNumber()).
-                    lotName(extractedLot.getLotName()).
-                    description(extractedLot.getDescription()).
-                    startPage(extractedLot.getStartPage()).
-                    endPage(extractedLot.getEndPage()).
-                    qualificationStatus(LotQualificationStatus.PENDING).
-                    createdAt(LocalDateTime.now()).
-                    valuation(extractedLot.getValuation()).
-                    build();
+            ContractLot contractLot = ContractLot.builder().contractDocument(contractDocument).lotNumber(extractedLot.getLotNumber()).lotName(extractedLot.getLotName()).description(extractedLot.getDescription()).startPage(extractedLot.getStartPage()).endPage(extractedLot.getEndPage()).qualificationStatus(LotQualificationStatus.PENDING).createdAt(LocalDateTime.now()).valuation(extractedLot.getValuation()).build();
 
             savedLots.add(contractLotRepository.save(contractLot));
         }

@@ -4,6 +4,7 @@ import com.evatech.bidplatform.contract.entity.*;
 import com.evatech.bidplatform.contract.entity.analysis.AnalysisStatus;
 import com.evatech.bidplatform.contract.entity.analysis.ContractAnalysisSummary;
 import com.evatech.bidplatform.contract.entity.analysis.ContractHighlight;
+import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
 import com.evatech.bidplatform.contract.repository.ContractAnalysisSummaryRepository;
 import com.evatech.bidplatform.contract.repository.ContractAssignmentHistoryRepository;
 import com.evatech.bidplatform.contract.repository.ContractDocumentRepository;

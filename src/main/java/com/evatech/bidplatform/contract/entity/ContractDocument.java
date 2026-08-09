@@ -3,6 +3,7 @@ package com.evatech.bidplatform.contract.entity;
 import com.evatech.bidplatform.bid.entity.Bid;
 import com.evatech.bidplatform.contract.entity.analysis.ContractAnalysisSummary;
 import com.evatech.bidplatform.contract.entity.analysis.ContractHighlight;
+import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
 import jakarta.persistence.*;
 import lombok.*;
 

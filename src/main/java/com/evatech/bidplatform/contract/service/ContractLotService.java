@@ -2,7 +2,7 @@ package com.evatech.bidplatform.contract.service;
 
 import com.evatech.bidplatform.contract.dto.ContractLotAnalysisResult;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
-import com.evatech.bidplatform.contract.entity.ContractLot;
+import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
 import com.evatech.bidplatform.user.entity.User;
 
 import java.util.List;
@@ -46,6 +46,14 @@ public interface ContractLotService {
             Long contractLotId,
             boolean reanalyse,
             User user,
-            List<String> roles
+            List<String> roles,
+            String userComment
     );
+
+    ContractLotAnalysisResult reanalyseLot(
+            Long lotId,
+            String userComment,
+            User user,
+            List<String> roles) ;
+
 }

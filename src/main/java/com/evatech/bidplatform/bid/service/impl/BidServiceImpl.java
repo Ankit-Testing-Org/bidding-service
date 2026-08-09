@@ -6,7 +6,7 @@ import com.evatech.bidplatform.bid.entity.BidStatus;
 import com.evatech.bidplatform.bid.repository.BidFieldRepository;
 import com.evatech.bidplatform.bid.repository.BidRepository;
 import com.evatech.bidplatform.bid.service.BidService;
-import com.evatech.bidplatform.contract.entity.ContractLot;
+import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
 import com.evatech.bidplatform.contract.entity.LotQualificationStatus;
 import com.evatech.bidplatform.contract.service.ContractService;
 import com.evatech.bidplatform.user.entity.User;

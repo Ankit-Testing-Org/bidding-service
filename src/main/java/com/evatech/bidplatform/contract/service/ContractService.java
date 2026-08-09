@@ -2,12 +2,11 @@ package com.evatech.bidplatform.contract.service;
 
 import com.evatech.bidplatform.contract.entity.*;
 import com.evatech.bidplatform.contract.entity.analysis.ContractHighlight;
-import com.evatech.bidplatform.user.dto.RoleType;
+import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
 import com.evatech.bidplatform.user.entity.User;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Set;
 
 public interface ContractService {
 

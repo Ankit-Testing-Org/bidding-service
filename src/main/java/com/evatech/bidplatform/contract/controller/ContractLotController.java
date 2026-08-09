@@ -3,14 +3,18 @@ package com.evatech.bidplatform.contract.controller;
 
 import com.evatech.bidplatform.ApiResponse;
 import com.evatech.bidplatform.contract.dto.ContractLotAnalysisResult;
+import com.evatech.bidplatform.contract.dto.ReanalyseLotRequest;
 import com.evatech.bidplatform.contract.dto.response.ContractLotResponse;
-import com.evatech.bidplatform.contract.entity.ContractLot;
+import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
 import com.evatech.bidplatform.contract.mapper.ContractLotMapper;
 import com.evatech.bidplatform.contract.service.ContractLotService;
 import com.evatech.bidplatform.user.entity.User;
 import com.evatech.bidplatform.user.repository.UserRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -76,10 +80,27 @@ public class ContractLotController extends AbstractController {
     }
 
     @PostMapping("/api/contracts/lots/{contractLotId}/analyse")
-    public ContractLotAnalysisResult analyseContractLot(Authentication authentication, @PathVariable Long contractLotId, @RequestParam(defaultValue = "false") boolean reanalyse) {
+    public ContractLotAnalysisResult analyseContractLot(
+            Authentication authentication,
+            @PathVariable Long contractLotId,
+            @RequestParam(defaultValue = "false") boolean reanalyse) {
         User user = authenticateAndFetchUser(userRepository, authentication);
         List<String> roles = fetchRolesForUser(authentication);
-        return contractLotService.analyseContractLot(contractLotId, reanalyse, user, roles);
+        return contractLotService.analyseContractLot(contractLotId,
+                reanalyse, user, roles, null);
+    }
+
+    @PostMapping("/{lotId}/reanalyse")
+    public ResponseEntity<ContractLotAnalysisResult> reanalyseLot(
+            Authentication authentication,
+            @PathVariable Long lotId,
+            @Valid @RequestBody ReanalyseLotRequest request) {
+
+        User user = authenticateAndFetchUser(userRepository, authentication);
+        List<String> roles = fetchRolesForUser(authentication);
+        ContractLotAnalysisResult result = contractLotService.reanalyseLot(
+                lotId, request.getUserComment(), user, roles);
+        return ResponseEntity.ok(result);
     }
 }
 

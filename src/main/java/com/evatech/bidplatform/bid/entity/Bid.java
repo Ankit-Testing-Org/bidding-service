@@ -4,7 +4,7 @@ package com.evatech.bidplatform.bid.entity;
 import com.evatech.bidplatform.approval.entity.ApprovalHistory;
 import com.evatech.bidplatform.approval.entity.ApprovalTask;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
-import com.evatech.bidplatform.contract.entity.ContractLot;
+import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
 import com.evatech.bidplatform.document.entity.GeneratedDocument;
 import jakarta.persistence.*;
 import lombok.*;

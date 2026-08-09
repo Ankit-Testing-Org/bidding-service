@@ -2,6 +2,7 @@ package com.evatech.bidplatform.ai.service;
 
 import com.evatech.bidplatform.contract.entity.ContractDocument;
 import com.evatech.bidplatform.contract.entity.ContractPageText;
+import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -9,10 +10,7 @@ import java.util.List;
 @Component
 public class ContractAnalysisPromptBuilder {
 
-    public String buildPrompt(
-            ContractDocument contractDocument,
-            List<ContractPageText> pages
-    ) {
+    public String buildPrompt(ContractDocument contractDocument, List<ContractPageText> pages) {
         StringBuilder prompt = new StringBuilder();
 
         prompt.append("You are an expert bid contract analyst.\n\n");
@@ -52,6 +50,41 @@ public class ContractAnalysisPromptBuilder {
             prompt.append("\n\n");
         }
 
+        return prompt.toString();
+    }
+
+    public String buildLotPrompt(ContractDocument contractDocument,
+                                 ContractLot contractLot,
+                                 List<ContractPageText> lotPages,
+                                 String userComment) {
+
+        StringBuilder prompt = new StringBuilder();
+        prompt.append("""
+                Analyse the following hospital procurement lot.
+                
+                Determine:
+                - recommendedToBid
+                - winProbability
+                - overallRiskLevel
+                - executiveSummary
+                - recommendation
+                - highlights
+                
+                """);
+        prompt.append("Lot Number: ").append(contractLot.getLotNumber()).append("\n");
+        prompt.append("Lot Name: ").append(contractLot.getLotName()).append("\n");
+        prompt.append("Description:\n").append(contractLot.getDescription()).append("\n");
+        if (userComment != null && !userComment.isBlank()) {
+            prompt.append("""
+                    USER FEEDBACK:
+                    """);
+            prompt.append(userComment).append("\n");
+            prompt.append("""
+                    Reanalyse the lot taking
+                    the user feedback into account.
+                    """);
+        }
+        lotPages.forEach(page -> prompt.append(page.getText()).append("\n"));
         return prompt.toString();
     }
 }

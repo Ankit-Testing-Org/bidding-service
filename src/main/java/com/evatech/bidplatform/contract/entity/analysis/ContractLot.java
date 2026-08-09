@@ -1,8 +1,8 @@
-package com.evatech.bidplatform.contract.entity;
+package com.evatech.bidplatform.contract.entity.analysis;
 
 import com.evatech.bidplatform.contract.dto.LotAnalysisStatus;
-import com.evatech.bidplatform.contract.entity.analysis.ContractLotAnalysis;
-import com.evatech.bidplatform.contract.entity.analysis.ContractLotHighlight;
+import com.evatech.bidplatform.contract.entity.ContractDocument;
+import com.evatech.bidplatform.contract.entity.LotQualificationStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -90,6 +90,23 @@ public class ContractLot {
     @Column(name = "analysis_error")
     private String analysisError;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "analysis_review_status")
+    private LotAnalysisReviewStatus analysisReviewStatus;
+
+    @Column(name = "reviewed_by")
+    private String reviewedBy;
+
+    @Column(name = "reviewed_at")
+    private LocalDateTime reviewedAt;
+
+    @Lob
+    @Column(name = "review_comment")
+    private String reviewComment;
+
+    @Column(name = "reanalysis_requested_count")
+    private Integer reanalysisRequestedCount;
+
     @Builder.Default
     @OneToMany(mappedBy = "contractLot", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ContractLotHighlight> highlights = new ArrayList<>();
@@ -99,13 +116,39 @@ public class ContractLot {
 
     @PrePersist
     public void prePersist() {
-        if (this.qualificationStatus == null) {
-            this.qualificationStatus = LotQualificationStatus.PENDING;
+
+        if (analysisStatus == null) {
+            analysisStatus = LotAnalysisStatus.NOT_ANALYSED;
         }
 
-        if (this.analysisStatus == null) {
-            this.analysisStatus = LotAnalysisStatus.NOT_ANALYSED;
+        if (analysisReviewStatus == null) {
+            analysisReviewStatus = LotAnalysisReviewStatus.PENDING_REVIEW;
         }
+
+        if (reanalysisRequestedCount == null) {
+            reanalysisRequestedCount = 0;
+        }
+    }
+
+    public void approveAnalysis(String userName) {
+        this.analysisReviewStatus = LotAnalysisReviewStatus.APPROVED;
+        this.reviewedBy = userName;
+        this.reviewedAt = LocalDateTime.now();
+    }
+
+    public void rejectAnalysis(String userName, String comment) {
+        this.analysisReviewStatus = LotAnalysisReviewStatus.REJECTED;
+        this.reviewComment = comment;
+        this.reviewedBy = userName;
+        this.reviewedAt = LocalDateTime.now();
+    }
+
+    public void requestReanalysis(String userName, String comment) {
+        this.analysisReviewStatus = LotAnalysisReviewStatus.REANALYSIS_REQUESTED;
+        this.reviewComment = comment;
+        this.reviewedBy = userName;
+        this.reviewedAt = LocalDateTime.now();
+        this.reanalysisRequestedCount++;
     }
 
     public void markAnalysisInProgress() {
