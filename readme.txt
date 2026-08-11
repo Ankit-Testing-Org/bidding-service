@@ -39,3 +39,72 @@ Plain Text
 2 - Can approve bid submission
 3 - Can approve contract award decisions
 ----------------------------------------------------------------
+
+FLOW STEPS :
+       1) -  uploadContract
+                      (Controller : ContractController, @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE))
+       	- // STEP 1) VALIDATE FILE
+       	- // STEP 2) STORE FILE
+       	- // STEP 3) UPDATE CONTRACT DOCUMENT DB
+           - // STEP 4) Extract text and save pages
+           - // STEP 5) Extract lots and save them
+
+        2) - It will be assigned to bidder.
+                      (Controller : ContractAssignmentController, @PostMapping("/{contractId}/assign")
+
+        3) - Once assigned bidder will open Contract and click on Analyse -> It will analyse contract and provides highlights
+                      (Controller : ContractController,  @GetMapping("/{contractId}/analyse/contract")
+
+        4) - Once highlights are shown on left user can mark highlighs correct / incorrect and comments if want reanalysis of points.
+                      (Controller : ContractHighlightController,
+                          @PostMapping("/contract/highlights/{highlightId}/approve"),
+                          @PostMapping("/contract/highlights/{highlightId}/reject"),
+                          @PostMapping("/contract/highlights/{highlightId}/reanalyse")
+
+                          REPEAT STEP 4) TILL ITS QUALIFY OR REJECT
+
+        5)- User can see lots in list, once click on lot comes lot details... Where user can mark it as qualified or unqualified.
+                      (Controller : ContractLotController,
+                      @GetMapping("/{contractId}/fetch/contract/lots"),
+                      @GetMapping("/{contractId}/lots/{lotNumber}/qualify"),
+                      @GetMapping("/{contractId}/lots/{lotNumber}/unqualify"),
+
+
+        6)- If user marks it unqualified then lot will be red and Analysis button won't appear-
+
+        7)- If user marks it qualified then lot will be green and Analysis button will appear
+
+        8)- On click of analysis button it will analyse lot and show highlights of lot.
+                      (Controller : ContractLotController,     @GetMapping("/api/contracts/lots/{contractLotId}/analyse")
+
+        9)- User have option to mark analysis correct or renalayse based on comments.
+                      (Controller : ContractLotController,
+                       @PostMapping("/{lotId}/reanalyse")
+
+        10)- After complete analysis user marks analysis complete
+                      (Controller : ContractLotController,
+                          @PostMapping("/{lotId}/analysis/approve"),
+                          @PostMapping("/{lotId}/analysis/reject")
+
+        11) - User will assign bid task.
+              (Controller : BidController,     @PostMapping("/{contractId}/assign")
+)
+        12) - AI will generate a template based on AI lots.
+            (Controller : BidTemplateController,
+                          @PostMapping("/{contractId}/generate-template"))
+
+        13) - User will download AI Template.
+         (Controller : BidTemplateController,
+                                     @GetMapping("/{documentId}/download"))
+
+        14)- User upload bid in template.
+                      (Controller : BidController, @PostMapping("/{bidId}/upload-documents")
+)
+
+       15)- Update contract with document template
+                             (Controller : BidController, @PostMapping("/{bidId}/template/{templateId}/update-contract")
+)
+
+       16)- Fetch updated contract
+                                     (Controller : BidController, @PostMapping("/{bidId}/template/{templateId}/update-contract")
+        )

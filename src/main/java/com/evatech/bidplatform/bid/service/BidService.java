@@ -1,26 +1,45 @@
 package com.evatech.bidplatform.bid.service;
 
+import com.evatech.bidplatform.bid.dto.request.AssignBidRequest;
+import com.evatech.bidplatform.bid.dto.response.BidTemplateFieldUpdateResponse;
+import com.evatech.bidplatform.bid.dto.response.DeleteDocumentResponse;
 import com.evatech.bidplatform.bid.entity.Bid;
-import com.evatech.bidplatform.bid.entity.BidField;
+import com.evatech.bidplatform.bid.entity.BidDocument;
+import com.evatech.bidplatform.bid.entity.BidDocumentType;
 import com.evatech.bidplatform.user.entity.User;
+import org.springframework.core.io.Resource;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Map;
 
 public interface BidService {
 
-    Bid createBid(
+    Bid assignBid(
             Long contractId,
-            String lotNumber,
-            String title,
-            String createdBy,
+            AssignBidRequest request,
             User user,
             List<String> roles);
 
-    Bid getBid(Long bidId,  User user);
-    Bid updateBidFields(Long bidId, Map<String, String> fields, User user);
-    Bid submitBid(Long bidId,  User user);
-    List<BidField> fillBidFormUsingAi(Long bidId, User user);
-    List<BidField> getBidFields(Long bidId,  User user);
+    BidDocument uploadDocument(
+            Long bidId,
+            MultipartFile file,
+            BidDocumentType documentType,
+            User user);
 
+    BidDocument uploadCompletedBid(
+            Long bidId,
+            MultipartFile file,
+            User user,
+            List<String> roles);
+
+    Resource downloadDocument(Long documentId, User user, List<String> roles);
+
+    DeleteDocumentResponse deleteDocument(Long documentId, User user, List<String> roles);
+
+    List<BidTemplateFieldUpdateResponse> uploadTemplateToContract(
+            Long bidId,
+            Long templateId,
+            Long contractId,
+            User user,
+            List<String> roles);
 }

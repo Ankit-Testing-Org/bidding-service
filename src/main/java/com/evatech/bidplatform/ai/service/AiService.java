@@ -1,10 +1,15 @@
 package com.evatech.bidplatform.ai.service;
 
+import com.evatech.bidplatform.bid.dto.AiBidTemplateResponse;
 import com.evatech.bidplatform.contract.dto.ContractLotAnalysisResult;
+import com.evatech.bidplatform.contract.dto.response.HighlightReanalysisResponse;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
+import com.evatech.bidplatform.contract.entity.analysis.ContractHighlight;
 import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
 import com.evatech.bidplatform.contract.entity.ContractPageText;
 import com.evatech.bidplatform.contract.dto.ContractAnalysisResult;
+import com.evatech.bidplatform.user.entity.User;
+import org.springframework.core.io.Resource;
 
 import java.util.List;
 
@@ -18,4 +23,12 @@ public interface AiService {
             ContractLot contractLot,
             List<ContractPageText> lotPages,
             String userComment);
+
+    HighlightReanalysisResponse reanalyseHighlight(ContractDocument contract,
+                                                   ContractHighlight highlight,
+                                                   String userComment);
+
+    AiBidTemplateResponse generateText(String prompt);
+
+    void createContractCopyFromTemplate(ContractDocument contract, Resource template, User user);
 }

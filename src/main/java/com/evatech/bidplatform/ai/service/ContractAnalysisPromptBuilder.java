@@ -2,6 +2,7 @@ package com.evatech.bidplatform.ai.service;
 
 import com.evatech.bidplatform.contract.entity.ContractDocument;
 import com.evatech.bidplatform.contract.entity.ContractPageText;
+import com.evatech.bidplatform.contract.entity.analysis.ContractHighlight;
 import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
 import org.springframework.stereotype.Component;
 
@@ -86,5 +87,68 @@ public class ContractAnalysisPromptBuilder {
         }
         lotPages.forEach(page -> prompt.append(page.getText()).append("\n"));
         return prompt.toString();
+    }
+
+    public String buildHighlightReanalysisPrompt(
+            ContractDocument contractDocument,
+            ContractHighlight highlight,
+            String userComment) {
+
+        return """
+            You are reviewing a previously analysed
+            contract highlight.
+
+            Contract:
+            %s
+
+            Current Analysis:
+
+            Category:
+            %s
+
+            Title:
+            %s
+
+            Description:
+            %s
+
+            Risk Level:
+            %s
+
+            Severity:
+            %s
+
+            Recommended Action:
+            %s
+
+            User Feedback:
+            %s
+
+            Reanalyse this highlight considering
+            the user feedback.
+
+            Return ONLY JSON.
+
+            {
+                "category": "",
+                "title": "",
+                "description": "",
+                "riskLevel": "",
+                "severityScore": 0,
+                "recommendedAction": "",
+                "confidenceScore": 0.0,
+                "reasoning": ""
+            }
+            """
+                .formatted(
+                        contractDocument.getOriginalFileName(),
+                        highlight.getCategory(),
+                        highlight.getTitle(),
+                        highlight.getDescription(),
+                        highlight.getRiskLevel(),
+                        highlight.getSeverityScore(),
+                        highlight.getRecommendedAction(),
+                        userComment
+                );
     }
 }

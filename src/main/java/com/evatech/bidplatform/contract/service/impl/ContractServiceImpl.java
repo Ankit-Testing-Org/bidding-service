@@ -1,14 +1,14 @@
 package com.evatech.bidplatform.contract.service.impl;
 
+import com.evatech.bidplatform.bid.entity.BidTemplateField;
+import com.evatech.bidplatform.bid.exception.BidTemplateFieldNotFoundException;
+import com.evatech.bidplatform.bid.repository.BidTemplateFieldRepository;
 import com.evatech.bidplatform.contract.entity.*;
 import com.evatech.bidplatform.contract.entity.analysis.AnalysisStatus;
 import com.evatech.bidplatform.contract.entity.analysis.ContractAnalysisSummary;
 import com.evatech.bidplatform.contract.entity.analysis.ContractHighlight;
 import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
-import com.evatech.bidplatform.contract.repository.ContractAnalysisSummaryRepository;
-import com.evatech.bidplatform.contract.repository.ContractAssignmentHistoryRepository;
-import com.evatech.bidplatform.contract.repository.ContractDocumentRepository;
-import com.evatech.bidplatform.contract.repository.ContractHighlightRepository;
+import com.evatech.bidplatform.contract.repository.*;
 import com.evatech.bidplatform.contract.service.ContractLotService;
 import com.evatech.bidplatform.contract.service.ContractService;
 import com.evatech.bidplatform.contract.service.ContractTextExtractionService;
@@ -36,6 +36,8 @@ public class ContractServiceImpl implements ContractService {
     private final ContractLotService contractLotService;
     private final ContractTextExtractionService contractTextExtractionService;
     private final ContractAnalysisSummaryRepository contractAnalysisSummaryRepository;
+    private final ContractDocumentFieldValueRepository contractDocumentFieldValueRepository;
+    private final BidTemplateFieldRepository bidTemplateFieldRepository;
 
     @Override
     public ContractDocument uploadContract(
@@ -63,11 +65,12 @@ public class ContractServiceImpl implements ContractService {
         contractDocument = contractDocumentRepository.save(contractDocument);
 
         // STEP 4) Extract text and save pages
-        contractTextExtractionService.extractText(contractDocument.getId(), user, roles);
+        List<ContractPageText>  contractPageTexts = contractTextExtractionService.
+                extractText(contractDocument.getId(), user, roles);
 
         // STEP 5) Extract lots and save them
-        contractLotService.processExtractingLots(contractDocument, user);
-
+        List<ContractLot>  contractLots = contractLotService.
+                processExtractingLots(contractDocument, user);
         return contractDocumentRepository.findById(contractDocument.getId()).orElse(null);
     }
 
@@ -119,31 +122,25 @@ public class ContractServiceImpl implements ContractService {
     @Override
     public ContractDocument markAnalysisInProgress(Long contractId, User user, List<String> roles) {
         ContractDocument contractDocument = getContractOrThrow(contractId, user, roles);
-
         if (!ContractStatus.TEXT_EXTRACTED.equals(contractDocument.getStatus())
                 && !ContractStatus.ANALYSED.equals(contractDocument.getStatus())) {
             throw new IllegalStateException(
                     "Contract text must be extracted before analysis can start"
             );
         }
-
         contractDocument.setStatus(ContractStatus.ANALYSIS_IN_PROGRESS);
-
         return contractDocumentRepository.save(contractDocument);
     }
 
     @Override
     public ContractDocument markAnalysed(Long contractId, User user, List<String> roles) {
         ContractDocument contractDocument = getContractOrThrow(contractId, user, roles);
-
         if (!ContractStatus.ANALYSIS_IN_PROGRESS.equals(contractDocument.getStatus())) {
             throw new IllegalStateException(
                     "Contract must be in analysis progress before marking as analysed"
             );
         }
-
         contractDocument.setStatus(ContractStatus.ANALYSED);
-
         return contractDocumentRepository.save(contractDocument);
     }
 
@@ -161,46 +158,22 @@ public class ContractServiceImpl implements ContractService {
         if (assignedTo == null || assignedTo.isBlank()) {
             throw new IllegalArgumentException("Assigned to must not be empty");
         }
-
-        return contractDocumentRepository.findByAssignedToAndAssignmentStatus(
-                assignedTo,
-                ContractAssignmentStatus.ASSIGNED
-        );
+        return contractDocumentRepository.findByAssignedToAndAssignmentStatus(assignedTo, ContractAssignmentStatus.ASSIGNED);
     }
 
     @Override
     public ContractDocument assignContract(
-            Long contractId,
-            String assignedTo,
-            User user, List<String> roles) {
+            Long contractId, String assignedTo, User user, List<String> roles) {
 
         String assignedBy = getUserEmail(user);
-
         if (assignedTo == null || assignedTo.isBlank()) {
             assignedTo = assignedBy;
         }
         ContractDocument contractDocument = getContractOrThrow(contractId, user, roles);
-
         String oldAssignee = contractDocument.getAssignedTo();
-
-        contractDocument.assignTo(
-                assignedTo,
-                assignedBy
-        );
-
-        String remarks = resolveAssignmentRemarks(
-                oldAssignee,
-                assignedTo
-        );
-
-        createAssignmentHistory(
-                contractDocument,
-                oldAssignee,
-                assignedTo,
-                assignedBy,
-                remarks
-        );
-
+        contractDocument.assignTo(assignedTo, assignedBy);
+        String remarks = resolveAssignmentRemarks(oldAssignee, assignedTo);
+        createAssignmentHistory(contractDocument, oldAssignee,  assignedTo,  assignedBy, remarks);
         return contractDocumentRepository.save(contractDocument);
     }
 
@@ -214,36 +187,17 @@ public class ContractServiceImpl implements ContractService {
         if (newAssignee == null || newAssignee.isBlank()) {
             throw new IllegalArgumentException("New assignee must not be empty");
         }
-
         String assignedBy = getUserEmail(user);
-
         ContractDocument contractDocument = getContractOrThrow(contractId, user, roles);
-
         String oldAssignee = contractDocument.getAssignedTo();
-
         if (oldAssignee == null || oldAssignee.isBlank()) {
             throw new IllegalStateException(
                     "Contract is not currently assigned. Please assign it first."
             );
         }
-
-        contractDocument.reassignTo(
-                newAssignee,
-                assignedBy
-        );
-
-        String remarks = oldAssignee.equals(newAssignee)
-                ? "Assignment updated"
-                : "Contract reassigned";
-
-        createAssignmentHistory(
-                contractDocument,
-                oldAssignee,
-                newAssignee,
-                assignedBy,
-                remarks
-        );
-
+        contractDocument.reassignTo(newAssignee, assignedBy);
+        String remarks = oldAssignee.equals(newAssignee) ? "Assignment updated" : "Contract reassigned";
+        createAssignmentHistory(contractDocument, oldAssignee, newAssignee, assignedBy, remarks);
         return contractDocumentRepository.save(contractDocument);
     }
 
@@ -252,23 +206,12 @@ public class ContractServiceImpl implements ContractService {
         String assignedBy = getUserEmail(user);
 
         ContractDocument contractDocument = getContractOrThrow(contractId, user, roles);
-
         String oldAssignee = contractDocument.getAssignedTo();
-
         if (oldAssignee == null || oldAssignee.isBlank()) {
             throw new IllegalStateException("Contract is already unassigned");
         }
-
         contractDocument.unassign(assignedBy);
-
-        createAssignmentHistory(
-                contractDocument,
-                oldAssignee,
-                null,
-                assignedBy,
-                "Contract unassigned"
-        );
-
+        createAssignmentHistory(contractDocument, oldAssignee, null, assignedBy, "Contract unassigned");
         return contractDocumentRepository.save(contractDocument);
     }
 
@@ -325,6 +268,62 @@ public class ContractServiceImpl implements ContractService {
 
         contractDocument.setStatus(ContractStatus.FAILED);
         contractDocumentRepository.save(contractDocument);
+    }
+
+    @Override
+    @Transactional
+    public ContractDocumentFieldValue fetchAndUpdateContractDocumentFieldValue(
+            Long contractId,
+            Long templateFieldId,
+            String parsedValue,
+            User user,
+            List<String> roles) {
+
+        ContractDocument contractDocument = getContract(contractId, user, roles);
+
+        BidTemplateField templateField = getTemplateField(templateFieldId);
+
+        ContractDocumentFieldValue fieldValue = getOrCreateFieldValue(contractDocument, templateField);
+
+        updateFieldValue(fieldValue, parsedValue, user);
+
+        return contractDocumentFieldValueRepository.save(fieldValue);
+    }
+
+    private BidTemplateField getTemplateField(
+            Long templateFieldId) {
+
+        return bidTemplateFieldRepository
+                .findById(templateFieldId)
+                .orElseThrow(() ->
+                        new BidTemplateFieldNotFoundException(
+                                "Template field not found: "
+                                        + templateFieldId));
+    }
+
+    private ContractDocumentFieldValue getOrCreateFieldValue(
+            ContractDocument contractDocument,
+            BidTemplateField templateField) {
+
+        return contractDocumentFieldValueRepository
+                .findByContractDocumentIdAndTemplateFieldId(
+                        contractDocument.getId(),
+                        templateField.getId())
+                .orElseGet(() ->
+                        ContractDocumentFieldValue.builder()
+                                .contractDocument(contractDocument)
+                                .templateField(templateField)
+                                .build());
+    }
+
+    private void updateFieldValue(
+            ContractDocumentFieldValue fieldValue,
+            String value,
+            User user) {
+
+        fieldValue.setValue(value);
+        fieldValue.setUpdatedBy(user.getEmail());
+        fieldValue.setUpdatedAt(LocalDateTime.now());
     }
 
     private String resolveAssignmentRemarks(

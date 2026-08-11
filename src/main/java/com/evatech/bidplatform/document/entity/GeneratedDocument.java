@@ -2,6 +2,7 @@ package com.evatech.bidplatform.document.entity;
 
 
 import com.evatech.bidplatform.bid.entity.Bid;
+import com.evatech.bidplatform.contract.entity.ContractDocument;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,7 +37,11 @@ public class GeneratedDocument {
     @Column(name = "generated_at", nullable = false)
     private LocalDateTime generatedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "contract_id")
+    private ContractDocument contract;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bid_id", nullable = false)
     private Bid bid;
 

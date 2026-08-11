@@ -3,7 +3,7 @@ package com.evatech.bidplatform.contract.service.impl;
 import com.evatech.bidplatform.ai.service.AiRequestLoggerService;
 import com.evatech.bidplatform.ai.service.AiService;
 import com.evatech.bidplatform.contract.dto.ContractLotAnalysisResult;
-import com.evatech.bidplatform.contract.dto.ExtractedLotResponse;
+import com.evatech.bidplatform.contract.dto.response.ExtractedLotResponse;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
 import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
 import com.evatech.bidplatform.contract.entity.ContractPageText;
@@ -172,6 +172,22 @@ public class ContractLotServiceImpl implements ContractLotService {
         return analyseContractLot(lotId, true, user, roles, userComment);
     }
 
+    @Override
+    public ContractLot approveAnalysis(Long contractLotId, User user, String comment) {
+        ContractLot contractLot = contractLotRepository.findById(contractLotId).orElseThrow(() -> new IllegalArgumentException("Contract lot not found with id: " + contractLotId));
+        contractLot.approveAnalysis(user.getEmail(), comment);
+        return contractLotRepository.save(contractLot);
+    }
+
+    @Override
+    public ContractLot rejectAnalysis(
+            Long contractLotId,
+            String comment,
+            User user) {
+        ContractLot contractLot = contractLotRepository.findById(contractLotId).orElseThrow(() -> new IllegalArgumentException("Contract lot not found with id: " + contractLotId));
+        contractLot.rejectAnalysis(user.getEmail(), comment);
+        return contractLotRepository.save(contractLot);
+    }
 
     private ContractLotAnalysisResult getExistingLotAnalysisResult(Long contractLotId) {
         ContractLotAnalysis existingAnalysis = contractLotAnalysisRepository.findByContractLotId(contractLotId).orElse(null);

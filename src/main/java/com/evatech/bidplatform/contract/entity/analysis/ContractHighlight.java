@@ -1,5 +1,6 @@
 package com.evatech.bidplatform.contract.entity.analysis;
 
+import com.evatech.bidplatform.contract.dto.HighlightReviewStatus;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
 import com.evatech.bidplatform.contract.entity.RiskLevel;
 import jakarta.persistence.*;
@@ -34,12 +35,6 @@ public class ContractHighlight {
     @Column(name = "page_number")
     private Integer pageNumber;
 
-    /**
-     * Example:
-     * Clause 7.3
-     * Section 5.4
-     * Annexure B
-     */
     @Column(name = "reference")
     private String reference;
 
@@ -47,10 +42,6 @@ public class ContractHighlight {
     @Column(name = "risk_level")
     private RiskLevel riskLevel;
 
-    /**
-     * 0 - 100
-     * Used for sorting critical findings
-     */
     @Column(name = "severity_score")
     private Integer severityScore;
 
@@ -70,6 +61,22 @@ public class ContractHighlight {
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "eview_status")
+    private HighlightReviewStatus reviewStatus;
+
+    @Column(name = "user_comment")
+    private String  userComment;
+
+    @Column(name = "reviewed_by")
+    private String reviewedBy;
+
+    @Column(name = "reviewed_at")
+    private LocalDateTime reviewedAt;
+
+    @Lob
+    @Column(name = "review_comment")
+    private String reviewComment;
 
     @PrePersist
     public void prePersist() {

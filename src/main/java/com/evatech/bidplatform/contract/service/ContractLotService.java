@@ -56,4 +56,10 @@ public interface ContractLotService {
             User user,
             List<String> roles) ;
 
+    ContractLot approveAnalysis(Long lotId, User user, String comment);
+
+    ContractLot rejectAnalysis(
+            Long lotId,
+            String comment,
+            User user);
 }

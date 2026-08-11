@@ -1,4 +1,4 @@
-package com.evatech.bidplatform.contract.dto;
+package com.evatech.bidplatform.contract.dto.response;
 
 
 import lombok.Getter;

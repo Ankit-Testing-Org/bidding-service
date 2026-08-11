@@ -4,16 +4,20 @@ import com.evatech.bidplatform.ai.model.AiContractAnalysisResponse;
 import com.evatech.bidplatform.ai.service.AiClient;
 import com.evatech.bidplatform.ai.service.AiService;
 import com.evatech.bidplatform.ai.service.ContractAnalysisPromptBuilder;
+import com.evatech.bidplatform.bid.dto.AiBidTemplateResponse;
 import com.evatech.bidplatform.contract.dto.ContractLotAnalysisResult;
+import com.evatech.bidplatform.contract.dto.response.HighlightReanalysisResponse;
 import com.evatech.bidplatform.contract.dto.response.AiContractLotAnalysisResponse;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
 import com.evatech.bidplatform.contract.entity.analysis.*;
 import com.evatech.bidplatform.contract.entity.ContractPageText;
 import com.evatech.bidplatform.contract.entity.RiskLevel;
 import com.evatech.bidplatform.contract.dto.ContractAnalysisResult;
+import com.evatech.bidplatform.user.entity.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -61,6 +65,48 @@ public class AiServiceImpl implements AiService {
         ContractLotAnalysis analysis = mapToContractLotAnalysis(contractLot, analysisResponse);
 
         return ContractLotAnalysisResult.builder().analysis(analysis).highlights(highlights).build();
+    }
+
+    @Override
+    public HighlightReanalysisResponse reanalyseHighlight(
+            ContractDocument contractDocument,
+            ContractHighlight highlight,
+            String userComment) {
+
+        String prompt = contractAnalysisPromptBuilder.buildHighlightReanalysisPrompt(
+                        contractDocument, highlight, userComment);
+
+        String aiResponse = aiClient.analysePrompt(prompt);
+
+        return parseHighlightReanalysisResponse(aiResponse);
+    }
+
+    @Override
+    public AiBidTemplateResponse generateText(String prompt) {
+
+        //TODO : NEED TO FIND WAY
+
+        return null;
+    }
+
+    @Override
+    public void createContractCopyFromTemplate(
+            ContractDocument contract,
+            Resource uploadedTemplate,
+            User user) {
+
+        //TODO : NEED TO FIND WAY
+    }
+
+    private HighlightReanalysisResponse parseHighlightReanalysisResponse(
+            String aiResponse) {
+        try {
+            return objectMapper.readValue(aiResponse, HighlightReanalysisResponse.class);
+        } catch (Exception ex) {
+            throw new IllegalStateException(
+                    "Failed to parse highlight reanalysis response",
+                    ex);
+        }
     }
 
     private AiContractLotAnalysisResponse parseLotAiResponse(String aiResponse) {

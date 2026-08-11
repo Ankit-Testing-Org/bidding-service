@@ -130,8 +130,9 @@ public class ContractLot {
         }
     }
 
-    public void approveAnalysis(String userName) {
+    public void approveAnalysis(String userName, String comment) {
         this.analysisReviewStatus = LotAnalysisReviewStatus.APPROVED;
+        this.reviewComment = comment;
         this.reviewedBy = userName;
         this.reviewedAt = LocalDateTime.now();
     }

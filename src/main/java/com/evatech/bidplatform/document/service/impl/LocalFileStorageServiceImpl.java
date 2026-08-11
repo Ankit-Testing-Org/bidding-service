@@ -1,14 +1,18 @@
 package com.evatech.bidplatform.document.service.impl;
 
 import com.evatech.bidplatform.FileStorageProperties;
+import com.evatech.bidplatform.bid.exception.FileStorageException;
 import com.evatech.bidplatform.document.service.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -35,36 +39,6 @@ public class LocalFileStorageServiceImpl implements FileStorageService {
     }
 
     @Override
-    public String storeTemplate(MultipartFile file, String templateCode) {
-        String originalFileName = cleanFileName(file.getOriginalFilename());
-        String fileName = System.currentTimeMillis() + "_" + originalFileName;
-
-        Path templateDirectory = getBasePath()
-                .resolve("templates")
-                .resolve(templateCode);
-
-        Path targetPath = templateDirectory.resolve(fileName);
-
-        createDirectory(templateDirectory);
-        copyFile(file, targetPath);
-
-        return targetPath.toString();
-    }
-
-    @Override
-    public String storeGeneratedDocument(byte[] content, String fileName) {
-        String cleanedFileName = cleanFileName(fileName);
-
-        Path generatedDirectory = getBasePath().resolve("generated");
-        Path targetPath = generatedDirectory.resolve(cleanedFileName);
-
-        createDirectory(generatedDirectory);
-        writeBytes(content, targetPath);
-
-        return targetPath.toString();
-    }
-
-    @Override
     public Path resolvePath(String relativePath) {
         if (relativePath == null || relativePath.isBlank()) {
             throw new IllegalArgumentException("Storage path must not be empty");
@@ -87,13 +61,60 @@ public class LocalFileStorageServiceImpl implements FileStorageService {
         try {
             Files.createDirectories(tempDirectory);
         } catch (IOException exception) {
-            throw new IllegalStateException(
-                    "Could not create temp directory: " + tempDirectory,
-                    exception
-            );
+            throw new IllegalStateException("Could not create temp directory: " + tempDirectory, exception);
         }
 
         return tempDirectory;
+    }
+
+
+    @Override
+    public String storeTemplate(String fileName, MultipartFile file) {
+        try {
+            Path contractDirectory = getBasePath().resolve("templates");
+            Path uploadDir = contractDirectory.resolve(fileName);
+
+            Files.createDirectories(uploadDir);
+
+            Path target = uploadDir.resolve(fileName);
+
+            Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
+
+            return target.toString();
+
+        } catch (IOException ex) {
+
+            throw new FileStorageException("Failed to store file", ex);
+        }
+    }
+
+    @Override
+    public Resource loadTemplate(String fileName) {
+
+        try {
+            Path contractDirectory = getBasePath().resolve("templates");
+            Path uploadDir = contractDirectory.resolve(fileName);
+            Path target = uploadDir.resolve(fileName);
+
+            return new UrlResource(target.toUri());
+        } catch (MalformedURLException ex) {
+
+            throw new FileStorageException("Failed to load file", ex);
+        }
+    }
+
+    @Override
+    public void deleteTemplate(String fileName) {
+
+        try {
+            Path contractDirectory = getBasePath().resolve("templates");
+            Path uploadDir = contractDirectory.resolve(fileName);
+            Path target = uploadDir.resolve(fileName);
+            Files.deleteIfExists(target);
+        } catch (IOException ex) {
+
+            throw new FileStorageException("Failed to delete file", ex);
+        }
     }
 
     private Path getBasePath() {
@@ -110,11 +131,7 @@ public class LocalFileStorageServiceImpl implements FileStorageService {
 
     private void copyFile(MultipartFile file, Path targetPath) {
         try {
-            Files.copy(
-                    file.getInputStream(),
-                    targetPath,
-                    StandardCopyOption.REPLACE_EXISTING
-            );
+            Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException exception) {
             throw new IllegalStateException("Could not store file: " + targetPath, exception);
         }
