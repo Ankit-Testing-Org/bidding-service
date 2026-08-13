@@ -4,7 +4,7 @@ import com.evatech.bidplatform.bid.dto.response.GeneratedDocumentResponse;
 import com.evatech.bidplatform.bid.mapper.GeneratedDocumentMapper;
 import com.evatech.bidplatform.bid.service.BidTemplateService;
 import com.evatech.bidplatform.contract.controller.AbstractController;
-import com.evatech.bidplatform.document.entity.GeneratedDocument;
+import com.evatech.bidplatform.bid.entity.GeneratedDocument;
 import com.evatech.bidplatform.user.entity.User;
 import com.evatech.bidplatform.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -48,10 +48,17 @@ public class BidTemplateController extends AbstractController {
                 generatedDocumentMapper.toResponse(template));
     }
 
-    @GetMapping("/{documentId}/download")
+    @GetMapping("/contracts/{contractId}/documents/{documentId}/download")
     public ResponseEntity<Resource> downloadDocument(
+            Authentication authentication,
+            @PathVariable Long contractId,
             @PathVariable Long documentId) {
-        Resource resource =bidTemplateService.downloadDocument(documentId);
+        User user = authenticateAndFetchUser(userRepository,
+                authentication);
+        List<String> roles = fetchRolesForUser(authentication);
+
+        Resource resource =bidTemplateService.downloadDocument(documentId,
+                contractId, user, roles);
         return ResponseEntity.ok()
                 .header(
                         HttpHeaders.CONTENT_DISPOSITION,

@@ -12,11 +12,11 @@ import com.evatech.bidplatform.bid.repository.BidDocumentRepository;
 import com.evatech.bidplatform.bid.repository.BidRepository;
 import com.evatech.bidplatform.bid.repository.BidTemplateFieldRepository;
 import com.evatech.bidplatform.bid.service.BidService;
+import com.evatech.bidplatform.bid.service.FileStorageService;
 import com.evatech.bidplatform.bid.service.UploadedTemplateParser;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
 import com.evatech.bidplatform.contract.entity.ContractDocumentFieldValue;
 import com.evatech.bidplatform.contract.service.ContractService;
-import com.evatech.bidplatform.document.service.FileStorageService;
 import com.evatech.bidplatform.user.dto.RoleType;
 import com.evatech.bidplatform.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -124,8 +124,7 @@ public class BidServiceImpl implements BidService {
                     bidTemplateFieldRepository.findByPlaceholder(parsedValue.placeholder())
                             .orElseThrow(() -> new BidTemplateFieldNotFoundException("Template field not found: " + parsedValue.placeholder()));
 
-            ContractDocumentFieldValue fieldValue = contractService.fetchAndUpdateContractDocumentFieldValue(
-                            contractId, templateField.getId(), parsedValue.value(), user, roles);
+            ContractDocumentFieldValue fieldValue = contractService.fetchAndUpdateContractDocumentFieldValue(templateField.getId(), parsedValue.value(), user);
 
             responses.add(BidTemplateFieldUpdateResponse.builder()
                             .templateFieldId(templateField.getId())

@@ -1,7 +1,7 @@
 package com.evatech.bidplatform.contract.service.impl;
 
+import com.evatech.bidplatform.bid.service.FileStorageService;
 import com.evatech.bidplatform.contract.service.PdfPageService;
-import com.evatech.bidplatform.document.service.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.Loader;

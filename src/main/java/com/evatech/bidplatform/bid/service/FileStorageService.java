@@ -1,4 +1,4 @@
-package com.evatech.bidplatform.document.service;
+package com.evatech.bidplatform.bid.service;
 
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;

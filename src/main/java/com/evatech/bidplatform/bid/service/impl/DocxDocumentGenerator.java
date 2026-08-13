@@ -2,11 +2,11 @@ package com.evatech.bidplatform.bid.service.impl;
 
 import com.evatech.bidplatform.bid.dto.AiBidTemplateResponse;
 import com.evatech.bidplatform.bid.dto.AiTemplateFieldDefinition;
+import com.evatech.bidplatform.bid.entity.DocumentType;
 import com.evatech.bidplatform.bid.exception.DocumentGenerationException;
 import com.evatech.bidplatform.bid.service.DocumentGenerator;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
-import com.evatech.bidplatform.document.entity.DocumentType;
-import com.evatech.bidplatform.document.entity.GeneratedDocument;
+import com.evatech.bidplatform.bid.entity.GeneratedDocument;
 import com.evatech.bidplatform.user.entity.User;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
@@ -53,7 +53,7 @@ public class DocxDocumentGenerator
 
                 placeholderRun.addBreak();
                 placeholderRun.setText(
-                        "[[" + field.placeholder() + "]]");
+                        "[[FIELD_" + field.placeholder() + "]]");
                 placeholderRun.addBreak();
             }
             String fileName = contract.getOriginalFileName() + "-bid-template.docx";
@@ -67,8 +67,7 @@ public class DocxDocumentGenerator
                     .contract(contract)
                     .fileName(fileName)
                     .storagePath(storagePath)
-                    .documentType(
-                            DocumentType.BID_TEMPLATE)
+                    .documentType(DocumentType.BID_TEMPLATE)
                     .generatedBy(
                             user.getEmail())
                     .generatedAt(

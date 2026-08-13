@@ -1,4 +1,4 @@
-package com.evatech.bidplatform.document.entity;
+package com.evatech.bidplatform.bid.entity;
 
 public enum DocumentType {
     BID_DOCX,

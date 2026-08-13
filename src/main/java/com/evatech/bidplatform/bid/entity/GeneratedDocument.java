@@ -1,12 +1,13 @@
-package com.evatech.bidplatform.document.entity;
+package com.evatech.bidplatform.bid.entity;
 
 
-import com.evatech.bidplatform.bid.entity.Bid;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -41,12 +42,25 @@ public class GeneratedDocument {
     @JoinColumn(name = "contract_id")
     private ContractDocument contract;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "bid_id", nullable = false)
-    private Bid bid;
-
     @PrePersist
     public void prePersist() {
-        this.generatedAt = LocalDateTime.now();
+        if (generatedAt == null) {
+            generatedAt = LocalDateTime.now();
+        }
     }
+
+    @OneToMany(mappedBy = "generatedDocument", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<BidTemplateField> templateFields = new ArrayList<>();
+
+    public void addTemplateField(BidTemplateField field) {
+        templateFields.add(field);
+        field.setGeneratedDocument(this);
+    }
+
+    public void removeTemplateField(BidTemplateField field) {
+        templateFields.remove(field);
+        field.setGeneratedDocument(null);
+    }
+
 }

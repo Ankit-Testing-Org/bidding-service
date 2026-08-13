@@ -1,11 +1,11 @@
 package com.evatech.bidplatform.contract.service.impl;
 
+import com.evatech.bidplatform.bid.service.FileStorageService;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
 import com.evatech.bidplatform.contract.repository.ContractDocumentRepository;
 import com.evatech.bidplatform.contract.repository.ContractPageTextRepository;
 import com.evatech.bidplatform.contract.service.ContractPageDocumentService;
 import com.evatech.bidplatform.contract.service.PdfPageService;
-import com.evatech.bidplatform.document.service.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;

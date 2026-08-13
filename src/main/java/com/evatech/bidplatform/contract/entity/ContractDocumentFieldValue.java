@@ -19,12 +19,12 @@ public class ContractDocumentFieldValue {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "contract_document_id")
-    private ContractDocument contractDocument;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "template_field_id")
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(
+            name = "template_field_id",
+            nullable = false,
+            unique = true
+    )
     private BidTemplateField templateField;
 
     @Column(columnDefinition = "TEXT")

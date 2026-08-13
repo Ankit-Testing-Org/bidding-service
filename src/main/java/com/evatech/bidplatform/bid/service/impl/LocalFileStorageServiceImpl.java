@@ -1,8 +1,8 @@
-package com.evatech.bidplatform.document.service.impl;
+package com.evatech.bidplatform.bid.service.impl;
 
 import com.evatech.bidplatform.FileStorageProperties;
 import com.evatech.bidplatform.bid.exception.FileStorageException;
-import com.evatech.bidplatform.document.service.FileStorageService;
+import com.evatech.bidplatform.bid.service.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;

@@ -1,7 +1,6 @@
 package com.evatech.bidplatform.bid.entity;
 
-import com.evatech.bidplatform.contract.entity.analysis.ContractHighlight;
-import com.evatech.bidplatform.document.entity.GeneratedDocument;
+import com.evatech.bidplatform.contract.entity.ContractDocumentFieldValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
@@ -22,20 +21,6 @@ public class BidTemplateField {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    /**
-     * Template document that contains this field
-     */
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "generated_document_id", nullable = false)
-    private GeneratedDocument generatedDocument;
-
-    /**
-     * Original highlight from contract analysis
-     */
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "contract_highlight_id", nullable = false)
-    private ContractHighlight contractHighlight;
 
     /**
      * Internal placeholder used in DOCX
@@ -69,4 +54,19 @@ public class BidTemplateField {
      */
     @Column(name = "default_value")
     private String defaultValue;
+
+    /**
+     * Template document that contains this field
+     */
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "generated_document_id", nullable = false)
+    private GeneratedDocument generatedDocument;
+
+    @OneToOne(
+            mappedBy = "templateField",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private ContractDocumentFieldValue fieldValue;
+
 }

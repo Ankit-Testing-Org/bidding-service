@@ -3,6 +3,7 @@ package com.evatech.bidplatform.contract.service.impl;
 import com.evatech.bidplatform.bid.entity.BidTemplateField;
 import com.evatech.bidplatform.bid.exception.BidTemplateFieldNotFoundException;
 import com.evatech.bidplatform.bid.repository.BidTemplateFieldRepository;
+import com.evatech.bidplatform.bid.service.FileStorageService;
 import com.evatech.bidplatform.contract.entity.*;
 import com.evatech.bidplatform.contract.entity.analysis.AnalysisStatus;
 import com.evatech.bidplatform.contract.entity.analysis.ContractAnalysisSummary;
@@ -12,7 +13,6 @@ import com.evatech.bidplatform.contract.repository.*;
 import com.evatech.bidplatform.contract.service.ContractLotService;
 import com.evatech.bidplatform.contract.service.ContractService;
 import com.evatech.bidplatform.contract.service.ContractTextExtractionService;
-import com.evatech.bidplatform.document.service.FileStorageService;
 import com.evatech.bidplatform.user.dto.RoleType;
 import com.evatech.bidplatform.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -65,11 +65,11 @@ public class ContractServiceImpl implements ContractService {
         contractDocument = contractDocumentRepository.save(contractDocument);
 
         // STEP 4) Extract text and save pages
-        List<ContractPageText>  contractPageTexts = contractTextExtractionService.
+        contractTextExtractionService.
                 extractText(contractDocument.getId(), user, roles);
 
         // STEP 5) Extract lots and save them
-        List<ContractLot>  contractLots = contractLotService.
+        contractLotService.
                 processExtractingLots(contractDocument, user);
         return contractDocumentRepository.findById(contractDocument.getId()).orElse(null);
     }
@@ -270,25 +270,26 @@ public class ContractServiceImpl implements ContractService {
         contractDocumentRepository.save(contractDocument);
     }
 
+    /**
+     * This method will first try to fetch ContractDocumentFieldValue if it founds it updates value there but if not, it will create new field and update its value.
+     */
     @Override
     @Transactional
     public ContractDocumentFieldValue fetchAndUpdateContractDocumentFieldValue(
-            Long contractId,
             Long templateFieldId,
             String parsedValue,
-            User user,
-            List<String> roles) {
-
-        ContractDocument contractDocument = getContract(contractId, user, roles);
+            User user) {
 
         BidTemplateField templateField = getTemplateField(templateFieldId);
 
-        ContractDocumentFieldValue fieldValue = getOrCreateFieldValue(contractDocument, templateField);
-
-        updateFieldValue(fieldValue, parsedValue, user);
+        ContractDocumentFieldValue fieldValue = getOrCreateFieldValue(templateField);
+        fieldValue.setValue(parsedValue);
+        fieldValue.setUpdatedBy(user.getEmail());
+        fieldValue.setUpdatedAt(LocalDateTime.now());
 
         return contractDocumentFieldValueRepository.save(fieldValue);
     }
+
 
     private BidTemplateField getTemplateField(
             Long templateFieldId) {
@@ -301,30 +302,19 @@ public class ContractServiceImpl implements ContractService {
                                         + templateFieldId));
     }
 
-    private ContractDocumentFieldValue getOrCreateFieldValue(
-            ContractDocument contractDocument,
-            BidTemplateField templateField) {
+    private ContractDocumentFieldValue getOrCreateFieldValue(BidTemplateField templateField) {
 
-        return contractDocumentFieldValueRepository
-                .findByContractDocumentIdAndTemplateFieldId(
-                        contractDocument.getId(),
-                        templateField.getId())
-                .orElseGet(() ->
-                        ContractDocumentFieldValue.builder()
-                                .contractDocument(contractDocument)
-                                .templateField(templateField)
-                                .build());
+        if (templateField.getFieldValue() != null) {
+            return templateField.getFieldValue();
+        }
+        ContractDocumentFieldValue fieldValue =
+                ContractDocumentFieldValue.builder()
+                        .templateField(templateField)
+                        .build();
+        templateField.setFieldValue(fieldValue);
+        return fieldValue;
     }
 
-    private void updateFieldValue(
-            ContractDocumentFieldValue fieldValue,
-            String value,
-            User user) {
-
-        fieldValue.setValue(value);
-        fieldValue.setUpdatedBy(user.getEmail());
-        fieldValue.setUpdatedAt(LocalDateTime.now());
-    }
 
     private String resolveAssignmentRemarks(
             String oldAssignee,
