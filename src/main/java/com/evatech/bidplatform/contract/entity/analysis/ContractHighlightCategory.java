@@ -6,29 +6,9 @@ public enum ContractHighlightCategory {
 
     TERMS_AND_CONDITIONS,
 
-    COMPLIANCE,
+    COMPLIANCE_REQUIREMENT,
 
-    PAYMENT,
+    MANDATORY_ACTION,
 
-    PENALTY,
-
-    LIABILITY,
-
-    TERMINATION,
-
-    WARRANTY,
-
-    INSURANCE,
-
-    FINANCIAL,
-
-    LEGAL,
-
-    OBLIGATION,
-
-    ELIGIBILITY,
-
-    DEADLINE,
-
-    RECOMMENDATION
+    AI_RECOMMENDATION
 }

@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hospital Procurement Analysis Platform</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    background:#f3f5f9;
+    height:100vh;
+    overflow:hidden;
+}
+
+.header{
+    height:80px;
+    background:#fff;
+    border-bottom:1px solid #ddd;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 20px;
+}
+
+.header h1{
+    font-size:32px;
+    color:#0f172a;
+}
+
+.header p{
+    color:#64748b;
+}
+
+.header-actions button{
+    border:none;
+    border-radius:8px;
+    padding:12px 18px;
+    cursor:pointer;
+    color:white;
+    margin-left:10px;
+}
+
+.btn-primary{
+    background:#2563eb;
+}
+
+.btn-success{
+    background:#16a34a;
+}
+
+.container{
+    display:flex;
+    height:calc(100vh - 80px);
+}
+
+/* LEFT */
+
+.left-panel{
+    width:330px;
+    background:white;
+    border-right:1px solid #ddd;
+    overflow:auto;
+    padding:15px;
+}
+
+.left-panel h3{
+    margin-bottom:15px;
+}
+
+.lot{
+    background:white;
+    border:1px solid #e2e8f0;
+    border-radius:12px;
+    padding:15px;
+    margin-bottom:12px;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.lot:hover{
+    transform:translateY(-2px);
+    box-shadow:0 3px 10px rgba(0,0,0,0.08);
+}
+
+.lot.active{
+    border:2px solid #2563eb;
+    background:#eff6ff;
+}
+
+.lot-header{
+    display:flex;
+    gap:10px;
+}
+
+.lot-icon{
+    font-size:24px;
+}
+
+.lot-title{
+    font-weight:600;
+    margin-bottom:3px;
+}
+
+.lot-value{
+    color:#64748b;
+    font-size:13px;
+}
+
+.lot-footer{
+    display:flex;
+    justify-content:space-between;
+    margin-top:10px;
+    font-size:12px;
+}
+
+/* CENTER */
+
+.center-panel{
+    flex:1;
+    overflow:auto;
+    padding:20px;
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+}
+
+.card{
+    background:white;
+    border-radius:14px;
+    padding:20px;
+    box-shadow:0 2px 5px rgba(0,0,0,.06);
+}
+
+.card h4{
+    color:#64748b;
+}
+
+.card h2{
+    margin-top:8px;
+}
+
+.section{
+    background:white;
+    border-radius:14px;
+    padding:20px;
+    margin-top:20px;
+    box-shadow:0 2px 5px rgba(0,0,0,.06);
+}
+
+.section h3{
+    margin-bottom:15px;
+}
+
+.score{
+    font-size:52px;
+    font-weight:bold;
+    color:#16a34a;
+}
+
+.risk{
+    display:inline-block;
+    margin-top:10px;
+    padding:8px 15px;
+    border-radius:20px;
+    background:#fee2e2;
+    color:#dc2626;
+}
+
+.actions{
+    margin-top:20px;
+}
+
+.actions button{
+    margin-right:10px;
+    border:none;
+    border-radius:8px;
+    padding:10px 15px;
+    cursor:pointer;
+    color:white;
+}
+
+.qualify{
+    background:#16a34a;
+}
+
+.unqualify{
+    background:#dc2626;
+}
+
+.analyze{
+    background:#2563eb;
+}
+
+.analysis-columns{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+.analysis-box{
+    background:#f8fafc;
+    border-radius:10px;
+    padding:15px;
+}
+
+.analysis-box ul{
+    padding-left:20px;
+}
+
+.missing-item{
+    background:#fef2f2;
+    border-left:4px solid #dc2626;
+    padding:12px;
+    margin-bottom:10px;
+    border-radius:6px;
+}
+
+/* TABLE */
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th{
+    background:#f8fafc;
+}
+
+th,td{
+    border:1px solid #ddd;
+    padding:10px;
+    text-align:left;
+}
+
+/* RIGHT */
+
+.right-panel{
+    width:400px;
+    background:white;
+    border-left:1px solid #ddd;
+    display:flex;
+    flex-direction:column;
+}
+
+.chat-header{
+    padding:15px;
+    border-bottom:1px solid #ddd;
+    font-weight:bold;
+}
+
+.chat-body{
+    flex:1;
+    overflow:auto;
+    padding:15px;
+}
+
+.message{
+    padding:12px;
+    border-radius:10px;
+    margin-bottom:10px;
+    white-space:pre-line;
+}
+
+.ai{
+    background:#eef2ff;
+}
+
+.user{
+    background:#dcfce7;
+}
+
+.suggestions{
+    padding:15px;
+    border-top:1px solid #eee;
+}
+
+.suggestion{
+    background:#f3f4f6;
+    padding:10px;
+    border-radius:8px;
+    margin-bottom:8px;
+    cursor:pointer;
+}
+
+.chat-input{
+    padding:15px;
+    border-top:1px solid #ddd;
+}
+
+.chat-input input{
+    width:100%;
+    padding:12px;
+    border-radius:8px;
+    border:1px solid #ccc;
+}
+
+</style>
+</head>
+<body>
+
+<div class="header">
+
+<div>
+<h1>New City Hospital Setup Project</h1>
+<p>500 Beds | Tender Value €45M | Closing Date 30 Sept 2026</p>
+</div>
+
+<div class="header-actions">
+<button class="btn-primary">Analyse Contract</button>
+<button class="btn-success">Generate Proposal</button>
+</div>
+
+</div>
+
+<div class="container">
+
+<!-- LEFT -->
+
+<div class="left-panel">
+
+    <div class="project-header">
+
+        <h3>🏥 Hospital Setup</h3>
+
+        <div class="project-stat">
+            Budget: €45M
+        </div>
+
+        <div class="project-stat">
+            Capacity: 500 Beds
+        </div>
+
+        <div class="project-stat">
+            Status: Analysis Complete
+        </div>
+
+    </div>
+
+    <div class="lots-header">
+        Procurement Lots
+    </div>
+
+    <div id="lotList">
+
+        <div class="lot active">
+
+            <div class="lot-top">
+
+                <div class="icon">
+                    💊
+                </div>
+
+                <div>
+
+                    <div class="title">
+                        Medicines & Pharmaceuticals
+                    </div>
+
+                    <div class="value">
+                        €12M
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="lot-footer">
+
+                <span>Score 91%</span>
+
+                <span class="success">
+                    Qualified
+                </span>
+
+            </div>
+
+        </div>
+
+        <div class="lot">
+
+            <div class="lot-top">
+
+                <div class="icon">
+                    🛏️
+                </div>
+
+                <div>
+
+                    <div class="title">
+                        Beds & Furniture
+                    </div>
+
+                    <div class="value">
+                        €8M
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="lot-footer">
+
+                <span>Score 84%</span>
+
+                <span class="warning">
+                    Review
+                </span>
+
+            </div>
+
+        </div>
+
+        <div class="lot">
+
+            <div class="lot-top">
+
+                <div class="icon">
+                    🏥
+                </div>
+
+                <div>
+
+                    <div class="title">
+                        Medical Devices
+                    </div>
+
+                    <div class="value">
+                        €15M
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="lot-footer">
+
+                <span>Score 72%</span>
+
+                <span class="danger">
+                    High Risk
+                </span>
+
+            </div>
+
+        </div>
+
+        <div class="lot">
+
+            <div class="lot-top">
+
+                <div class="icon">
+                    🧪
+                </div>
+
+                <div>
+
+                    <div class="title">
+                        Laboratory Equipment
+                    </div>
+
+                    <div class="value">
+                        €4M
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="lot-footer">
+
+                <span>Score 88%</span>
+
+                <span class="success">
+                    Qualified
+                </span>
+
+            </div>
+
+        </div>
+
+        <div class="lot">
+
+            <div class="lot-top">
+
+                <div class="icon">
+                    🚑
+                </div>
+
+                <div>
+
+                    <div class="title">
+                        Ambulances
+                    </div>
+
+                    <div class="value">
+                        €3M
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="lot">
+
+            <div class="lot-top">
+
+                <div class="icon">
+                    💻
+                </div>
+
+                <div>
+
+                    <div class="title">
+                        Hospital IT Systems
+                    </div>
+
+                    <div class="value">
+                        €3M
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- CENTER -->
+
+<div class="center-panel">
+
+<div class="stats">
+
+<div class="card">
+<h4>Total Lots</h4>
+<h2>6</h2>
+</div>
+
+<div class="card">
+<h4>Qualified</h4>
+<h2>4</h2>
+</div>
+
+<div class="card">
+<h4>Bid Score</h4>
+<h2>82%</h2>
+</div>
+
+<div class="card">
+<h4>Win Probability</h4>
+<h2>High</h2>
+</div>
+
+</div>
+
+<div class="section">
+
+<h2 id="lotTitle"></h2>
+
+<br>
+
+<p><b>Value:</b> <span id="lotValue"></span></p>
+<p><b>Delivery:</b> <span id="lotDuration"></span></p>
+<p><b>Department:</b> <span id="lotDepartment"></span></p>
+
+<div class="actions">
+
+<button class="analyze" onclick="analyseLot()">
+Analyse Lot
+</button>
+
+<button class="qualify">
+Qualified
+</button>
+
+<button class="unqualify">
+Unqualified
+</button>
+
+</div>
+
+</div>
+
+<div class="section">
+
+<h3>AI Analysis</h3>
+
+<div id="score" class="score">
+	72%
+</div>
+<div id="risk" class="risk">High Risk</div>
+
+<br><br>
+
+<div class="analysis-columns">
+
+<div class="analysis-box">
+
+<h4>Strengths</h4>
+
+<ul>
+                <li>✅ MRI Equipment</li>
+                <li>✅ CT Scanners</li>
+                <li>✅ CE Certifications</li>
+            </ul>
+
+</div>
+
+<div class="analysis-box">
+
+<h4>Weaknesses</h4>
+
+<ul>
+                <li>❌ Ventilators Missing</li>
+                <li>❌ Biomedical Engineers</li>
+            </ul>
+
+</div>
+
+</div>
+
+<br>
+
+<h4>Recommendation</h4>
+
+<p>
+        Conditional Bid. Supplier capability
+        is strong but critical devices are missing.
+    </p>
+
+</div>
+
+
+<div class="section">
+
+
+    <h3>Missing Requirements</h3>
+
+    <div class="missing-item">
+        ❌ 20 Ventilators Required
+    </div>
+
+    <div class="missing-item">
+        ❌ Biomedical Engineers
+    </div>
+
+    <div class="missing-item">
+        ⚠ Installation Resources
+    </div>
+
+</div>
+
+</div>
+
+<!-- RIGHT -->
+
+<div class="right-panel">
+
+<div class="chat-header">
+AI Procurement Assistant
+</div>
+
+<div id="chatBody" class="chat-body">
+
+<div class="message ai">
+Select a lot and ask questions.
+
+Examples:
+• Show missing requirements
+• Should we bid?
+• Why is risk high?
+• Generate executive summary
+</div>
+
+</div>
+
+<div class="suggestions">
+
+<div class="suggestion" onclick="askSuggestion(this)">
+Should we bid?
+</div>
+
+<div class="suggestion" onclick="askSuggestion(this)">
+Show missing requirements
+</div>
+
+<div class="suggestion" onclick="askSuggestion(this)">
+Why is risk high?
+</div>
+
+<div class="suggestion" onclick="askSuggestion(this)">
+Generate executive summary
+</div>
+
+</div>
+
+<div class="chat-input">
+<input
+id="chatInput"
+placeholder="Ask AI..."
+onkeypress="sendMessage(event)">
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+let currentLotId = 1;
+
+const lots = [
+
+{
+id:1,
+icon:"💊",
+title:"Medicines & Pharmaceuticals",
+value:"€12M",
+duration:"12 Months",
+department:"Pharmacy",
+score:"91%",
+risk:"Low Risk",
+strengths:[
+"WHO GMP Certified",
+"Cold Chain Logistics",
+"24x7 Supply Chain"
+],
+weaknesses:[
+"Pricing slightly above market"
+],
+missing:[],
+recommendation:"Strong Bid Recommended",
+requirements:[
+["WHO GMP Compliance","✅ Met"],
+["Cold Chain Logistics","✅ Met"],
+["24x7 Availability","✅ Met"]
+]
+},
+
+{
+id:2,
+icon:"🛏️",
+title:"Beds & Furniture",
+value:"€8M",
+duration:"8 Months",
+department:"Patient Care",
+score:"84%",
+risk:"Medium Risk",
+strengths:[
+"500 Beds Available",
+"ICU Configuration Supported"
+],
+weaknesses:[
+"Installation Team Limited"
+],
+missing:[
+"Installation Resources"
+],
+recommendation:"Bid with Delivery
+requirements:[
+["WHO GMP Compliance","✅ Met"],
+["Cold Chain Logistics","✅ Met"],
+["24x7 Availability","✅ Met"]
+]
+}

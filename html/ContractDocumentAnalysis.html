@@ -1,0 +1,2216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBid AI - Contract Review Workspace</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+			width:72px;
+			background:#111827;
+			color:#ffffff;
+			display:flex;
+			flex-direction:column;
+			align-items:center;
+			flex-shrink:0;
+		}
+		
+		.menu-item{
+			position:relative;
+			height:58px;
+			display:flex;
+			justify-content:center;
+			align-items:center;
+			cursor:pointer;
+		}
+
+		.menu-icon{
+			font-size:20px;
+		}
+
+		.menu-tooltip{
+			position:absolute;
+			left:85px;
+			top:50%;
+			transform:translateY(-50%);
+			background:#111827;
+			color:white;
+			padding:8px 12px;
+			border-radius:8px;
+			white-space:nowrap;
+			visibility:hidden;
+			opacity:0;
+			transition:.2s ease;
+		}
+
+		.menu-item:hover .menu-tooltip{
+			visibility:visible;
+			opacity:1;
+		}
+
+        .logo {
+            padding: 22px;
+            font-size: 22px;
+            font-weight: 700;
+            background: #020617;
+            border-bottom: 1px solid #374151;
+        }
+
+        .sidebar-menu {
+            padding: 16px 0;
+        }
+
+        .menu-item {
+            padding: 15px 22px;
+            cursor: pointer;
+            font-size: 15px;
+            color: #d1d5db;
+            border-left: 4px solid transparent;
+        }
+
+        .menu-item:hover {
+            background: #1f2937;
+            color: #ffffff;
+        }
+
+        .menu-item.active {
+            background: #1e40af;
+            color: #ffffff;
+            border-left-color: #60a5fa;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .top-header h1 {
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+
+        .top-header p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .primary-btn {
+            background: #2563eb;
+            color: #ffffff;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .primary-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .secondary-btn {
+            background: #f3f4f6;
+            color: #111827;
+            border: 1px solid #d1d5db;
+            padding: 9px 13px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .secondary-btn:hover {
+            background: #e5e7eb;
+        }
+
+        .workspace-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 680px;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .analysis-section {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .review-section {
+            position: sticky;
+            top: 24px;
+            height: calc(100vh - 48px);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .badge-green {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-yellow {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-red {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-blue {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-purple {
+            background: #ede9fe;
+            color: #5b21b6;
+        }
+
+        .badge-gray {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .accordion {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .accordion-item {
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+            overflow: hidden;
+        }
+
+        .accordion-header {
+            padding: 18px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            cursor: pointer;
+            background: #ffffff;
+        }
+
+        .accordion-header:hover {
+            background: #f8fafc;
+        }
+
+        .accordion-heading {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .accordion-title-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .accordion-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #eff6ff;
+            color: #2563eb;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 14px;
+        }
+
+        .accordion-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .accordion-subtitle {
+            font-size: 13px;
+            color: #6b7280;
+            padding-left: 38px;
+        }
+
+        .accordion-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .accordion-arrow {
+            font-size: 18px;
+            color: #475569;
+            transition: transform 0.2s ease;
+        }
+
+        .accordion-item.active .accordion-arrow {
+            transform: rotate(90deg);
+        }
+
+        .accordion-content {
+            display: none;
+            padding: 20px;
+            border-top: 1px solid #e5e7eb;
+            background: #ffffff;
+        }
+
+        .accordion-item.active .accordion-content {
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+
+        .stat-card {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 14px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 23px;
+            font-weight: 800;
+            color: #111827;
+        }
+
+        .stat-note {
+            margin-top: 6px;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .health-score-box {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .score-circle {
+            min-width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            background: conic-gradient(#2563eb 0deg 270deg, #e5e7eb 270deg 360deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .score-inner {
+            width: 94px;
+            height: 94px;
+            border-radius: 50%;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 26px;
+        }
+
+        .score-inner span {
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 600;
+        }
+
+        .score-details {
+            flex: 1;
+        }
+
+        .score-row {
+            margin-bottom: 14px;
+        }
+
+        .score-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-bottom: 6px;
+            color: #374151;
+        }
+
+        .progress {
+            height: 9px;
+            background: #e5e7eb;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 999px;
+        }
+
+        .fill-blue {
+            width: 75%;
+            background: #2563eb;
+        }
+
+        .fill-green {
+            width: 86%;
+            background: #16a34a;
+        }
+
+        .fill-yellow {
+            width: 62%;
+            background: #f59e0b;
+        }
+
+        .fill-red {
+            width: 48%;
+            background: #dc2626;
+        }
+
+        .finding-grid {
+			display:grid;
+			grid-template-columns:repeat(2,minmax(0,1fr));
+			align-items:stretch;
+		}
+
+		.finding-description {
+			max-height:60px;
+			overflow:hidden;
+		}
+
+		.finding-tile.expanded
+		.finding-description {
+			max-height:500px;
+		}
+
+        .finding-tile {
+			border: 1px solid #e5e7eb;
+			background: #f8fafc;
+			border-radius: 14px;
+			padding: 14px;
+
+			display:flex;
+			flex-direction:column;
+			height:100%;
+		}
+        .finding-tile.review-approved {
+            border-color: #16a34a;
+            background: #f0fdf4;
+        }
+
+        .finding-tile.review-rejected {
+            border-color: #dc2626;
+            background: #fef2f2;
+        }
+
+        .finding-tile.review-reanalyse {
+            border-color: #7c3aed;
+            background: #f5f3ff;
+        }
+
+        .finding-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .finding-header h4 {
+            font-size: 15px;
+            color: #111827;
+        }
+
+        .finding-tile p {
+            font-size: 13px;
+            color: #4b5563;
+            line-height: 1.5;
+        }
+
+        .reference {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 700;
+        }
+
+        .review-status {
+            margin-top: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #475569;
+        }
+
+        .review-actions {
+            margin-top: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .review-btn {
+            border: 1px solid #d1d5db;
+            padding: 7px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+            background: #ffffff;
+        }
+
+        .review-btn.open {
+            color: #1e40af;
+            border-color: #bfdbfe;
+            background: #eff6ff;
+        }
+
+        .review-btn.correct {
+            color: #166534;
+            border-color: #86efac;
+            background: #f0fdf4;
+        }
+
+        .review-btn.incorrect {
+            color: #991b1b;
+            border-color: #fecaca;
+            background: #fef2f2;
+        }
+
+        .review-btn.reanalyse {
+            color: #5b21b6;
+            border-color: #ddd6fe;
+            background: #f5f3ff;
+        }
+
+        .review-btn.why {
+            color: #374151;
+            border-color: #cbd5e1;
+            background: #ffffff;
+        }
+
+        .review-comment {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            background: #ffffff;
+            border: 1px dashed #cbd5e1;
+            border-radius: 10px;
+            font-size: 12px;
+            color: #475569;
+            line-height: 1.4;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            font-size: 13px;
+            color: #475569;
+            padding: 12px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 14px;
+            color: #374151;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .feedback-list {
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .feedback-row {
+            padding: 12px 14px;
+            border-bottom: 1px solid #e5e7eb;
+            background: #f8fafc;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .feedback-row:last-child {
+            border-bottom: none;
+        }
+
+        .feedback-row strong {
+            display: block;
+            font-size: 13px;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .feedback-row span {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .pdf-card {
+            flex: 1;
+            min-height: 0;
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .pdf-toolbar {
+            padding: 14px 16px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            background: #ffffff;
+        }
+
+        .pdf-title h3 {
+            font-size: 17px;
+            margin-bottom: 4px;
+            color: #111827;
+        }
+
+        .pdf-title span {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .pdf-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .pdf-frame-wrapper {
+            flex: 1;
+            min-height: 500px;
+            background: #e5e7eb;
+            padding: 10px;
+        }
+
+        .pdf-viewer {
+            width: 100%;
+            height: 100%;
+            min-height: 500px;
+            border: none;
+            border-radius: 10px;
+            background: #ffffff;
+        }
+
+        .assistant-card {
+            height: 310px;
+            min-height: 310px;
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+            display: flex;
+            flex-direction: column;
+            padding: 16px;
+        }
+
+        .chat-header {
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 10px;
+        }
+
+        .chat-header h3 {
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+
+        .chat-header p {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .suggestion-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .chip {
+            border: none;
+            background: #eef2ff;
+            color: #3730a3;
+            padding: 7px 9px;
+            font-size: 12px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .chip:hover {
+            background: #e0e7ff;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 4px;
+            margin-bottom: 10px;
+        }
+
+        .message {
+            margin-bottom: 10px;
+            max-width: 94%;
+            padding: 10px 12px;
+            border-radius: 14px;
+            line-height: 1.5;
+            font-size: 13px;
+        }
+
+        .ai-message {
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            color: #111827;
+        }
+
+        .user-message {
+            background: #2563eb;
+            color: #ffffff;
+            margin-left: auto;
+        }
+
+        .answer-section {
+            padding: 8px;
+            background: #ffffff;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .answer-section strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .chat-feedback {
+            margin-top: 8px;
+            display: flex;
+            gap: 6px;
+        }
+
+        .chat-feedback button {
+            border: 1px solid #d1d5db;
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 5px 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .chat-input-area {
+            display: flex;
+            gap: 8px;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 10px;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            outline: none;
+            font-size: 13px;
+        }
+
+        .chat-input-area input:focus {
+            border-color: #2563eb;
+        }
+
+        .send-btn {
+            background: #111827;
+            color: #ffffff;
+            border: none;
+            padding: 0 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .send-btn:hover {
+            background: #030712;
+        }
+
+        .toast {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            background: #111827;
+            color: #ffffff;
+            padding: 14px 18px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            display: none;
+            z-index: 1000;
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 2000;
+        }
+
+        .modal {
+            width: 520px;
+            max-width: 100%;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 20px 50px rgba(15, 23, 42, 0.28);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .modal-header h3 {
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+
+        .modal-header p {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-body label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #374151;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .modal-body textarea {
+            width: 100%;
+            min-height: 120px;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 12px;
+            resize: vertical;
+            outline: none;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .modal-body textarea:focus {
+            border-color: #2563eb;
+        }
+
+        .modal-footer {
+            padding: 16px 20px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        @media (max-width: 1400px) {
+            .workspace-layout {
+                grid-template-columns: minmax(0, 1fr) 580px;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .workspace-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .review-section {
+                position: static;
+                height: auto;
+            }
+
+            .pdf-card {
+				flex: 3;
+				min-height: 850px;
+			}
+
+			.assistant-card {
+				flex: 1;
+				min-height: 220px;
+			}
+        }
+
+        @media (max-width: 900px) {
+            .app-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .finding-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .health-score-box {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .main-content {
+                padding: 16px;
+            }
+
+            .top-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .accordion-header {
+                align-items: flex-start;
+            }
+
+            .accordion-meta {
+                flex-direction: column;
+                align-items: flex-end;
+            }
+
+            .pdf-toolbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .pdf-actions {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app-container">
+
+	<aside class="sidebar">
+
+    <div class="logo">SB</div>
+
+    <nav class="sidebar-menu">
+
+        <div class="menu-item"
+             onclick="navigateTo('/dashboard')">
+
+            <span class="menu-icon">🏠</span>
+
+            <span class="menu-tooltip">
+                Dashboard
+            </span>
+
+        </div>
+
+        <div class="menu-item active"
+             onclick="navigateTo('/contracts')">
+
+            <span class="menu-icon">📄</span>
+
+            <span class="menu-tooltip">
+                Contract Analysis
+            </span>
+
+        </div>
+
+        <div class="menu-item"
+             onclick="navigateTo('/lots')">
+
+            <span class="menu-icon">📦</span>
+
+            <span class="menu-tooltip">
+                Lots
+            </span>
+
+        </div>
+
+        <div class="menu-item"
+             onclick="navigateTo('/bids')">
+
+            <span class="menu-icon">📝</span>
+
+            <span class="menu-tooltip">
+                Bid Preparation
+            </span>
+
+        </div>
+
+        <div class="menu-item"
+             onclick="navigateTo('/workflow')">
+
+            <span class="menu-icon">✅</span>
+
+            <span class="menu-tooltip">
+                Approval Workflow
+            </span>
+
+        </div>
+
+        <div class="menu-item"
+             onclick="navigateTo('/documents')">
+
+            <span class="menu-icon">📁</span>
+
+            <span class="menu-tooltip">
+                Documents
+            </span>
+
+        </div>
+
+        <div class="menu-item"
+             onclick="navigateTo('/settings')">
+
+            <span class="menu-icon">⚙️</span>
+
+            <span class="menu-tooltip">
+                Settings
+            </span>
+
+        </div>
+
+    </nav>
+
+</aside>
+
+    <main class="main-content">
+
+        <div class="top-header">
+            <div>
+                <h1>Contract Review Workspace</h1>
+                <p>Validate AI findings, open the source PDF, and teach the assistant what is correct or incorrect.</p>
+            </div>
+
+            <button class="primary-btn" onclick="runContractAnalysis()">
+                Analyze Contract
+            </button>
+        </div>
+
+        <div class="workspace-layout">
+
+            <section class="analysis-section">
+
+                <div class="accordion">
+
+                    <div class="accordion-item active">
+                        <div class="accordion-header" onclick="toggleAccordion(this)">
+                            <div class="accordion-heading">
+                                <div class="accordion-title-row">
+                                    <span class="accordion-icon">1</span>
+                                    <span class="accordion-title">Contract Overview</span>
+                                </div>
+                                <div class="accordion-subtitle">Hospital Infrastructure Procurement Agreement</div>
+                            </div>
+
+                            <div class="accordion-meta">
+                                <span class="badge badge-blue">City General Hospital</span>
+                                <span class="accordion-arrow">▶</span>
+                            </div>
+                        </div>
+
+                        <div class="accordion-content">
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <div class="stat-label">Contract Value</div>
+                                    <div class="stat-value">€12.5M</div>
+                                    <div class="stat-note">Estimated total value</div>
+                                </div>
+
+                                <div class="stat-card">
+                                    <div class="stat-label">Duration</div>
+                                    <div class="stat-value">36</div>
+                                    <div class="stat-note">Months</div>
+                                </div>
+
+                                <div class="stat-card">
+                                    <div class="stat-label">Critical Clauses</div>
+                                    <div class="stat-value">7</div>
+                                    <div class="stat-note">Require legal review</div>
+                                </div>
+
+                                <div class="stat-card">
+                                    <div class="stat-label">Mandatory Documents</div>
+                                    <div class="stat-value">9</div>
+                                    <div class="stat-note">Needed before submission</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item active">
+                        <div class="accordion-header" onclick="toggleAccordion(this)">
+                            <div class="accordion-heading">
+                                <div class="accordion-title-row">
+                                    <span class="accordion-icon">2</span>
+                                    <span class="accordion-title">Contract Health Score</span>
+                                </div>
+                                <div class="accordion-subtitle">AI-generated contract level risk and readiness evaluation</div>
+                            </div>
+
+                            <div class="accordion-meta">
+                                <span class="badge badge-yellow">Medium Risk</span>
+                                <span class="accordion-arrow">▶</span>
+                            </div>
+                        </div>
+
+                        <div class="accordion-content">
+                            <div class="health-score-box">
+                                <div class="score-circle">
+                                    <div class="score-inner">
+                                        75%
+                                        <span>Overall</span>
+                                    </div>
+                                </div>
+
+                                <div class="score-details">
+                                    <div class="score-row">
+                                        <div class="score-label">
+                                            <span>Legal Readiness</span>
+                                            <span>75%</span>
+                                        </div>
+                                        <div class="progress">
+                                            <div class="progress-fill fill-blue"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="score-row">
+                                        <div class="score-label">
+                                            <span>Compliance Readiness</span>
+                                            <span>86%</span>
+                                        </div>
+                                        <div class="progress">
+                                            <div class="progress-fill fill-green"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="score-row">
+                                        <div class="score-label">
+                                            <span>Commercial Risk</span>
+                                            <span>62%</span>
+                                        </div>
+                                        <div class="progress">
+                                            <div class="progress-fill fill-yellow"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="score-row">
+                                        <div class="score-label">
+                                            <span>Penalty Exposure</span>
+                                            <span>48%</span>
+                                        </div>
+                                        <div class="progress">
+                                            <div class="progress-fill fill-red"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="review-actions">
+                                <button class="review-btn correct" onclick="openReviewModal('analysis', 'contract-health-score', 'Contract Health Score', 'APPROVED')">✓ Correct</button>
+                                <button class="review-btn incorrect" onclick="openReviewModal('analysis', 'contract-health-score', 'Contract Health Score', 'REJECTED')">✗ Incorrect</button>
+                                <button class="review-btn reanalyse" onclick="openReviewModal('analysis', 'contract-health-score', 'Contract Health Score', 'REANALYSE')">↻ Reanalyse</button>
+                                <button class="review-btn why" onclick="askAiWhy('Contract Health Score')">Why?</button>
+                            </div>
+
+                            <div class="review-comment" id="comment-contract-health-score"></div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)">
+                            <div class="accordion-heading">
+                                <div class="accordion-title-row">
+                                    <span class="accordion-icon">3</span>
+                                    <span class="accordion-title">AI Executive Summary</span>
+                                </div>
+                                <div class="accordion-subtitle">Summary and high-level review points</div>
+                            </div>
+
+                            <div class="accordion-meta">
+                                <span class="badge badge-blue">2 Insights</span>
+                                <span class="accordion-arrow">▶</span>
+                            </div>
+                        </div>
+
+                        <div class="accordion-content">
+                            <div class="finding-grid">
+
+                                <div class="finding-tile" id="tile-overall-summary">
+                                    <div class="finding-header">
+                                        <h4>Overall Contract Summary</h4>
+                                        <span class="badge badge-blue">Summary</span>
+                                    </div>
+
+                                    <p>
+                                        This contract defines procurement obligations for hospital infrastructure and related services.
+                                        The client expects strict compliance with delivery timelines, certifications, warranty obligations,
+                                        performance guarantee requirements and documentation submission.
+                                    </p>
+
+                                    <div class="reference">Reference: Pages 4, 8, 12, 18</div>
+                                    <div class="review-status" id="status-overall-summary">Review Status: Pending</div>
+
+                                    <div class="review-actions">
+                                        <button class="review-btn open" onclick="openHighlight(4, 'Overall Contract Summary')">Open in PDF</button>
+                                        <button class="review-btn correct" onclick="openReviewModal('analysis', 'overall-summary', 'Overall Contract Summary', 'APPROVED')">✓ Correct</button>
+                                        <button class="review-btn incorrect" onclick="openReviewModal('analysis', 'overall-summary', 'Overall Contract Summary', 'REJECTED')">✗ Incorrect</button>
+                                        <button class="review-btn reanalyse" onclick="openReviewModal('analysis', 'overall-summary', 'Overall Contract Summary', 'REANALYSE')">↻ Reanalyse</button>
+                                        <button class="review-btn why" onclick="askAiWhy('Overall Contract Summary')">Why?</button>
+                                    </div>
+
+                                    <div class="review-comment" id="comment-overall-summary"></div>
+                                </div>
+
+                                <div class="finding-tile" id="tile-key-attention-area">
+                                    <div class="finding-header">
+                                        <h4>Key Attention Area</h4>
+                                        <span class="badge badge-yellow">Attention</span>
+                                    </div>
+
+                                    <p>
+                                        The contract includes penalty clauses, fixed delivery expectations and mandatory compliance documentation.
+                                        These should be reviewed before submitting the bid.
+                                    </p>
+
+                                    <div class="reference">Reference: Pages 12, 18, 24</div>
+                                    <div class="review-status" id="status-key-attention-area">Review Status: Pending</div>
+
+                                    <div class="review-actions">
+                                        <button class="review-btn open" onclick="openHighlight(18, 'Key Attention Area')">Open in PDF</button>
+                                        <button class="review-btn correct" onclick="openReviewModal('analysis', 'key-attention-area', 'Key Attention Area', 'APPROVED')">✓ Correct</button>
+                                        <button class="review-btn incorrect" onclick="openReviewModal('analysis', 'key-attention-area', 'Key Attention Area', 'REJECTED')">✗ Incorrect</button>
+                                        <button class="review-btn reanalyse" onclick="openReviewModal('analysis', 'key-attention-area', 'Key Attention Area', 'REANALYSE')">↻ Reanalyse</button>
+                                        <button class="review-btn why" onclick="askAiWhy('Key Attention Area')">Why?</button>
+                                    </div>
+
+                                    <div class="review-comment" id="comment-key-attention-area"></div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item active">
+                        <div class="accordion-header" onclick="toggleAccordion(this)">
+                            <div class="accordion-heading">
+                                <div class="accordion-title-row">
+                                    <span class="accordion-icon">4</span>
+                                    <span class="accordion-title">Terms & Conditions Analysis</span>
+                                </div>
+                                <div class="accordion-subtitle">Review AI findings and jump directly to PDF pages</div>
+                            </div>
+
+                            <div class="accordion-meta">
+                                <span class="badge badge-red">4 Findings</span>
+                                <span class="accordion-arrow">▶</span>
+                            </div>
+                        </div>
+
+                        <div class="accordion-content">
+                            <div class="finding-grid">
+
+                                <div class="finding-tile" id="tile-late-delivery-penalty">
+                                    <div class="finding-header">
+                                        <h4>Late Delivery Penalty</h4>
+                                        <span class="badge badge-red">High</span>
+                                    </div>
+
+                                    <p>
+                                        The contract applies liquidated damages for delayed delivery.
+                                        The penalty is calculated weekly and capped at a maximum percentage of contract value.
+                                    </p>
+
+                                    <div class="reference">Page 18 | Clause 7.3</div>
+                                    <div class="review-status" id="status-late-delivery-penalty">Review Status: Pending</div>
+
+                                    <div class="review-actions">
+                                        <button class="review-btn open" onclick="openHighlight(18, 'Late Delivery Penalty')">Open in PDF</button>
+                                        <button class="review-btn correct" onclick="openReviewModal('highlight', 'late-delivery-penalty', 'Late Delivery Penalty', 'APPROVED')">✓ Correct</button>
+                                        <button class="review-btn incorrect" onclick="openReviewModal('highlight', 'late-delivery-penalty', 'Late Delivery Penalty', 'REJECTED')">✗ Incorrect</button>
+                                        <button class="review-btn reanalyse" onclick="openReviewModal('highlight', 'late-delivery-penalty', 'Late Delivery Penalty', 'REANALYSE')">↻ Reanalyse</button>
+                                        <button class="review-btn why" onclick="askAiWhy('Late Delivery Penalty')">Why?</button>
+                                    </div>
+
+                                    <div class="review-comment" id="comment-late-delivery-penalty"></div>
+                                </div>
+
+                                <div class="finding-tile" id="tile-performance-bank-guarantee">
+                                    <div class="finding-header">
+                                        <h4>Performance Bank Guarantee</h4>
+                                        <span class="badge badge-yellow">Medium</span>
+                                    </div>
+
+                                    <p>
+                                        The selected bidder must submit a valid bank guarantee within the defined timeline after award.
+                                        Failure to submit may affect contract execution.
+                                    </p>
+
+                                    <div class="reference">Page 24 | Clause 9.1</div>
+                                    <div class="review-status" id="status-performance-bank-guarantee">Review Status: Pending</div>
+
+                                    <div class="review-actions">
+                                        <button class="review-btn open" onclick="openHighlight(24, 'Performance Bank Guarantee')">Open in PDF</button>
+                                        <button class="review-btn correct" onclick="openReviewModal('highlight', 'performance-bank-guarantee', 'Performance Bank Guarantee', 'APPROVED')">✓ Correct</button>
+                                        <button class="review-btn incorrect" onclick="openReviewModal('highlight', 'performance-bank-guarantee', 'Performance Bank Guarantee', 'REJECTED')">✗ Incorrect</button>
+                                        <button class="review-btn reanalyse" onclick="openReviewModal('highlight', 'performance-bank-guarantee', 'Performance Bank Guarantee', 'REANALYSE')">↻ Reanalyse</button>
+                                        <button class="review-btn why" onclick="askAiWhy('Performance Bank Guarantee')">Why?</button>
+                                    </div>
+
+                                    <div class="review-comment" id="comment-performance-bank-guarantee"></div>
+                                </div>
+
+                                <div class="finding-tile" id="tile-insurance-requirement">
+                                    <div class="finding-header">
+                                        <h4>Insurance Requirement</h4>
+                                        <span class="badge badge-yellow">Medium</span>
+                                    </div>
+
+                                    <p>
+                                        The supplier must maintain appropriate insurance coverage during the contract duration.
+                                        This may include professional liability, product liability and service coverage.
+                                    </p>
+
+                                    <div class="reference">Page 29 | Clause 11.2</div>
+                                    <div class="review-status" id="status-insurance-requirement">Review Status: Pending</div>
+
+                                    <div class="review-actions">
+                                        <button class="review-btn open" onclick="openHighlight(29, 'Insurance Requirement')">Open in PDF</button>
+                                        <button class="review-btn correct" onclick="openReviewModal('highlight', 'insurance-requirement', 'Insurance Requirement', 'APPROVED')">✓ Correct</button>
+                                        <button class="review-btn incorrect" onclick="openReviewModal('highlight', 'insurance-requirement', 'Insurance Requirement', 'REJECTED')">✗ Incorrect</button>
+                                        <button class="review-btn reanalyse" onclick="openReviewModal('highlight', 'insurance-requirement', 'Insurance Requirement', 'REANALYSE')">↻ Reanalyse</button>
+                                        <button class="review-btn why" onclick="askAiWhy('Insurance Requirement')">Why?</button>
+                                    </div>
+
+                                    <div class="review-comment" id="comment-insurance-requirement"></div>
+                                </div>
+
+                                <div class="finding-tile" id="tile-payment-terms">
+                                    <div class="finding-header">
+                                        <h4>Payment Terms</h4>
+                                        <span class="badge badge-green">Low</span>
+                                    </div>
+
+                                    <p>
+                                        Payment terms are acceptable. Payment is released after invoice validation and acceptance of delivered goods or services.
+                                    </p>
+
+                                    <div class="reference">Page 12 | Clause 5.4</div>
+                                    <div class="review-status" id="status-payment-terms">Review Status: Pending</div>
+
+                                    <div class="review-actions">
+                                        <button class="review-btn open" onclick="openHighlight(12, 'Payment Terms')">Open in PDF</button>
+                                        <button class="review-btn correct" onclick="openReviewModal('highlight', 'payment-terms', 'Payment Terms', 'APPROVED')">✓ Correct</button>
+                                        <button class="review-btn incorrect" onclick="openReviewModal('highlight', 'payment-terms', 'Payment Terms', 'REJECTED')">✗ Incorrect</button>
+                                        <button class="review-btn reanalyse" onclick="openReviewModal('highlight', 'payment-terms', 'Payment Terms', 'REANALYSE')">↻ Reanalyse</button>
+                                        <button class="review-btn why" onclick="askAiWhy('Payment Terms')">Why?</button>
+                                    </div>
+
+                                    <div class="review-comment" id="comment-payment-terms"></div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)">
+                            <div class="accordion-heading">
+                                <div class="accordion-title-row">
+                                    <span class="accordion-icon">5</span>
+                                    <span class="accordion-title">Compliance Requirements</span>
+                                </div>
+                                <div class="accordion-subtitle">Mandatory documents and declarations required before submission</div>
+                            </div>
+
+                            <div class="accordion-meta">
+                                <span class="badge badge-yellow">5 Requirements</span>
+                                <span class="accordion-arrow">▶</span>
+                            </div>
+                        </div>
+
+                        <div class="accordion-content">
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th>Requirement</th>
+                                    <th>Status</th>
+                                    <th>Risk</th>
+                                    <th>Reference</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+
+                                <tbody>
+                                <tr>
+                                    <td>ISO 9001 Certification</td>
+                                    <td><span class="badge badge-green">Available</span></td>
+                                    <td>Low</td>
+                                    <td>Page 16</td>
+                                    <td>
+                                        <button class="review-btn open" onclick="openHighlight(16, 'ISO 9001 Certification')">Open</button>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>Medical Device Compliance Declaration</td>
+                                    <td><span class="badge badge-yellow">Review Needed</span></td>
+                                    <td>Medium</td>
+                                    <td>Page 21</td>
+                                    <td>
+                                        <button class="review-btn open" onclick="openHighlight(21, 'Medical Device Compliance Declaration')">Open</button>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>Audited Financial Statements</td>
+                                    <td><span class="badge badge-green">Available</span></td>
+                                    <td>Low</td>
+                                    <td>Page 26</td>
+                                    <td>
+                                        <button class="review-btn open" onclick="openHighlight(26, 'Audited Financial Statements')">Open</button>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>Performance Bank Guarantee</td>
+                                    <td><span class="badge badge-red">Required</span></td>
+                                    <td>High</td>
+                                    <td>Page 24</td>
+                                    <td>
+                                        <button class="review-btn open" onclick="openHighlight(24, 'Performance Bank Guarantee')">Open</button>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>Insurance Confirmation</td>
+                                    <td><span class="badge badge-yellow">Pending</span></td>
+                                    <td>Medium</td>
+                                    <td>Page 29</td>
+                                    <td>
+                                        <button class="review-btn open" onclick="openHighlight(29, 'Insurance Confirmation')">Open</button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)">
+                            <div class="accordion-heading">
+                                <div class="accordion-title-row">
+                                    <span class="accordion-icon">6</span>
+                                    <span class="accordion-title">Mandatory Bidder Actions</span>
+                                </div>
+                                <div class="accordion-subtitle">Actions required before bid submission or contract execution</div>
+                            </div>
+
+                            <div class="accordion-meta">
+                                <span class="badge badge-purple">3 Actions</span>
+                                <span class="accordion-arrow">▶</span>
+                            </div>
+                        </div>
+
+                        <div class="accordion-content">
+                            <div class="finding-grid">
+
+                                <div class="finding-tile" id="tile-submit-performance-guarantee">
+                                    <div class="finding-header">
+                                        <h4>Submit Performance Guarantee</h4>
+                                        <span class="badge badge-red">Required</span>
+                                    </div>
+
+                                    <p>
+                                        Arrange bank guarantee documentation and validate the required guarantee amount before submitting the bid.
+                                    </p>
+
+                                    <div class="reference">Reference: Page 24</div>
+
+                                    <div class="review-actions">
+                                        <button class="review-btn open" onclick="openHighlight(24, 'Submit Performance Guarantee')">Open in PDF</button>
+                                        <button class="review-btn correct" onclick="openReviewModal('analysis', 'submit-performance-guarantee', 'Submit Performance Guarantee', 'APPROVED')">✓ Correct</button>
+                                        <button class="review-btn incorrect" onclick="openReviewModal('analysis', 'submit-performance-guarantee', 'Submit Performance Guarantee', 'REJECTED')">✗ Incorrect</button>
+                                    </div>
+
+                                    <div class="review-status" id="status-submit-performance-guarantee">Review Status: Pending</div>
+                                    <div class="review-comment" id="comment-submit-performance-guarantee"></div>
+                                </div>
+
+                                <div class="finding-tile" id="tile-confirm-delivery-commitment">
+                                    <div class="finding-header">
+                                        <h4>Confirm Delivery Commitment</h4>
+                                        <span class="badge badge-yellow">Action</span>
+                                    </div>
+
+                                    <p>
+                                        Validate delivery capability against contract deadlines and penalty exposure before submitting the bid.
+                                    </p>
+
+                                    <div class="reference">Reference: Page 18</div>
+
+                                    <div class="review-actions">
+                                        <button class="review-btn open" onclick="openHighlight(18, 'Confirm Delivery Commitment')">Open in PDF</button>
+                                        <button class="review-btn correct" onclick="openReviewModal('analysis', 'confirm-delivery-commitment', 'Confirm Delivery Commitment', 'APPROVED')">✓ Correct</button>
+                                        <button class="review-btn incorrect" onclick="openReviewModal('analysis', 'confirm-delivery-commitment', 'Confirm Delivery Commitment', 'REJECTED')">✗ Incorrect</button>
+                                    </div>
+
+                                    <div class="review-status" id="status-confirm-delivery-commitment">Review Status: Pending</div>
+                                    <div class="review-comment" id="comment-confirm-delivery-commitment"></div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)">
+                            <div class="accordion-heading">
+                                <div class="accordion-title-row">
+                                    <span class="accordion-icon">7</span>
+                                    <span class="accordion-title">AI Recommendations</span>
+                                </div>
+                                <div class="accordion-subtitle">Suggested actions based on contract-level analysis</div>
+                            </div>
+
+                            <div class="accordion-meta">
+                                <span class="badge badge-blue">3 Recommendations</span>
+                                <span class="accordion-arrow">▶</span>
+                            </div>
+                        </div>
+
+                        <div class="accordion-content">
+                            <div class="finding-grid">
+
+                                <div class="finding-tile" id="tile-legal-review-recommended">
+                                    <div class="finding-header">
+                                        <h4>Legal Review Recommended</h4>
+                                        <span class="badge badge-red">Important</span>
+                                    </div>
+
+                                    <p>
+                                        Review penalty, termination and liability clauses with the legal team before submitting the bid.
+                                    </p>
+
+                                    <div class="reference">References: Pages 18, 24, 29</div>
+
+                                    <div class="review-actions">
+                                        <button class="review-btn open" onclick="openHighlight(18, 'Legal Review Recommended')">Open in PDF</button>
+                                        <button class="review-btn correct" onclick="openReviewModal('analysis', 'legal-review-recommended', 'Legal Review Recommended', 'APPROVED')">✓ Correct</button>
+                                        <button class="review-btn incorrect" onclick="openReviewModal('analysis', 'legal-review-recommended', 'Legal Review Recommended', 'REJECTED')">✗ Incorrect</button>
+                                    </div>
+
+                                    <div class="review-status" id="status-legal-review-recommended">Review Status: Pending</div>
+                                    <div class="review-comment" id="comment-legal-review-recommended"></div>
+                                </div>
+
+                                <div class="finding-tile" id="tile-validate-financial-exposure">
+                                    <div class="finding-header">
+                                        <h4>Validate Financial Exposure</h4>
+                                        <span class="badge badge-yellow">Finance</span>
+                                    </div>
+
+                                    <p>
+                                        Confirm whether the bank guarantee, penalty cap and fixed pricing terms are commercially acceptable.
+                                    </p>
+
+                                    <div class="reference">References: Pages 18, 24</div>
+
+                                    <div class="review-actions">
+                                        <button class="review-btn open" onclick="openHighlight(24, 'Validate Financial Exposure')">Open in PDF</button>
+                                        <button class="review-btn correct" onclick="openReviewModal('analysis', 'validate-financial-exposure', 'Validate Financial Exposure', 'APPROVED')">✓ Correct</button>
+                                        <button class="review-btn incorrect" onclick="openReviewModal('analysis', 'validate-financial-exposure', 'Validate Financial Exposure', 'REJECTED')">✗ Incorrect</button>
+                                    </div>
+
+                                    <div class="review-status" id="status-validate-financial-exposure">Review Status: Pending</div>
+                                    <div class="review-comment" id="comment-validate-financial-exposure"></div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)">
+                            <div class="accordion-heading">
+                                <div class="accordion-title-row">
+                                    <span class="accordion-icon">8</span>
+                                    <span class="accordion-title">Reviewer Feedback History</span>
+                                </div>
+                                <div class="accordion-subtitle">Human feedback used as future AI context</div>
+                            </div>
+
+                            <div class="accordion-meta">
+                                <span class="badge badge-purple" id="feedbackCount">0 Signals</span>
+                                <span class="accordion-arrow">▶</span>
+                            </div>
+                        </div>
+
+                        <div class="accordion-content">
+                            <div class="feedback-list" id="feedbackList">
+                                <div class="feedback-row">
+                                    <div>
+                                        <strong>No feedback captured yet</strong>
+                                        <span>Mark analysis or highlights as correct, incorrect, or reanalyse.</span>
+                                    </div>
+                                    <span class="badge badge-gray">Pending</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <aside class="review-section">
+
+                <div class="pdf-card">
+                    <div class="pdf-toolbar">
+                        <div class="pdf-title">
+                            <h3>Contract Document</h3>
+                            <span id="pageTitle">Late Delivery Penalty | Page 18 of 84</span>
+                        </div>
+
+                        <div class="pdf-actions">
+                            <button class="secondary-btn" onclick="goToPreviousPage()">Previous</button>
+                            <button class="secondary-btn" onclick="goToNextPage()">Next</button>
+                            <button class="secondary-btn" onclick="openPdfInNewTab()">Open Full PDF</button>
+                        </div>
+                    </div>
+
+                    <div class="pdf-frame-wrapper">
+                        sample-contract.pdf#page=18
+                        </iframe>
+                    </div>
+                </div>
+
+                <div class="assistant-card">
+                    <div class="chat-header">
+                        <h3>AI Contract Assistant</h3>
+                        <p>Common assistant for this page. It uses reviewer feedback as context.</p>
+                    </div>
+
+                    <div class="suggestion-chips">
+                        <button class="chip" onclick="askSuggestedQuestion('Summarize this contract')">Summarize</button>
+                        <button class="chip" onclick="askSuggestedQuestion('What are the major risks?')">Major risks</button>
+                        <button class="chip" onclick="askSuggestedQuestion('Explain selected page')">Selected page</button>
+                        <button class="chip" onclick="askSuggestedQuestion('What feedback did reviewers provide?')">Feedback</button>
+                    </div>
+
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message ai-message">
+                            Hello Ankit, I can help you review this contract.
+                            <br><br>
+                            Click <strong>Open in PDF</strong> on any finding to jump to its source page.
+                            Mark wrong findings as <strong>Incorrect</strong> so future analysis can use that feedback.
+                        </div>
+                    </div>
+
+                    <div class="chat-input-area">
+                        <input
+                                type="text"
+                                id="userQuestion"
+                                placeholder="Ask about this contract, current page, or feedback..."
+                                onkeydown="handleEnter(event)"
+                        >
+
+                        <button class="send-btn" onclick="sendQuestion()">Send</button>
+                    </div>
+                </div>
+
+            </aside>
+
+        </div>
+
+    </main>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal-backdrop" id="reviewModalBackdrop">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="reviewModalTitle">Review AI Finding</h3>
+            <p id="reviewModalSubtitle">Provide feedback to improve future analysis.</p>
+        </div>
+
+        <div class="modal-body">
+            <label for="reviewComment">Reviewer Comment</label>
+            <textarea id="reviewComment" placeholder="Example: This is not a valid highlight because it is only informational."></textarea>
+        </div>
+
+        <div class="modal-footer">
+            <button class="secondary-btn" onclick="closeReviewModal()">Cancel</button>
+            <button class="primary-btn" onclick="submitReview()">Save Feedback</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentPage = 18;
+    const totalPages = 84;
+    const pdfFile = "sample-contract.pdf";
+
+    let currentPdfTitle = "Late Delivery Penalty";
+    let pendingReview = null;
+    const feedbackMemory = [];
+
+    const mockAnswers = {
+        "summarize this contract": `
+            <div class="answer-section">
+                <strong>Contract Summary</strong>
+                This contract covers hospital infrastructure procurement with delivery obligations,
+                payment terms, compliance documents, insurance requirements and performance guarantee conditions.
+                <br><br>
+                <strong>AI View</strong>
+                The contract can proceed if legal, finance and compliance checks are completed.
+            </div>
+        `,
+        "what are the major risks?": `
+            <div class="answer-section">
+                <strong>Major Risks</strong>
+                1. Late delivery penalty exposure.
+                <br>
+                2. Performance bank guarantee requirement.
+                <br>
+                3. Insurance and compliance dependency.
+                <br>
+                4. Fixed delivery commitment.
+            </div>
+        `,
+        "explain selected page": `
+            <div class="answer-section">
+                <strong>Selected PDF Page</strong>
+                You are currently viewing <strong>${currentPdfTitle}</strong> on page ${currentPage}.
+                <br><br>
+                In the real application, this question should be sent with the extracted text of the selected page.
+            </div>
+        `
+    };
+
+    function toggleAccordion(headerElement) {
+        const accordionItem = headerElement.parentElement;
+        accordionItem.classList.toggle("active");
+    }
+
+    function runContractAnalysis() {
+        showToast("Contract analysis completed successfully");
+
+        addAiMessage(`
+            <div class="answer-section">
+                <strong>Analysis Completed</strong>
+                I analyzed the contract and generated findings, compliance checks, recommendations and source references.
+                <br><br>
+                Please validate each finding. Incorrect feedback will become context for future reanalysis.
+            </div>
+        `);
+    }
+
+    function openHighlight(pageNumber, title) {
+        currentPage = pageNumber;
+        currentPdfTitle = title;
+
+        document.getElementById("contractPdfViewer").src =
+            pdfFile + "#page=" + pageNumber;
+
+        document.getElementById("pageTitle").innerText =
+            title + " | Page " + pageNumber + " of " + totalPages;
+
+        showToast("Opened " + title + " on page " + pageNumber);
+    }
+
+    function goToPreviousPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            currentPdfTitle = "Manual page navigation";
+
+            updatePdfViewer();
+            showToast("Moved to page " + currentPage);
+        }
+    }
+
+    function goToNextPage() {
+        if (currentPage < totalPages) {
+            currentPage++;
+            currentPdfTitle = "Manual page navigation";
+
+            updatePdfViewer();
+            showToast("Moved to page " + currentPage);
+        }
+    }
+
+    function updatePdfViewer() {
+        document.getElementById("contractPdfViewer").src =
+            pdfFile + "#page=" + currentPage;
+
+        document.getElementById("pageTitle").innerText =
+            currentPdfTitle + " | Page " + currentPage + " of " + totalPages;
+    }
+
+    function openPdfInNewTab() {
+        window.open(pdfFile + "#page=" + currentPage, "_blank");
+    }
+
+    function openReviewModal(type, itemId, itemTitle, status) {
+        pendingReview = {
+            type: type,
+            itemId: itemId,
+            itemTitle: itemTitle,
+            status: status
+        };
+
+        document.getElementById("reviewModalTitle").innerText =
+            getStatusLabel(status) + ": " + itemTitle;
+
+        document.getElementById("reviewModalSubtitle").innerText =
+            "This feedback will be stored as human review context for future AI analysis.";
+
+        const textarea = document.getElementById("reviewComment");
+        textarea.value = "";
+
+        if (status === "APPROVED") {
+            textarea.placeholder = "Example: Correct. This clause creates financial or compliance impact.";
+        }
+
+        if (status === "REJECTED") {
+            textarea.placeholder = "Example: Incorrect. This is informational and should not be treated as a highlight.";
+        }
+
+        if (status === "REANALYSE") {
+            textarea.placeholder = "Example: Please reanalyse because the category, risk level or extracted meaning is wrong.";
+        }
+
+        document.getElementById("reviewModalBackdrop").style.display = "flex";
+    }
+
+    function closeReviewModal() {
+        pendingReview = null;
+        document.getElementById("reviewModalBackdrop").style.display = "none";
+    }
+
+    function submitReview() {
+        if (!pendingReview) {
+            return;
+        }
+
+        const commentValue = document.getElementById("reviewComment").value.trim();
+
+        const reviewRecord = {
+            type: pendingReview.type,
+            itemId: pendingReview.itemId,
+            itemTitle: pendingReview.itemTitle,
+            status: pendingReview.status,
+            comment: commentValue || "No comment provided"
+        };
+
+        feedbackMemory.push(reviewRecord);
+
+        applyReviewStatus(reviewRecord);
+        updateFeedbackList();
+
+        addAiMessage(`
+            <div class="answer-section">
+                <strong>Feedback Saved</strong>
+                ${escapeHtml(reviewRecord.itemTitle)} was marked as <strong>${getStatusLabel(reviewRecord.status)}</strong>.
+                <br><br>
+                <strong>Reviewer Comment</strong>
+                ${escapeHtml(reviewRecord.comment)}
+                <br><br>
+                <strong>AI Usage</strong>
+                This feedback should be sent with future reanalysis so the AI can avoid repeating rejected patterns and prefer approved examples.
+            </div>
+        `);
+
+        closeReviewModal();
+        showToast("Feedback saved");
+    }
+
+    function applyReviewStatus(reviewRecord) {
+        const statusElement = document.getElementById("status-" + reviewRecord.itemId);
+        const commentElement = document.getElementById("comment-" + reviewRecord.itemId);
+        const tileElement = document.getElementById("tile-" + reviewRecord.itemId);
+
+        if (statusElement) {
+            statusElement.innerText = "Review Status: " + getStatusLabel(reviewRecord.status);
+        }
+
+        if (commentElement) {
+            commentElement.style.display = "block";
+            commentElement.innerText = "Reviewer Comment: " + reviewRecord.comment;
+        }
+
+        if (tileElement) {
+            tileElement.classList.remove("review-approved");
+            tileElement.classList.remove("review-rejected");
+            tileElement.classList.remove("review-reanalyse");
+
+            if (reviewRecord.status === "APPROVED") {
+                tileElement.classList.add("review-approved");
+            }
+
+            if (reviewRecord.status === "REJECTED") {
+                tileElement.classList.add("review-rejected");
+            }
+
+            if (reviewRecord.status === "REANALYSE") {
+                tileElement.classList.add("review-reanalyse");
+            }
+        }
+    }
+
+    function updateFeedbackList() {
+        const feedbackList = document.getElementById("feedbackList");
+        const feedbackCount = document.getElementById("feedbackCount");
+
+        feedbackCount.innerText = feedbackMemory.length + " Signals";
+
+        if (feedbackMemory.length === 0) {
+            feedbackList.innerHTML = `
+                <div class="feedback-row">
+                    <div>
+                        <strong>No feedback captured yet</strong>
+                        <span>Mark analysis or highlights as correct, incorrect, or reanalyse.</span>
+                    </div>
+                    <span class="badge badge-gray">Pending</span>
+                </div>
+            `;
+            return;
+        }
+
+        feedbackList.innerHTML = "";
+
+        feedbackMemory.forEach(function (item) {
+            const row = document.createElement("div");
+            row.className = "feedback-row";
+
+            row.innerHTML = `
+                <div>
+                    <strong>${escapeHtml(item.itemTitle)}</strong>
+                    <span>${escapeHtml(item.comment)}</span>
+                </div>
+                <span class="${getBadgeClass(item.status)}">${getStatusLabel(item.status)}</span>
+            `;
+
+            feedbackList.appendChild(row);
+        });
+    }
+
+    function askAiWhy(itemTitle) {
+        addUserMessage("Why did AI identify this: " + itemTitle + "?");
+
+        setTimeout(function () {
+            addAiMessage(`
+                <div class="answer-section">
+                    <strong>Why AI identified this</strong>
+                    AI selected <strong>${escapeHtml(itemTitle)}</strong> because it appears related to risk,
+                    obligation, compliance, payment, penalty or bidder responsibility.
+                    <br><br>
+                    <strong>If this is wrong</strong>
+                    Mark it as Incorrect and explain the reason. That feedback should be stored as human review context for future analysis.
+                </div>
+            `);
+        }, 300);
+    }
+
+    function askSuggestedQuestion(question) {
+        document.getElementById("userQuestion").value = question;
+        sendQuestion();
+    }
+
+    function sendQuestion() {
+        const input = document.getElementById("userQuestion");
+        const question = input.value.trim();
+
+        if (!question) {
+            return;
+        }
+
+        addUserMessage(question);
+
+        const normalizedQuestion = question.toLowerCase();
+
+        setTimeout(function () {
+            addAiMessage(findAnswer(normalizedQuestion));
+        }, 300);
+
+        input.value = "";
+    }
+
+    function findAnswer(question) {
+        if (question.includes("feedback") || question.includes("reviewer")) {
+            return buildFeedbackAnswer();
+        }
+
+        if (question.includes("selected page") || question.includes("current page")) {
+            return `
+                <div class="answer-section">
+                    <strong>Current PDF Context</strong>
+                    The viewer is currently showing <strong>${escapeHtml(currentPdfTitle)}</strong>
+                    on page ${currentPage} of ${totalPages}.
+                    <br><br>
+                    In the real backend, send the selected page text, selected highlight and reviewer feedback to the AI service.
+                </div>
+            `;
+        }
+
+        if (question.includes("risk")) {
+            return mockAnswers["what are the major risks?"];
+        }
+
+        if (question.includes("summary") || question.includes("summarize")) {
+            return mockAnswers["summarize this contract"];
+        }
+
+        return `
+            <div class="answer-section">
+                <strong>AI Answer</strong>
+                In the real application, this question should be sent to your backend AI service with:
+                <br><br>
+                ContractDocument, selected page number, extracted page text, AI findings, approved highlights, rejected highlights and reviewer comments.
+            </div>
+        `;
+    }
+
+    function buildFeedbackAnswer() {
+        if (feedbackMemory.length === 0) {
+            return `
+                <div class="answer-section">
+                    <strong>Reviewer Feedback</strong>
+                    No reviewer feedback has been captured yet.
+                    <br><br>
+                    Use Correct, Incorrect or Reanalyse buttons on findings to create feedback memory.
+                </div>
+            `;
+        }
+
+        let html = `
+            <div class="answer-section">
+                <strong>Reviewer Feedback Captured</strong>
+                <br><br>
+        `;
+
+        feedbackMemory.forEach(function (item, index) {
+            html += `
+                ${index + 1}. <strong>${escapeHtml(item.itemTitle)}</strong>
+                <br>
+                Status: ${getStatusLabel(item.status)}
+                <br>
+                Comment: ${escapeHtml(item.comment)}
+                <br><br>
+            `;
+        });
+
+        html += `
+                <strong>AI Learning Use</strong>
+                Approved items should be treated as positive examples.
+                Incorrect items should be avoided in future extraction unless new evidence justifies them.
+            </div>
+        `;
+
+        return html;
+    }
+
+    function addUserMessage(message) {
+        const chatMessages = document.getElementById("chatMessages");
+
+        const messageDiv = document.createElement("div");
+        messageDiv.className = "message user-message";
+        messageDiv.innerText = message;
+
+        chatMessages.appendChild(messageDiv);
+        scrollChatToBottom();
+    }
+
+    function addAiMessage(messageHtml) {
+        const chatMessages = document.getElementById("chatMessages");
+
+        const messageDiv = document.createElement("div");
+        messageDiv.className = "message ai-message";
+        messageDiv.innerHTML = messageHtml + `
+            <div class="chat-feedback">
+                <button onclick="markChatFeedback(this, 'HELPFUL')">👍 Helpful</button>
+                <button onclick="markChatFeedback(this, 'INCORRECT')">👎 Incorrect</button>
+            </div>
+        `;
+
+        chatMessages.appendChild(messageDiv);
+        scrollChatToBottom();
+    }
+
+    function markChatFeedback(button, status) {
+        if (status === "HELPFUL") {
+            button.parentElement.innerHTML = `<span class="badge badge-green">AI answer marked helpful</span>`;
+        } else {
+            button.parentElement.innerHTML = `<span class="badge badge-red">AI answer marked incorrect</span>`;
+        }
+
+        showToast("AI answer feedback saved");
+    }
+
+    function scrollChatToBottom() {
+        const chatMessages = document.getElementById("chatMessages");
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function handleEnter(event) {
+        if (event.key === "Enter") {
+            sendQuestion();
+        }
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById("toast");
+        toast.innerText = message;
+        toast.style.display = "block";
+
+        setTimeout(function () {
+            toast.style.display = "none";
+        }, 2500);
+    }
+
+    function getStatusLabel(status) {
+        if (status === "APPROVED") {
+            return "Correct";
+        }
+
+        if (status === "REJECTED") {
+            return "Incorrect";
+        }
+
+        if (status === "REANALYSE") {
+            return "Reanalyse Requested";
+        }
+
+        return "Pending";
+    }
+
+    function getBadgeClass(status) {
+        if (status === "APPROVED") {
+            return "badge badge-green";
+        }
+
+        if (status === "REJECTED") {
+            return "badge badge-red";
+        }
+
+        if (status === "REANALYSE") {
+            return "badge badge-purple";
+        }
+
+        return "badge badge-gray";
+    }
+
+    function escapeHtml(value) {
+        return String(value)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+    }
+	
+	function navigateTo(url){
+		window.location.href = url;
+	}
+</script>
+
+</body>
+</html>

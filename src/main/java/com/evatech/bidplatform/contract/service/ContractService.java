@@ -1,8 +1,8 @@
 package com.evatech.bidplatform.contract.service;
 
 import com.evatech.bidplatform.contract.entity.*;
-import com.evatech.bidplatform.contract.entity.analysis.ContractHighlight;
 import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
+import com.evatech.bidplatform.user.dto.response.ContractHighlightResponse;
 import com.evatech.bidplatform.user.entity.User;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,7 +18,7 @@ public interface ContractService {
 
     List<ContractPageText> getContractPages(Long contractId, Integer pageNumber, User user, List<String> roles);
 
-    List<ContractHighlight> getHighlights(Long contractId, User user, List<String> roles);
+    List<ContractHighlightResponse> getHighlights(Long contractId, User user, List<String> roles);
 
     ContractDocument markAnalysisInProgress(Long contractId, User user, List<String> roles);
 

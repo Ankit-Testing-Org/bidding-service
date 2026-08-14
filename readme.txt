@@ -46,14 +46,19 @@ FLOW STEPS :
        	- // STEP 1) VALIDATE FILE
        	- // STEP 2) STORE FILE
        	- // STEP 3) UPDATE CONTRACT DOCUMENT DB
-           - // STEP 4) Extract text and save pages
-           - // STEP 5) Extract lots and save them
+        - // STEP 4) Extract text and save pages
+        - // STEP 5) Extract lots and save them
+        - // STEP 6) ANALYSE THE CONTRACT.
+        - // STEP 7) SEND EMAIL TO BIDDERS.
+
+        // EMAIL WILL BE TRIGGERED TO BIDDERS.
 
         2) - It will be assigned to bidder.
                       (Controller : ContractAssignmentController, @PostMapping("/{contractId}/assign")
 
-        3) - Once assigned bidder will open Contract and click on Analyse -> It will analyse contract and provides highlights
-                      (Controller : ContractController,  @GetMapping("/{contractId}/analyse/contract")
+        3) - Once contract is openend it will opened Contract Analysed Screen , this service will be used both for analysis and
+         renalaysis of contract. If analysis already done it will return contract.
+                      (Controller : ContractAnalyserController, @GetMapping("/{contractId}/analyse/contract"))
 
         4) - Once highlights are shown on left user can mark highlighs correct / incorrect and comments if want reanalysis of points.
                       (Controller : ContractHighlightController,
@@ -95,7 +100,7 @@ FLOW STEPS :
 
         13) - User will download AI Template.
          (Controller : BidTemplateController,
-                                     @GetMapping("/{documentId}/download"))
+                 @GetMapping("/contracts/{contractId}/documents/{documentId}/download")
 
         14)- User upload bid in template.
                       (Controller : BidController, @PostMapping("/{bidId}/upload-documents")

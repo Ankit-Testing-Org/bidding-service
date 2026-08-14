@@ -33,7 +33,7 @@ public class ContractController extends AbstractController {
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @PostMapping(value = "/upload",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ApiResponse<ContractDocument> uploadContract(
+    public ApiResponse<ContractResponse> uploadContract(
             Authentication authentication,
             @RequestPart("file") MultipartFile file) {
         User user = authenticateAndFetchUser(userRepo,authentication);
@@ -42,7 +42,7 @@ public class ContractController extends AbstractController {
 
         return ApiResponse.success(
                 "Contract uploaded successfully",
-                contractDocument
+                contractMapper.toResponse(contractDocument)
         );
     }
 

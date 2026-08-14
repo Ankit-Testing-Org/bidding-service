@@ -1,7 +1,9 @@
 package com.evatech.bidplatform.contract.controller;
 
 import com.evatech.bidplatform.ApiResponse;
+import com.evatech.bidplatform.contract.dto.response.ContractResponse;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
+import com.evatech.bidplatform.contract.mapper.ContractMapper;
 import com.evatech.bidplatform.contract.service.ContractService;
 import com.evatech.bidplatform.user.entity.User;
 import com.evatech.bidplatform.user.repository.UserRepository;
@@ -20,9 +22,10 @@ public class ContractAssignmentController extends AbstractController {
 
     private final ContractService contractService;
     private final UserRepository userRepo;
+    private final ContractMapper contractMapper;
 
     @PostMapping("/{contractId}/assign")
-    public ApiResponse<ContractDocument> assignContract(
+    public ApiResponse<ContractResponse> assignContract(
             Authentication authentication,
             @PathVariable Long contractId,
             @Nullable @RequestParam String assignedTo
@@ -42,12 +45,12 @@ public class ContractAssignmentController extends AbstractController {
 
         return ApiResponse.success(
                 "Contract assigned successfully",
-                contractDocument
+                contractMapper.toResponse(contractDocument)
         );
     }
 
     @PostMapping("/{contractId}/unassign")
-    public ApiResponse<ContractDocument> unassignContract(
+    public ApiResponse<ContractResponse> unassignContract(
             Authentication authentication,
             @PathVariable Long contractId
     ) {
@@ -61,13 +64,14 @@ public class ContractAssignmentController extends AbstractController {
 
         return ApiResponse.success(
                 "Contract unassigned successfully",
-                contractDocument
+                contractMapper.toResponse(contractDocument)
+
         );
     }
 
 
     @GetMapping("/unassigned")
-    public ApiResponse<List<ContractDocument>> getUnassignedContracts(Authentication authentication) {
+    public ApiResponse<List<ContractResponse>> getUnassignedContracts(Authentication authentication) {
         User user = authenticateAndFetchUser(userRepo,authentication);
         List<String> roles = fetchRolesForUser(authentication);
 
@@ -75,12 +79,13 @@ public class ContractAssignmentController extends AbstractController {
 
         return ApiResponse.success(
                 "Unassigned contracts fetched successfully",
-                contracts
+                contractMapper.toResponses(contracts)
+
         );
     }
 
     @GetMapping("/assigned")
-    public ApiResponse<List<ContractDocument>> getAssignedContracts(
+    public ApiResponse<List<ContractResponse>> getAssignedContracts(
             Authentication authentication,
             @RequestParam String assignedTo
     ) {
@@ -92,7 +97,8 @@ public class ContractAssignmentController extends AbstractController {
 
         return ApiResponse.success(
                 "Assigned contracts fetched successfully",
-                contracts
+                contractMapper.toResponses(contracts)
+
         );
     }
 }

@@ -1,12 +1,16 @@
-package com.evatech.bidplatform.ai.model;
+package com.evatech.bidplatform.user.dto.response;
 
 import com.evatech.bidplatform.contract.entity.RiskLevel;
+import com.evatech.bidplatform.contract.entity.analysis.AnalysisStatus;
+import com.evatech.bidplatform.contract.entity.analysis.QualificationStatus;
 
-import java.util.List;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-public record AiContractAnalysisResponse(
+public record ContractSummaryResponse(
+
+        Long id,
 
         String clientName,
 
@@ -20,9 +24,9 @@ public record AiContractAnalysisResponse(
 
         LocalDate contractEndDate,
 
-        String executiveSummary,
+        Integer totalLots,
 
-        String recommendation,
+        Integer qualifiedLots,
 
         Double overallBidScore,
 
@@ -36,17 +40,23 @@ public record AiContractAnalysisResponse(
 
         Double penaltyScore,
 
-        Integer criticalClauses,
+        String executiveSummary,
+
+        String recommendation,
 
         Integer mandatoryDocuments,
 
+        Integer criticalClauses,
+
         Integer durationMonths,
 
-        Integer totalLots,
+        QualificationStatus qualificationStatus,
 
-        Integer qualifiedLots,
+        AnalysisStatus status,
 
-        List<AiContractHighlightResponse> highlights
+        String failureReason,
+
+        LocalDateTime analyzedAt
 
 ) {
 }

@@ -7,6 +7,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -62,21 +64,18 @@ public class ContractHighlight {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "eview_status")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "review_status")
     private HighlightReviewStatus reviewStatus;
 
-    @Column(name = "user_comment")
-    private String  userComment;
+    @OneToMany(
+            mappedBy = "contractHighlight",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    @Builder.Default
+    private List<ContractHighlightReviewHistory> reviewHistory =
+            new ArrayList<>();
 
-    @Column(name = "reviewed_by")
-    private String reviewedBy;
-
-    @Column(name = "reviewed_at")
-    private LocalDateTime reviewedAt;
-
-    @Lob
-    @Column(name = "review_comment")
-    private String reviewComment;
 
     @PrePersist
     public void prePersist() {

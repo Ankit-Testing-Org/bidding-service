@@ -3,40 +3,52 @@ package com.evatech.bidplatform.contract.dto.response;
 
 import com.evatech.bidplatform.contract.entity.ContractAssignmentStatus;
 import com.evatech.bidplatform.contract.entity.ContractStatus;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class ContractResponse {
+public record ContractResponse(
 
-    private Long id;
+        Long id,
 
-    private String originalFileName;
+        String originalFileName,
 
-    private String fileType;
+        String fileType,
 
-    private Integer pageCount;
+        Integer pageCount,
 
-    private String uploadedBy;
+        String uploadedBy,
 
-    private LocalDateTime uploadedAt;
+        LocalDateTime uploadedAt,
 
-    private ContractStatus status;
+        ContractStatus status,
 
-    private ContractAssignmentStatus assignmentStatus;
+        ContractAssignmentStatus assignmentStatus,
 
-    private String assignedTo;
+        String assignedTo,
 
-    private String assignedBy;
+        String assignedBy,
 
-    private LocalDateTime assignedAt;
+        LocalDateTime assignedAt,
+
+        String clientName,
+
+        BigDecimal contractValue,
+
+        String currency,
+
+        LocalDate submissionDeadline,
+
+        LocalDate contractStartDate,
+
+        LocalDate contractEndDate,
+
+        Integer estimatedBidCount
+
+) {
 }

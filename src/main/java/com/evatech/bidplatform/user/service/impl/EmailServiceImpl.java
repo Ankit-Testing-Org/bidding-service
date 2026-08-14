@@ -7,6 +7,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService {
@@ -26,29 +28,38 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendVerificationEmail(
-            String email,
-            String token
-    ) {
+    public void sendVerificationEmail(String email, String token) {
 
-        String link =
-                baseUrl +
-                        "/user/email/verify?token=" +
-                        token;
+        String link = baseUrl + "/user/email/verify?token=" + token;
 
-        SimpleMailMessage message =
-                new SimpleMailMessage();
+        SimpleMailMessage message = new SimpleMailMessage();
 
         message.setTo(email);
         message.setSubject("Verify your email");
 
-        message.setText(
-                """
+        message.setText("""
                 Click the link below to verify your account:
-    
+                
                 %s
-                """.formatted(link)
-        );
+                """.formatted(link));
+
+        mailSender.send(message);
+    }
+
+    @Override
+    public void sendEmail(Long contractId, String contractName, List<String> emailAddresses) {
+
+        SimpleMailMessage message = new SimpleMailMessage();
+
+        message.setTo(emailAddresses.toArray(new String[0]));
+
+        message.setSubject("New contract is upload");
+
+        message.setText("""
+                A new contract is being uploaded , please assign it:
+                
+                contract id %s and contract name %s
+                """.formatted(contractId, contractName));
 
         mailSender.send(message);
     }

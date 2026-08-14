@@ -3,6 +3,7 @@ package com.evatech.bidplatform.contract.service.impl;
 import com.evatech.bidplatform.ai.service.AiRequestLoggerService;
 import com.evatech.bidplatform.ai.service.AiService;
 import com.evatech.bidplatform.contract.dto.ContractAnalysisResult;
+import com.evatech.bidplatform.contract.dto.ContractAnalysisSection;
 import com.evatech.bidplatform.contract.dto.response.HighlightReanalysisResponse;
 import com.evatech.bidplatform.contract.dto.HighlightReviewStatus;
 import com.evatech.bidplatform.contract.entity.*;
@@ -10,13 +11,19 @@ import com.evatech.bidplatform.contract.entity.analysis.*;
 import com.evatech.bidplatform.contract.repository.*;
 import com.evatech.bidplatform.contract.service.ContractHighlightService;
 import com.evatech.bidplatform.contract.service.ContractService;
+import com.evatech.bidplatform.user.dto.response.ContractAnalysisPageResponse;
+import com.evatech.bidplatform.user.dto.response.ContractAnalysisSectionType;
+import com.evatech.bidplatform.user.dto.response.ContractHighlightResponse;
 import com.evatech.bidplatform.user.entity.User;
+import com.evatech.bidplatform.user.mapper.ContractAnalysisMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -30,82 +37,93 @@ public class ContractHighlightServiceImpl implements ContractHighlightService {
     private final AiService aiService;
     private final AiRequestLoggerService aiRequestLoggerService;
     private final ContractAnalysisSummaryRepository contractAnalysisSummaryRepository;
-
+    private final ContractAnalysisMapper contractAnalysisMapper;
 
     @Override
     @Transactional
-    public List<ContractHighlight> analyseContractHightlights(Long contractId, boolean reanalyse, User user, List<String> roles) {
+    public ContractAnalysisPageResponse analyseContractHighlights(Long contractDocumentId, boolean reanalyse, User user, List<String> roles) {
 
-        ContractDocument contractDocument = contractDocumentRepository.findById(contractId).orElseThrow(() -> new IllegalArgumentException("Contract not found with id: " + contractId));
-        boolean alreadyAnalysed = contractHighlightRepository.existsByContractDocumentId(contractId);
+        ContractDocument contractDocument = contractDocumentRepository.findById(contractDocumentId).orElseThrow(() -> new IllegalArgumentException("Contract document not found with id: " + contractDocumentId));
+
+        boolean alreadyAnalysed = contractHighlightRepository.existsByContractDocumentId(contractDocumentId);
+
         if (alreadyAnalysed && !reanalyse) {
-            return contractHighlightRepository.findByContractDocumentIdOrderByPageNumberAsc(contractId);
+            ContractAnalysisSummary existingSummary = contractAnalysisSummaryRepository.findByContractDocumentId(contractDocumentId).orElseThrow(() -> new IllegalStateException("Analysis summary not found for contract document id: " + contractDocumentId));
+
+            List<ContractHighlight> existingHighlights = contractHighlightRepository.findByContractDocumentIdOrderByPageNumberAsc(contractDocumentId);
+
+            return contractAnalysisMapper.toPageResponse(contractDocument.getId(), existingSummary, existingHighlights);
         }
-        List<ContractPageText> pages = contractPageTextRepository.findByContractDocumentIdOrderByPageNumberAsc(contractId);
+
+        List<ContractPageText> pages = contractPageTextRepository.findByContractDocumentIdOrderByPageNumberAsc(contractDocumentId);
+
         if (pages.isEmpty()) {
             throw new IllegalStateException("Contract text must be extracted before analysis");
         }
-        contractService.markAnalysisInProgress(contractId, user, roles);
+
+        contractService.markAnalysisInProgress(contractDocumentId, user, roles);
+
         try {
             ContractAnalysisResult analysisResult = aiService.analyseContract(contractDocument, pages);
-            aiRequestLoggerService.logRequest(contractId, contractDocument.getAssignedTo());
+
+            aiRequestLoggerService.logRequest(contractDocumentId, contractDocument.getAssignedTo());
+
             if (alreadyAnalysed || reanalyse) {
-                contractHighlightRepository.deleteByContractDocumentId(contractId);
-                contractAnalysisSummaryRepository.deleteByContractDocumentId(contractId);
+                contractHighlightRepository.deleteByContractDocumentId(contractDocumentId);
+                contractAnalysisSummaryRepository.deleteByContractDocumentId(contractDocumentId);
             }
-            List<ContractHighlight> savedHighlights = saveHighlights(contractDocument, analysisResult.getHighlights());
-            saveAnalysisSummary(contractDocument, analysisResult.getSummary());
-            contractService.markAnalysed(contractId, user, roles);
-            return savedHighlights;
+            ContractAnalysisSummary savedSummary = saveAnalysisSummary(contractDocument, analysisResult.getSummary());
+            List<ContractHighlight> savedHighlights = saveHighlights(contractDocument, analysisResult.getSections());
+            contractService.markAnalysed(contractDocumentId, user, roles);
+            return contractAnalysisMapper.toPageResponse(contractDocument.getId(), savedSummary, savedHighlights);
+
         } catch (RuntimeException ex) {
-            contractService.markAnalysisFailed(contractId, ex.getMessage(), user, roles);
+            contractService.markAnalysisFailed(contractDocumentId, ex.getMessage(), user, roles);
+
             throw ex;
         }
     }
 
+    @Override
     @Transactional
-    public ContractHighlight approveHighlight(Long highlightId, User user) {
+    public ContractHighlightResponse approveHighlight(Long highlightId, User user) {
         ContractHighlight highlight = contractHighlightRepository.findById(highlightId).orElseThrow();
-        highlight.setReviewStatus(HighlightReviewStatus.APPROVED);
-        highlight.setReviewedBy(user.getEmail());
-        highlight.setReviewedAt(LocalDateTime.now());
-
-        return contractHighlightRepository.save(highlight);
+        ContractHighlightReviewHistory contractHighlightReviewHistory = addReview(highlight, HighlightReviewStatus.APPROVED, user.getEmail(), null);
+        highlight.getReviewHistory().add(contractHighlightReviewHistory);
+        highlight = contractHighlightRepository.save(highlight);
+        return contractAnalysisMapper.toHighlightResponse(highlight);
     }
 
+    @Override
     @Transactional
-    public ContractHighlight rejectHighlight(Long highlightId, String comment, User user) {
+    public ContractHighlightResponse rejectHighlight(Long highlightId, String comment, User user) {
 
-        ContractHighlight highlight = contractHighlightRepository.findById(highlightId)
-                        .orElseThrow();
+        ContractHighlight highlight = contractHighlightRepository.findById(highlightId).orElseThrow();
         highlight.setReviewStatus(HighlightReviewStatus.REJECTED);
-        highlight.setReviewComment(comment);
-        highlight.setReviewedBy(user.getEmail());
-        highlight.setReviewedAt(LocalDateTime.now());
-        return contractHighlightRepository.save(highlight);
+        ContractHighlightReviewHistory contractHighlightReviewHistory = addReview(highlight, HighlightReviewStatus.APPROVED, user.getEmail(), comment);
+        highlight.getReviewHistory().add(contractHighlightReviewHistory);
+        highlight = contractHighlightRepository.save(highlight);
+        return contractAnalysisMapper.toHighlightResponse(highlight);
+
     }
 
-    @Transactional
-    public ContractHighlight requestReanalysis(Long highlightId, String comment, User user) {
 
-        ContractHighlight highlight = contractHighlightRepository.findById(highlightId)
-                        .orElseThrow();
-        highlight.setReviewStatus(HighlightReviewStatus.REANALYSE);
-        highlight.setReviewComment(comment);
-        highlight.setReviewedBy(user.getEmail());
-        highlight.setReviewedAt(LocalDateTime.now());
-        return contractHighlightRepository.save(highlight);
+    @Override
+    @Transactional(readOnly = true)
+    public List<ContractHighlightResponse> getHighlights(Long contractId) {
+        List<ContractHighlight> contractHighlights = contractHighlightRepository.findByContractDocumentIdOrderByPageNumberAsc(contractId);
+        return contractAnalysisMapper.toHighlightResponses(contractHighlights);
+
     }
 
+    @Override
     @Transactional
-    public ContractHighlight reanalyseHighlight(Long highlightId, User user,
-                                                String userComment) {
+    public ContractHighlightResponse reanalyseHighlight(Long highlightId, User user, String userComment) {
 
-        ContractHighlight highlight = contractHighlightRepository.findById(highlightId)
-                        .orElseThrow();
+
+        ContractHighlight highlight = contractHighlightRepository.findById(highlightId).orElseThrow();
         ContractDocument contract = highlight.getContractDocument();
-        HighlightReanalysisResponse result = aiService.reanalyseHighlight(contract,
-                highlight, userComment);
+        HighlightReanalysisResponse result = aiService.reanalyseHighlight(contract, highlight, userComment);
         highlight.setCategory(result.category());
         highlight.setTitle(result.title());
         highlight.setDescription(result.description());
@@ -113,20 +131,89 @@ public class ContractHighlightServiceImpl implements ContractHighlightService {
         highlight.setSeverityScore(result.severityScore());
         highlight.setRecommendedAction(result.recommendedAction());
         highlight.setConfidenceScore(result.confidenceScore());
-        return contractHighlightRepository.save(highlight);
+        ContractHighlightReviewHistory contractHighlightReviewHistory = addReview(highlight, HighlightReviewStatus.REANALYSE, user.getEmail(), userComment);
+        highlight.getReviewHistory().add(contractHighlightReviewHistory);
+        highlight = contractHighlightRepository.save(highlight);
+        return contractAnalysisMapper.toHighlightResponse(highlight);
     }
 
-    private List<ContractHighlight> saveHighlights(ContractDocument contractDocument, List<ContractHighlight> highlights) {
-        if (highlights == null || highlights.isEmpty()) {
+    public ContractHighlightReviewHistory addReview(ContractHighlight highlight, HighlightReviewStatus status, String reviewedBy, String reviewComment) {
+        highlight.setReviewStatus(status);
+        ContractHighlightReviewHistory history = ContractHighlightReviewHistory.builder().contractHighlight(highlight).reviewStatus(status).reviewedBy(reviewedBy).reviewedAt(LocalDateTime.now()).reviewComment(reviewComment).build();
+
+        highlight.getReviewHistory().add(history);
+        return history;
+    }
+
+    private List<ContractHighlight> saveHighlights(ContractDocument contractDocument, List<ContractAnalysisSection> analysisSections) {
+
+        if (analysisSections == null || analysisSections.isEmpty()) {
             return List.of();
         }
-        highlights.forEach(highlight -> {
-            highlight.setContractDocument(contractDocument);
-            highlight.setUserComment(null);
-            highlight.setReviewStatus(HighlightReviewStatus.PENDING);
-        });
+
+        List<ContractHighlight> highlights = analysisSections.stream().filter(section -> section != null).flatMap(section -> toHighlights(contractDocument, section).stream()).toList();
+
+        if (highlights.isEmpty()) {
+            return List.of();
+        }
 
         return contractHighlightRepository.saveAll(highlights);
+    }
+
+    private List<ContractHighlight> toHighlights(ContractDocument contractDocument, ContractAnalysisSection section) {
+
+        if (section.getHighlights() == null || section.getHighlights().isEmpty()) {
+            return List.of();
+        }
+
+        return section.getHighlights().stream().filter(Objects::nonNull).peek(highlight -> prepareHighlight(contractDocument, section, highlight)).toList();
+    }
+
+    private void prepareHighlight(ContractDocument contractDocument, ContractAnalysisSection section, ContractHighlight highlight) {
+
+        highlight.setContractDocument(contractDocument);
+
+        if (highlight.getCategory() == null) {
+            highlight.setCategory(resolveHighlightCategory(section.getType()));
+        }
+
+        if (highlight.getMandatory() == null) {
+            highlight.setMandatory(false);
+        }
+
+        if (highlight.getSeverityScore() == null) {
+            highlight.setSeverityScore(50);
+        }
+
+        if (highlight.getReviewStatus() == null) {
+            highlight.setReviewStatus(HighlightReviewStatus.PENDING);
+        }
+
+        if (highlight.getCreatedAt() == null) {
+            highlight.setCreatedAt(LocalDateTime.now());
+        }
+
+        if (highlight.getReviewHistory() == null) {
+            highlight.setReviewHistory(new ArrayList<>());
+        }
+    }
+
+    private ContractHighlightCategory resolveHighlightCategory(ContractAnalysisSectionType sectionType) {
+
+        if (sectionType == null) {
+            return ContractHighlightCategory.TERMS_AND_CONDITIONS;
+        }
+
+        return switch (sectionType) {
+            case EXECUTIVE_SUMMARY -> ContractHighlightCategory.EXECUTIVE_SUMMARY;
+            case TERMS_AND_CONDITIONS -> ContractHighlightCategory.TERMS_AND_CONDITIONS;
+            case COMPLIANCE_REQUIREMENTS -> ContractHighlightCategory.COMPLIANCE_REQUIREMENT;
+
+            case MANDATORY_BIDDER_ACTIONS -> ContractHighlightCategory.MANDATORY_ACTION;
+
+            case AI_RECOMMENDATIONS -> ContractHighlightCategory.AI_RECOMMENDATION;
+            case REVIEWER_FEEDBACK_HISTORY -> null;
+        };
     }
 
     private ContractAnalysisSummary saveAnalysisSummary(ContractDocument contractDocument, ContractAnalysisSummary summary) {
