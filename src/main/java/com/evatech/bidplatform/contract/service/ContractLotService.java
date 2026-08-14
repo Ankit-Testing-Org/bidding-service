@@ -1,6 +1,7 @@
 package com.evatech.bidplatform.contract.service;
 
 import com.evatech.bidplatform.contract.dto.ContractLotAnalysisResult;
+import com.evatech.bidplatform.contract.dto.response.ContractLotAnalysisResultResponse;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
 import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
 import com.evatech.bidplatform.user.entity.User;
@@ -42,7 +43,7 @@ public interface ContractLotService {
             String lotNumber
     );
 
-    ContractLotAnalysisResult analyseContractLot(
+    ContractLotAnalysisResultResponse analyseContractLot(
             Long contractLotId,
             boolean reanalyse,
             User user,
@@ -50,7 +51,7 @@ public interface ContractLotService {
             String userComment
     );
 
-    ContractLotAnalysisResult reanalyseLot(
+    ContractLotAnalysisResultResponse reanalyseLot(
             Long lotId,
             String userComment,
             User user,

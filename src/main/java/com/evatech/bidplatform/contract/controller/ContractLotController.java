@@ -6,6 +6,7 @@ import com.evatech.bidplatform.contract.dto.ContractLotAnalysisResult;
 import com.evatech.bidplatform.contract.dto.request.ApproveAnalysisRequest;
 import com.evatech.bidplatform.contract.dto.request.ReanalyseLotRequest;
 import com.evatech.bidplatform.contract.dto.response.AnalysisReviewResponse;
+import com.evatech.bidplatform.contract.dto.response.ContractLotAnalysisResultResponse;
 import com.evatech.bidplatform.contract.dto.response.ContractLotResponse;
 import com.evatech.bidplatform.contract.dto.request.RejectAnalysisRequest;
 import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
@@ -69,7 +70,7 @@ public class ContractLotController extends AbstractController {
     }
 
     @GetMapping("/api/contracts/lots/{contractLotId}/analyse")
-    public ContractLotAnalysisResult analyseContractLot(
+    public ContractLotAnalysisResultResponse analyseContractLot(
             Authentication authentication,
             @PathVariable Long contractLotId,
             @RequestParam(defaultValue = "false") boolean reanalyse) {
@@ -80,14 +81,14 @@ public class ContractLotController extends AbstractController {
     }
 
     @PostMapping("/{lotId}/reanalyse")
-    public ResponseEntity<ContractLotAnalysisResult> reanalyseLot(
+    public ResponseEntity<ContractLotAnalysisResultResponse> reanalyseLot(
             Authentication authentication,
             @PathVariable Long lotId,
             @Valid @RequestBody ReanalyseLotRequest request) {
 
         User user = authenticateAndFetchUser(userRepository, authentication);
         List<String> roles = fetchRolesForUser(authentication);
-        ContractLotAnalysisResult result = contractLotService.reanalyseLot(
+        ContractLotAnalysisResultResponse result = contractLotService.reanalyseLot(
                 lotId, request.getUserComment(), user, roles);
         return ResponseEntity.ok(result);
     }

@@ -3,6 +3,7 @@ package com.evatech.bidplatform.contract.service.impl;
 import com.evatech.bidplatform.ai.service.AiRequestLoggerService;
 import com.evatech.bidplatform.ai.service.AiService;
 import com.evatech.bidplatform.contract.dto.ContractLotAnalysisResult;
+import com.evatech.bidplatform.contract.dto.response.ContractLotAnalysisResultResponse;
 import com.evatech.bidplatform.contract.dto.response.ExtractedLotResponse;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
 import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
@@ -10,6 +11,7 @@ import com.evatech.bidplatform.contract.entity.ContractPageText;
 import com.evatech.bidplatform.contract.entity.LotQualificationStatus;
 import com.evatech.bidplatform.contract.entity.analysis.ContractLotAnalysis;
 import com.evatech.bidplatform.contract.entity.analysis.ContractLotHighlight;
+import com.evatech.bidplatform.contract.mapper.ContractLotAnalysisMapper;
 import com.evatech.bidplatform.contract.repository.ContractLotAnalysisRepository;
 import com.evatech.bidplatform.contract.repository.ContractLotHighlightRepository;
 import com.evatech.bidplatform.contract.repository.ContractLotRepository;
@@ -45,6 +47,7 @@ public class ContractLotServiceImpl implements ContractLotService {
     private final AiService aiService;
     private final AiRequestLoggerService aiRequestLoggerService;
     private final EntityManager entityManager;
+    private final ContractLotAnalysisMapper contractLotAnalysisMapper;
 
     @Override
     public ContractLot qualifyLot(Long contractId, String lotNumber, User user) {
@@ -130,7 +133,7 @@ public class ContractLotServiceImpl implements ContractLotService {
 
     @Override
     @Transactional
-    public ContractLotAnalysisResult analyseContractLot(Long contractLotId,
+    public ContractLotAnalysisResultResponse analyseContractLot(Long contractLotId,
                                                         boolean reanalyse,
                                                         User user, List<String> roles,
                                                         String userComment) {
@@ -138,7 +141,11 @@ public class ContractLotServiceImpl implements ContractLotService {
         ContractDocument contractDocument = contractLot.getContractDocument();
         boolean alreadyAnalysed = contractLotAnalysisRepository.existsByContractLotId(contractLotId) || contractLotHighlightRepository.existsByContractLotId(contractLotId);
         if (alreadyAnalysed && !reanalyse) {
-            return getExistingLotAnalysisResult(contractLotId);
+            ContractLotAnalysisResult contractLotAnalysisResult =  getExistingLotAnalysisResult(contractLotId);
+            return contractLotAnalysisMapper.toResponse(
+                    contractLot.getId(),
+                    contractLotAnalysisResult.getAnalysis(),
+                    contractLotAnalysisResult.getHighlights());
         }
         List<ContractPageText> lotPages = resolveLotPages(contractLot);
         if (lotPages.isEmpty() && isBlank(contractLot.getDescription())) {
@@ -154,10 +161,23 @@ public class ContractLotServiceImpl implements ContractLotService {
                 contractLotAnalysisRepository.deleteByContractLotId(contractLotId);
                 entityManager.flush();
             }
-            ContractLotAnalysis savedAnalysis = saveLotAnalysis(contractLot, analysisResult.getAnalysis());
-            List<ContractLotHighlight> savedHighlights = saveLotHighlights(contractLot, analysisResult.getHighlights());
+            ContractLotAnalysis savedAnalysis =
+                    saveLotAnalysis(
+                            contractLot,
+                            analysisResult.getAnalysis());
+
+            List<ContractLotHighlight> savedHighlights =
+                    saveLotHighlights(
+                            contractLot,
+                            analysisResult.getHighlights());
+
             contractLot.markAnalysed();
-            return ContractLotAnalysisResult.builder().analysis(savedAnalysis).highlights(savedHighlights).build();
+
+            return contractLotAnalysisMapper.toResponse(
+                    contractLot.getId(),
+                    savedAnalysis,
+                    savedHighlights
+            );
         } catch (RuntimeException ex) {
             contractLot.markAnalysisFailed(ex.getMessage());
             throw ex;
@@ -166,7 +186,7 @@ public class ContractLotServiceImpl implements ContractLotService {
 
     @Transactional
     @Override
-    public ContractLotAnalysisResult reanalyseLot(Long lotId, String userComment, User user, List<String> roles) {
+    public ContractLotAnalysisResultResponse reanalyseLot(Long lotId, String userComment, User user, List<String> roles) {
         ContractLot lot = contractLotRepository.findById(lotId).orElseThrow();
         lot.requestReanalysis(user.getEmail(), userComment);
         return analyseContractLot(lotId, true, user, roles, userComment);

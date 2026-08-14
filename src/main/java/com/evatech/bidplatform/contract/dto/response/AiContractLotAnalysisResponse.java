@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.util.List;
 
 @Getter
@@ -16,6 +15,8 @@ public class AiContractLotAnalysisResponse {
 
     private Boolean recommendedToBid;
 
+    private Double bidScore;
+
     private Double winProbability;
 
     private RiskLevel overallRiskLevel;
@@ -23,6 +24,12 @@ public class AiContractLotAnalysisResponse {
     private String executiveSummary;
 
     private String recommendation;
+
+    private List<String> strengths;
+
+    private List<String> weaknesses;
+
+    private List<String> missingRequirements;
 
     private List<AiContractLotHighlightResponse> highlights;
 }
