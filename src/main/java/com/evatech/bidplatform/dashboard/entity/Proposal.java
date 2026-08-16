@@ -8,6 +8,8 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -36,6 +38,15 @@ public class Proposal {
     @Enumerated(EnumType.STRING)
     private ProposalStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "contract_document_id")
     private ContractDocument contractDocument;
+
+    @OneToMany(
+            mappedBy = "proposal",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<ProposalHistory> history =
+            new ArrayList<>();
 }

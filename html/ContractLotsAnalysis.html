@@ -1,781 +1,1601 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hospital Procurement Analysis Platform</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBid AI - Lot Analysis Workspace</title>
 
-<style>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Segoe UI',sans-serif;
-}
+        body {
+            background: #f4f7fb;
+            color: #1f2937;
+            height: 100vh;
+            overflow: hidden;
+        }
 
-body{
-    background:#f3f5f9;
-    height:100vh;
-    overflow:hidden;
-}
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
 
-.header{
-    height:80px;
-    background:#fff;
-    border-bottom:1px solid #ddd;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:0 20px;
-}
+        .sidebar {
+            width: 72px;
+            background: #111827;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-shrink: 0;
+            z-index: 100;
+        }
 
-.header h1{
-    font-size:32px;
-    color:#0f172a;
-}
+        .logo {
+            width: 100%;
+            padding: 22px 0;
+            font-size: 22px;
+            font-weight: 800;
+            text-align: center;
+            background: #020617;
+            border-bottom: 1px solid #374151;
+        }
 
-.header p{
-    color:#64748b;
-}
+        .sidebar-menu {
+            width: 100%;
+            padding: 16px 0;
+        }
 
-.header-actions button{
-    border:none;
-    border-radius:8px;
-    padding:12px 18px;
-    cursor:pointer;
-    color:white;
-    margin-left:10px;
-}
+        .menu-item {
+            position: relative;
+            height: 58px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            color: #d1d5db;
+            border-left: 4px solid transparent;
+        }
 
-.btn-primary{
-    background:#2563eb;
-}
+        .menu-item:hover {
+            background: #1f2937;
+            color: #ffffff;
+        }
 
-.btn-success{
-    background:#16a34a;
-}
+        .menu-item.active {
+            background: #1e40af;
+            color: #ffffff;
+            border-left-color: #60a5fa;
+        }
 
-.container{
-    display:flex;
-    height:calc(100vh - 80px);
-}
+        .menu-icon {
+            font-size: 20px;
+        }
 
-/* LEFT */
+        .menu-tooltip {
+            position: absolute;
+            left: 85px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #111827;
+            color: #ffffff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            white-space: nowrap;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.2s ease;
+            z-index: 1000;
+            font-size: 13px;
+            font-weight: 700;
+            box-shadow: 0 6px 16px rgba(15, 23, 42, 0.25);
+        }
 
-.left-panel{
-    width:330px;
-    background:white;
-    border-right:1px solid #ddd;
-    overflow:auto;
-    padding:15px;
-}
+        .menu-item:hover .menu-tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
 
-.left-panel h3{
-    margin-bottom:15px;
-}
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
 
-.lot{
-    background:white;
-    border:1px solid #e2e8f0;
-    border-radius:12px;
-    padding:15px;
-    margin-bottom:12px;
-    cursor:pointer;
-    transition:0.2s;
-}
+        .top-header {
+            height: 80px;
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            flex-shrink: 0;
+        }
 
-.lot:hover{
-    transform:translateY(-2px);
-    box-shadow:0 3px 10px rgba(0,0,0,0.08);
-}
+        .top-header h1 {
+            font-size: 28px;
+            margin-bottom: 6px;
+            color: #111827;
+        }
 
-.lot.active{
-    border:2px solid #2563eb;
-    background:#eff6ff;
-}
+        .top-header p {
+            color: #6b7280;
+            font-size: 14px;
+        }
 
-.lot-header{
-    display:flex;
-    gap:10px;
-}
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
 
-.lot-icon{
-    font-size:24px;
-}
+        .primary-btn {
+            background: #2563eb;
+            color: #ffffff;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+        }
 
-.lot-title{
-    font-weight:600;
-    margin-bottom:3px;
-}
+        .primary-btn:hover {
+            background: #1d4ed8;
+        }
 
-.lot-value{
-    color:#64748b;
-    font-size:13px;
-}
+        .success-btn {
+            background: #16a34a;
+            color: #ffffff;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+        }
 
-.lot-footer{
-    display:flex;
-    justify-content:space-between;
-    margin-top:10px;
-    font-size:12px;
-}
+        .success-btn:hover {
+            background: #15803d;
+        }
 
-/* CENTER */
+        .workspace {
+            display: flex;
+            flex: 1;
+            min-height: 0;
+        }
 
-.center-panel{
-    flex:1;
-    overflow:auto;
-    padding:20px;
-}
+        .left-panel {
+            width: 330px;
+            background: #ffffff;
+            border-right: 1px solid #e5e7eb;
+            overflow-y: auto;
+            padding: 16px;
+            flex-shrink: 0;
+        }
 
-.stats{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:15px;
-}
+        .project-header {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 15px;
+            margin-bottom: 16px;
+        }
 
-.card{
-    background:white;
-    border-radius:14px;
-    padding:20px;
-    box-shadow:0 2px 5px rgba(0,0,0,.06);
-}
+        .project-header h3 {
+            margin-bottom: 12px;
+        }
 
-.card h4{
-    color:#64748b;
-}
+        .project-stat {
+            font-size: 13px;
+            color: #475569;
+            margin-bottom: 6px;
+        }
 
-.card h2{
-    margin-top:8px;
-}
+        .lots-header {
+            font-weight: 800;
+            font-size: 15px;
+            margin: 16px 0 12px;
+            color: #111827;
+        }
 
-.section{
-    background:white;
-    border-radius:14px;
-    padding:20px;
-    margin-top:20px;
-    box-shadow:0 2px 5px rgba(0,0,0,.06);
-}
+        .lot {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
 
-.section h3{
-    margin-bottom:15px;
-}
+        .lot:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
 
-.score{
-    font-size:52px;
-    font-weight:bold;
-    color:#16a34a;
-}
+        .lot.active {
+            border: 2px solid #2563eb;
+            background: #eff6ff;
+        }
 
-.risk{
-    display:inline-block;
-    margin-top:10px;
-    padding:8px 15px;
-    border-radius:20px;
-    background:#fee2e2;
-    color:#dc2626;
-}
+        .lot-top {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
 
-.actions{
-    margin-top:20px;
-}
+        .icon {
+            font-size: 24px;
+        }
 
-.actions button{
-    margin-right:10px;
-    border:none;
-    border-radius:8px;
-    padding:10px 15px;
-    cursor:pointer;
-    color:white;
-}
+        .title {
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
 
-.qualify{
-    background:#16a34a;
-}
+        .value {
+            color: #64748b;
+            font-size: 13px;
+        }
 
-.unqualify{
-    background:#dc2626;
-}
+        .lot-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 12px;
+        }
 
-.analyze{
-    background:#2563eb;
-}
+        .success {
+            color: #166534;
+            font-weight: 700;
+        }
 
-.analysis-columns{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:20px;
-}
+        .warning {
+            color: #92400e;
+            font-weight: 700;
+        }
 
-.analysis-box{
-    background:#f8fafc;
-    border-radius:10px;
-    padding:15px;
-}
+        .danger {
+            color: #991b1b;
+            font-weight: 700;
+        }
 
-.analysis-box ul{
-    padding-left:20px;
-}
+        .center-panel {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
 
-.missing-item{
-    background:#fef2f2;
-    border-left:4px solid #dc2626;
-    padding:12px;
-    margin-bottom:10px;
-    border-radius:6px;
-}
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
 
-/* TABLE */
+        .card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 20px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 2px 5px rgba(15, 23, 42, 0.06);
+        }
 
-table{
-    width:100%;
-    border-collapse:collapse;
-}
+        .card h4 {
+            color: #64748b;
+            font-size: 14px;
+        }
 
-th{
-    background:#f8fafc;
-}
+        .card h2 {
+            margin-top: 8px;
+            font-size: 26px;
+            color: #111827;
+        }
 
-th,td{
-    border:1px solid #ddd;
-    padding:10px;
-    text-align:left;
-}
+        .section {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 2px 5px rgba(15, 23, 42, 0.06);
+        }
 
-/* RIGHT */
+        .section h3 {
+            margin-bottom: 15px;
+        }
 
-.right-panel{
-    width:400px;
-    background:white;
-    border-left:1px solid #ddd;
-    display:flex;
-    flex-direction:column;
-}
+        .lot-meta p {
+            margin-bottom: 8px;
+            color: #374151;
+            font-size: 14px;
+        }
 
-.chat-header{
-    padding:15px;
-    border-bottom:1px solid #ddd;
-    font-weight:bold;
-}
+        .score {
+            font-size: 52px;
+            font-weight: 800;
+            color: #16a34a;
+        }
 
-.chat-body{
-    flex:1;
-    overflow:auto;
-    padding:15px;
-}
+        .risk {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            background: #f1f5f9;
+            color: #475569;
+            font-weight: 700;
+        }
 
-.message{
-    padding:12px;
-    border-radius:10px;
-    margin-bottom:10px;
-    white-space:pre-line;
-}
+        .risk.low {
+            background: #dcfce7;
+            color: #166534;
+        }
 
-.ai{
-    background:#eef2ff;
-}
+        .risk.medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
 
-.user{
-    background:#dcfce7;
-}
+        .risk.high {
+            background: #fee2e2;
+            color: #991b1b;
+        }
 
-.suggestions{
-    padding:15px;
-    border-top:1px solid #eee;
-}
+        .actions {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
 
-.suggestion{
-    background:#f3f4f6;
-    padding:10px;
-    border-radius:8px;
-    margin-bottom:8px;
-    cursor:pointer;
-}
+        .actions button {
+            border: none;
+            border-radius: 8px;
+            padding: 10px 15px;
+            cursor: pointer;
+            color: #ffffff;
+            font-weight: 700;
+        }
 
-.chat-input{
-    padding:15px;
-    border-top:1px solid #ddd;
-}
+        .qualify {
+            background: #16a34a;
+        }
 
-.chat-input input{
-    width:100%;
-    padding:12px;
-    border-radius:8px;
-    border:1px solid #ccc;
-}
+        .unqualify {
+            background: #dc2626;
+        }
 
-</style>
+        .analyze {
+            background: #2563eb;
+        }
+
+        .reanalyse {
+            background: #7c3aed;
+        }
+
+        .analysis-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .analysis-box {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .analysis-box h4 {
+            margin-bottom: 12px;
+        }
+
+        .analysis-box ul {
+            padding-left: 20px;
+        }
+
+        .analysis-box li {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .recommendation-box {
+            background: #eef2ff;
+            border-left: 4px solid #4f46e5;
+            padding: 14px;
+            border-radius: 8px;
+            color: #312e81;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        .missing-item {
+            background: #fef2f2;
+            border-left: 4px solid #dc2626;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            color: #991b1b;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f8fafc;
+            color: #475569;
+        }
+
+        th,
+        td {
+            border: 1px solid #e5e7eb;
+            padding: 10px;
+            text-align: left;
+            font-size: 14px;
+            vertical-align: top;
+        }
+
+        .right-panel {
+            width: 400px;
+            background: #ffffff;
+            border-left: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .chat-header {
+            padding: 15px;
+            border-bottom: 1px solid #e5e7eb;
+            font-weight: 800;
+        }
+
+        .chat-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            white-space: pre-line;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        .ai {
+            background: #eef2ff;
+        }
+
+        .user {
+            background: #dcfce7;
+        }
+
+        .suggestions {
+            padding: 15px;
+            border-top: 1px solid #eeeeee;
+        }
+
+        .suggestion {
+            background: #f3f4f6;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .suggestion:hover {
+            background: #e5e7eb;
+        }
+
+        .chat-input {
+            padding: 15px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .chat-input input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            outline: none;
+        }
+
+        .toast {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            background: #111827;
+            color: #ffffff;
+            padding: 14px 18px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            display: none;
+            z-index: 9999;
+        }
+
+        .empty-state {
+            color: #64748b;
+            font-size: 14px;
+            padding: 10px 0;
+        }
+
+        @media (max-width: 1200px) {
+            body {
+                overflow: auto;
+            }
+
+            .app-container {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: 72px;
+                flex-direction: row;
+            }
+
+            .logo {
+                width: 72px;
+                height: 72px;
+                padding: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-bottom: none;
+                border-right: 1px solid #374151;
+            }
+
+            .sidebar-menu {
+                display: flex;
+                width: auto;
+                flex: 1;
+                padding: 0;
+                overflow-x: auto;
+            }
+
+            .menu-item {
+                min-width: 58px;
+                height: 72px;
+            }
+
+            .menu-tooltip {
+                display: none;
+            }
+
+            .main-content {
+                overflow: visible;
+            }
+
+            .workspace {
+                flex-direction: column;
+            }
+
+            .left-panel,
+            .right-panel {
+                width: 100%;
+                border: none;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .analysis-columns {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-<div class="header">
+<div class="app-container">
 
-<div>
-<h1>New City Hospital Setup Project</h1>
-<p>500 Beds | Tender Value €45M | Closing Date 30 Sept 2026</p>
-</div>
+    <aside class="sidebar">
+        <div class="logo">SB</div>
 
-<div class="header-actions">
-<button class="btn-primary">Analyse Contract</button>
-<button class="btn-success">Generate Proposal</button>
-</div>
+        <nav class="sidebar-menu">
+            <div class="menu-item" onclick="navigateTo('/dashboard')">
+                <span class="menu-icon">🏠</span>
+                <span class="menu-tooltip">Dashboard</span>
+            </div>
 
-</div>
+            <div class="menu-item" onclick="navigateTo('/contracts')">
+                <span class="menu-icon">📄</span>
+                <span class="menu-tooltip">Contract Analysis</span>
+            </div>
 
-<div class="container">
+            <div class="menu-item active" onclick="navigateTo('/lots')">
+                <span class="menu-icon">📦</span>
+                <span class="menu-tooltip">Lots</span>
+            </div>
 
-<!-- LEFT -->
+            <div class="menu-item" onclick="navigateTo('/bids')">
+                <span class="menu-icon">📝</span>
+                <span class="menu-tooltip">Bid Preparation</span>
+            </div>
 
-<div class="left-panel">
+            <div class="menu-item" onclick="navigateTo('/workflow')">
+                <span class="menu-icon">✅</span>
+                <span class="menu-tooltip">Approval Workflow</span>
+            </div>
 
-    <div class="project-header">
+            <div class="menu-item" onclick="navigateTo('/documents')">
+                <span class="menu-icon">📁</span>
+                <span class="menu-tooltip">Documents</span>
+            </div>
 
-        <h3>🏥 Hospital Setup</h3>
+            <div class="menu-item" onclick="navigateTo('/settings')">
+                <span class="menu-icon">⚙️</span>
+                <span class="menu-tooltip">Settings</span>
+            </div>
+        </nav>
+    </aside>
 
-        <div class="project-stat">
-            Budget: €45M
+    <main class="main-content">
+
+        <div class="top-header">
+            <div>
+                <h1 id="projectTitle">Hospital Procurement Lot Analysis</h1>
+                <p id="projectSubtitle">Fetch contract lots, analyse lot readiness, and decide bid participation.</p>
+            </div>
+
+            <div class="header-actions">
+                <button class="primary-btn" onclick="refreshLots()">Refresh Lots</button>
+                <button class="success-btn" onclick="navigateToProposal()">Generate Proposal</button>
+            </div>
         </div>
 
-        <div class="project-stat">
-            Capacity: 500 Beds
+        <div class="workspace">
+
+            <div class="left-panel">
+                <div class="project-header">
+                    <h3>🏥 Hospital Setup</h3>
+
+                    <div class="project-stat" id="projectBudget">
+                        Budget: -
+                    </div>
+
+                    <div class="project-stat" id="projectCapacity">
+                        Capacity: -
+                    </div>
+
+                    <div class="project-stat" id="projectStatus">
+                        Status: Waiting for lots
+                    </div>
+                </div>
+
+                <div class="lots-header">Procurement Lots</div>
+
+                <div id="lotList">
+                    <div class="empty-state">Loading lots...</div>
+                </div>
+            </div>
+
+            <div class="center-panel">
+
+                <div class="stats">
+                    <div class="card">
+                        <h4>Total Lots</h4>
+                        <h2 id="totalLots">-</h2>
+                    </div>
+
+                    <div class="card">
+                        <h4>Qualified</h4>
+                        <h2 id="qualifiedLots">-</h2>
+                    </div>
+
+                    <div class="card">
+                        <h4>Bid Score</h4>
+                        <h2 id="overallBidScore">-</h2>
+                    </div>
+
+                    <div class="card">
+                        <h4>Win Probability</h4>
+                        <h2 id="winProbability">-</h2>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="lotTitle">Select a lot</h2>
+
+                    <br>
+
+                    <div class="lot-meta">
+                        <p><b>Lot Number:</b> <span id="lotNumber">-</span></p>
+                        <p><b>Value:</b> <span id="lotValue">-</span></p>
+                        <p><b>Description:</b> <span id="lotDescription">-</span></p>
+                        <p><b>Pages:</b> <span id="lotPages">-</span></p>
+                        <p><b>Status:</b> <span id="lotStatus">-</span></p>
+                    </div>
+
+                    <div class="actions">
+                        <button class="analyze" onclick="analyseSelectedLot(false)">
+                            Analyse Lot
+                        </button>
+
+                        <button class="reanalyse" onclick="openReanalysePrompt()">
+                            Reanalyse Lot
+                        </button>
+
+                        <button class="qualify" onclick="qualifySelectedLot()">
+                            Qualified
+                        </button>
+
+                        <button class="unqualify" onclick="unqualifySelectedLot()">
+                            Unqualified
+                        </button>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>AI Analysis</h3>
+
+                    <div id="score" class="score">-</div>
+                    <div id="risk" class="risk">Not Analysed</div>
+
+                    <br><br>
+
+                    <div class="analysis-columns">
+                        <div class="analysis-box">
+                            <h4>Strengths</h4>
+                            <ul id="strengthsList">
+                                <li class="empty-state">No strengths available.</li>
+                            </ul>
+                        </div>
+
+                        <div class="analysis-box">
+                            <h4>Weaknesses</h4>
+                            <ul id="weaknessesList">
+                                <li class="empty-state">No weaknesses available.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <br>
+
+                    <h4>Recommendation</h4>
+
+                    <br>
+
+                    <div class="recommendation-box" id="recommendationText">
+                        No recommendation available.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>Missing Requirements</h3>
+
+                    <div id="missingRequirementsList">
+                        <div class="empty-state">No missing requirements available.</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>Detailed AI Findings</h3>
+
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Finding</th>
+                            <th>Risk</th>
+                            <th>Page</th>
+                            <th>Bid Capable</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+
+                        <tbody id="findingsTableBody">
+                        <tr>
+                            <td colspan="6">No findings available.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="chat-header">
+                    AI Procurement Assistant
+                </div>
+
+                <div id="chatBody" class="chat-body">
+                    <div class="message ai">
+                        Select a lot and ask questions.
+
+                        Examples:
+                        • Show missing requirements
+                        • Should we bid?
+                        • Why is risk high?
+                        • Generate executive summary
+                    </div>
+                </div>
+
+                <div class="suggestions">
+                    <div class="suggestion" onclick="askSuggestion(this)">Should we bid?</div>
+                    <div class="suggestion" onclick="askSuggestion(this)">Show missing requirements</div>
+                    <div class="suggestion" onclick="askSuggestion(this)">Why is risk high?</div>
+                    <div class="suggestion" onclick="askSuggestion(this)">Generate executive summary</div>
+                </div>
+
+                <div class="chat-input">
+                    <input
+                            id="chatInput"
+                            placeholder="Ask AI..."
+                            onkeypress="sendMessage(event)">
+                </div>
+            </div>
         </div>
-
-        <div class="project-stat">
-            Status: Analysis Complete
-        </div>
-
-    </div>
-
-    <div class="lots-header">
-        Procurement Lots
-    </div>
-
-    <div id="lotList">
-
-        <div class="lot active">
-
-            <div class="lot-top">
-
-                <div class="icon">
-                    💊
-                </div>
-
-                <div>
-
-                    <div class="title">
-                        Medicines & Pharmaceuticals
-                    </div>
-
-                    <div class="value">
-                        €12M
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="lot-footer">
-
-                <span>Score 91%</span>
-
-                <span class="success">
-                    Qualified
-                </span>
-
-            </div>
-
-        </div>
-
-        <div class="lot">
-
-            <div class="lot-top">
-
-                <div class="icon">
-                    🛏️
-                </div>
-
-                <div>
-
-                    <div class="title">
-                        Beds & Furniture
-                    </div>
-
-                    <div class="value">
-                        €8M
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="lot-footer">
-
-                <span>Score 84%</span>
-
-                <span class="warning">
-                    Review
-                </span>
-
-            </div>
-
-        </div>
-
-        <div class="lot">
-
-            <div class="lot-top">
-
-                <div class="icon">
-                    🏥
-                </div>
-
-                <div>
-
-                    <div class="title">
-                        Medical Devices
-                    </div>
-
-                    <div class="value">
-                        €15M
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="lot-footer">
-
-                <span>Score 72%</span>
-
-                <span class="danger">
-                    High Risk
-                </span>
-
-            </div>
-
-        </div>
-
-        <div class="lot">
-
-            <div class="lot-top">
-
-                <div class="icon">
-                    🧪
-                </div>
-
-                <div>
-
-                    <div class="title">
-                        Laboratory Equipment
-                    </div>
-
-                    <div class="value">
-                        €4M
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="lot-footer">
-
-                <span>Score 88%</span>
-
-                <span class="success">
-                    Qualified
-                </span>
-
-            </div>
-
-        </div>
-
-        <div class="lot">
-
-            <div class="lot-top">
-
-                <div class="icon">
-                    🚑
-                </div>
-
-                <div>
-
-                    <div class="title">
-                        Ambulances
-                    </div>
-
-                    <div class="value">
-                        €3M
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="lot">
-
-            <div class="lot-top">
-
-                <div class="icon">
-                    💻
-                </div>
-
-                <div>
-
-                    <div class="title">
-                        Hospital IT Systems
-                    </div>
-
-                    <div class="value">
-                        €3M
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
+    </main>
 </div>
 
-<!-- CENTER -->
-
-<div class="center-panel">
-
-<div class="stats">
-
-<div class="card">
-<h4>Total Lots</h4>
-<h2>6</h2>
-</div>
-
-<div class="card">
-<h4>Qualified</h4>
-<h2>4</h2>
-</div>
-
-<div class="card">
-<h4>Bid Score</h4>
-<h2>82%</h2>
-</div>
-
-<div class="card">
-<h4>Win Probability</h4>
-<h2>High</h2>
-</div>
-
-</div>
-
-<div class="section">
-
-<h2 id="lotTitle"></h2>
-
-<br>
-
-<p><b>Value:</b> <span id="lotValue"></span></p>
-<p><b>Delivery:</b> <span id="lotDuration"></span></p>
-<p><b>Department:</b> <span id="lotDepartment"></span></p>
-
-<div class="actions">
-
-<button class="analyze" onclick="analyseLot()">
-Analyse Lot
-</button>
-
-<button class="qualify">
-Qualified
-</button>
-
-<button class="unqualify">
-Unqualified
-</button>
-
-</div>
-
-</div>
-
-<div class="section">
-
-<h3>AI Analysis</h3>
-
-<div id="score" class="score">
-	72%
-</div>
-<div id="risk" class="risk">High Risk</div>
-
-<br><br>
-
-<div class="analysis-columns">
-
-<div class="analysis-box">
-
-<h4>Strengths</h4>
-
-<ul>
-                <li>✅ MRI Equipment</li>
-                <li>✅ CT Scanners</li>
-                <li>✅ CE Certifications</li>
-            </ul>
-
-</div>
-
-<div class="analysis-box">
-
-<h4>Weaknesses</h4>
-
-<ul>
-                <li>❌ Ventilators Missing</li>
-                <li>❌ Biomedical Engineers</li>
-            </ul>
-
-</div>
-
-</div>
-
-<br>
-
-<h4>Recommendation</h4>
-
-<p>
-        Conditional Bid. Supplier capability
-        is strong but critical devices are missing.
-    </p>
-
-</div>
-
-
-<div class="section">
-
-
-    <h3>Missing Requirements</h3>
-
-    <div class="missing-item">
-        ❌ 20 Ventilators Required
-    </div>
-
-    <div class="missing-item">
-        ❌ Biomedical Engineers
-    </div>
-
-    <div class="missing-item">
-        ⚠ Installation Resources
-    </div>
-
-</div>
-
-</div>
-
-<!-- RIGHT -->
-
-<div class="right-panel">
-
-<div class="chat-header">
-AI Procurement Assistant
-</div>
-
-<div id="chatBody" class="chat-body">
-
-<div class="message ai">
-Select a lot and ask questions.
-
-Examples:
-• Show missing requirements
-• Should we bid?
-• Why is risk high?
-• Generate executive summary
-</div>
-
-</div>
-
-<div class="suggestions">
-
-<div class="suggestion" onclick="askSuggestion(this)">
-Should we bid?
-</div>
-
-<div class="suggestion" onclick="askSuggestion(this)">
-Show missing requirements
-</div>
-
-<div class="suggestion" onclick="askSuggestion(this)">
-Why is risk high?
-</div>
-
-<div class="suggestion" onclick="askSuggestion(this)">
-Generate executive summary
-</div>
-
-</div>
-
-<div class="chat-input">
-<input
-id="chatInput"
-placeholder="Ask AI..."
-onkeypress="sendMessage(event)">
-</div>
-
-</div>
-
-</div>
+<div class="toast" id="toast"></div>
 
 <script>
+    const API_BASE_URL = "/api/contracts";
 
-let currentLotId = 1;
+    const urlParams =
+        new URLSearchParams(window.location.search);
 
-const lots = [
+    const contractId =
+        urlParams.get("contractId") || "1";
 
-{
-id:1,
-icon:"💊",
-title:"Medicines & Pharmaceuticals",
-value:"€12M",
-duration:"12 Months",
-department:"Pharmacy",
-score:"91%",
-risk:"Low Risk",
-strengths:[
-"WHO GMP Certified",
-"Cold Chain Logistics",
-"24x7 Supply Chain"
-],
-weaknesses:[
-"Pricing slightly above market"
-],
-missing:[],
-recommendation:"Strong Bid Recommended",
-requirements:[
-["WHO GMP Compliance","✅ Met"],
-["Cold Chain Logistics","✅ Met"],
-["24x7 Availability","✅ Met"]
-]
-},
+    let lots = [];
+    let selectedLot = null;
+    let currentAnalysisResult = null;
 
-{
-id:2,
-icon:"🛏️",
-title:"Beds & Furniture",
-value:"€8M",
-duration:"8 Months",
-department:"Patient Care",
-score:"84%",
-risk:"Medium Risk",
-strengths:[
-"500 Beds Available",
-"ICU Configuration Supported"
-],
-weaknesses:[
-"Installation Team Limited"
-],
-missing:[
-"Installation Resources"
-],
-recommendation:"Bid with Delivery
-requirements:[
-["WHO GMP Compliance","✅ Met"],
-["Cold Chain Logistics","✅ Met"],
-["24x7 Availability","✅ Met"]
-]
-}
+    document.addEventListener("DOMContentLoaded", async function () {
+        await refreshLots();
+    });
+
+    async function apiRequest(url, method = "GET", body = null) {
+        const options = {
+            method: method,
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        };
+
+        if (body !== null) {
+            options.body = JSON.stringify(body);
+        }
+
+        const response = await fetch(url, options);
+
+        if (!response.ok) {
+            const text = await response.text();
+            throw new Error(text || "API request failed");
+        }
+
+        return response.json();
+    }
+
+    function unwrapApiResponse(response) {
+        if (response && Object.prototype.hasOwnProperty.call(response, "data")) {
+            return response.data;
+        }
+
+        return response;
+    }
+
+    async function refreshLots() {
+        try {
+            const response =
+                await apiRequest(
+                    `${API_BASE_URL}/${contractId}/fetch/contract/lots`
+                );
+
+            lots =
+                unwrapApiResponse(response) || [];
+
+            renderLots();
+            renderDashboardStats();
+
+            if (lots.length > 0) {
+                selectLot(lots[0].id);
+            } else {
+                clearSelectedLot();
+            }
+
+            showToast("Lots loaded");
+
+        } catch (error) {
+            console.error(error);
+            showToast("Failed to load lots");
+        }
+    }
+
+    function renderLots() {
+        const lotList =
+            document.getElementById("lotList");
+
+        if (!lots.length) {
+            lotList.innerHTML =
+                `<div class="empty-state">No lots found.</div>`;
+            return;
+        }
+
+        lotList.innerHTML =
+            lots.map(function (lot) {
+                return buildLotCard(lot);
+            }).join("");
+    }
+
+    function buildLotCard(lot) {
+        const activeClass =
+            selectedLot && selectedLot.id === lot.id
+                ? "active"
+                : "";
+
+        const statusClass =
+            getParticipationStatusClass(lot.participationStatus);
+
+        const statusLabel =
+            lot.participationStatus || "UNDECIDED";
+
+        return `
+            <div class="lot ${activeClass}" onclick="selectLot(${lot.id})">
+                <div class="lot-top">
+                    <div class="icon">${getLotIcon(lot.lotName)}</div>
+
+                    <div>
+                        <div class="title">${escapeHtml(lot.lotName || "Unnamed Lot")}</div>
+                        <div class="value">${formatMoney(lot.valuation)}</div>
+                    </div>
+                </div>
+
+                <div class="lot-footer">
+                    <span>Lot ${escapeHtml(lot.lotNumber || "-")}</span>
+                    <span class="${statusClass}">${escapeHtml(statusLabel)}</span>
+                </div>
+            </div>
+        `;
+    }
+
+    function selectLot(lotId) {
+        selectedLot =
+            lots.find(function (lot) {
+                return lot.id === lotId;
+            });
+
+        renderLots();
+        renderSelectedLot();
+        resetAnalysisView();
+    }
+
+    function clearSelectedLot() {
+        selectedLot = null;
+        document.getElementById("lotTitle").innerText = "No lot selected";
+    }
+
+    function renderSelectedLot() {
+        if (!selectedLot) {
+            clearSelectedLot();
+            return;
+        }
+
+        document.getElementById("lotTitle").innerText =
+            selectedLot.lotName || "Unnamed Lot";
+
+        document.getElementById("lotNumber").innerText =
+            selectedLot.lotNumber || "-";
+
+        document.getElementById("lotValue").innerText =
+            formatMoney(selectedLot.valuation);
+
+        document.getElementById("lotDescription").innerText =
+            selectedLot.description || "-";
+
+        document.getElementById("lotPages").innerText =
+            buildPageRange(selectedLot);
+
+        document.getElementById("lotStatus").innerText =
+            selectedLot.participationStatus || "UNDECIDED";
+    }
+
+    function renderDashboardStats() {
+        const total =
+            lots.length;
+
+        const qualified =
+            lots.filter(function (lot) {
+                return lot.participationStatus === "QUALIFIED";
+            }).length;
+
+        document.getElementById("totalLots").innerText =
+            total;
+
+        document.getElementById("qualifiedLots").innerText =
+            qualified;
+
+        document.getElementById("overallBidScore").innerText =
+            "-";
+
+        document.getElementById("winProbability").innerText =
+            "-";
+
+        document.getElementById("projectSubtitle").innerText =
+            `${total} Lots | Qualified ${qualified}`;
+
+        document.getElementById("projectStatus").innerText =
+            "Status: Lots Loaded";
+    }
+
+    async function qualifySelectedLot() {
+        if (!selectedLot) {
+            showToast("Please select a lot first");
+            return;
+        }
+
+        try {
+            const response =
+                await apiRequest(
+                    `${API_BASE_URL}/${contractId}/lots/${encodeURIComponent(selectedLot.lotNumber)}/qualify`
+                );
+
+            updateLotInState(
+                unwrapApiResponse(response)
+            );
+
+            showToast("Lot qualified");
+
+        } catch (error) {
+            console.error(error);
+            showToast("Failed to qualify lot");
+        }
+    }
+
+    async function unqualifySelectedLot() {
+        if (!selectedLot) {
+            showToast("Please select a lot first");
+            return;
+        }
+
+        try {
+            const response =
+                await apiRequest(
+                    `${API_BASE_URL}/${contractId}/lots/${encodeURIComponent(selectedLot.lotNumber)}/unqualify`
+                );
+
+            updateLotInState(
+                unwrapApiResponse(response)
+            );
+
+            showToast("Lot unqualified");
+
+        } catch (error) {
+            console.error(error);
+            showToast("Failed to unqualify lot");
+        }
+    }
+
+    function updateLotInState(updatedLot) {
+        lots =
+            lots.map(function (lot) {
+                if (lot.id === updatedLot.id) {
+                    return updatedLot;
+                }
+
+                return lot;
+            });
+
+        selectedLot =
+            updatedLot;
+
+        renderLots();
+        renderSelectedLot();
+        renderDashboardStats();
+    }
+
+    async function analyseSelectedLot(reanalyse) {
+        if (!selectedLot) {
+            showToast("Please select a lot first");
+            return;
+        }
+
+        try {
+            const response =
+                await apiRequest(
+                    `${API_BASE_URL}/lots/${selectedLot.id}/analyse?reanalyse=${reanalyse}`,
+                    "GET"
+                );
+
+            currentAnalysisResult =
+                unwrapApiResponse(response);
+
+            renderAnalysisResult(currentAnalysisResult);
+
+            showToast("Lot analysis completed");
+
+        } catch (error) {
+            console.error(error);
+            showToast("Failed to analyse lot");
+        }
+    }
+
+    async function openReanalysePrompt() {
+        if (!selectedLot) {
+            showToast("Please select a lot first");
+            return;
+        }
+
+        const comment =
+            prompt("Why should this lot be reanalysed?");
+
+        if (!comment) {
+            return;
+        }
+
+        try {
+            const response =
+                await apiRequest(
+                    `${API_BASE_URL}/${selectedLot.id}/reanalyse`,
+                    "POST",
+                    {
+                        userComment: comment
+                    }
+                );
+
+            currentAnalysisResult =
+                unwrapApiResponse(response);
+
+            renderAnalysisResult(currentAnalysisResult);
+
+            showToast("Lot reanalysis completed");
+
+        } catch (error) {
+            console.error(error);
+            showToast("Failed to reanalyse lot");
+        }
+    }
+
+    function renderAnalysisResult(result) {
+        if (!result) {
+            resetAnalysisView();
+            return;
+        }
+
+        const analysis =
+            result.analysis || {};
+
+        const highlights =
+            result.highlights || [];
+
+        document.getElementById("score").innerText =
+            valueOrDash(formatPercent(analysis.bidScore));
+
+        document.getElementById("overallBidScore").innerText =
+            valueOrDash(formatPercent(analysis.bidScore));
+
+        document.getElementById("winProbability").innerText =
+            valueOrDash(formatPercent(analysis.winProbability));
+
+        renderRisk(analysis.overallRiskLevel);
+
+        document.getElementById("recommendationText").innerText =
+            analysis.recommendation || "No recommendation available.";
+
+        renderHighlightGroups(highlights);
+
+        if (analysis.executiveSummary) {
+            addAiMessage(
+                "Executive Summary:\n\n" + analysis.executiveSummary
+            );
+        }
+    }
+
+    function resetAnalysisView() {
+        currentAnalysisResult = null;
+
+        document.getElementById("score").innerText = "-";
+        document.getElementById("risk").innerText = "Not Analysed";
+        document.getElementById("risk").className = "risk";
+        document.getElementById("recommendationText").innerText =
+            "No recommendation available.";
+
+        document.getElementById("strengthsList").innerHTML =
+            `<li class="empty-state">No strengths available.</li>`;
+
+        document.getElementById("weaknessesList").innerHTML =
+            `<li class="empty-state">No weaknesses available.</li>`;
+
+        document.getElementById("missingRequirementsList").innerHTML =
+            `<div class="empty-state">No missing requirements available.</div>`;
+
+        document.getElementById("findingsTableBody").innerHTML =
+            `<tr><td colspan="6">No findings available.</td></tr>`;
+    }
+
+    function renderRisk(riskLevel) {
+        const risk =
+            document.getElementById("risk");
+
+        risk.className =
+            "risk";
+
+        if (!riskLevel) {
+            risk.innerText =
+                "Not Analysed";
+            return;
+        }
+
+        risk.innerText =
+            riskLevel + " Risk";
+
+        if (riskLevel === "LOW") {
+            risk.classList.add("low");
+        }
+
+        if (riskLevel === "MEDIUM") {
+            risk.classList.add("medium");
+        }
+
+        if (riskLevel === "HIGH") {
+            risk.classList.add("high");
+        }
+    }
+
+    function renderHighlightGroups(highlights) {
+        const strengths =
+            filterByCategory(highlights, "STRENGTH");
+
+        const weaknesses =
+            filterByCategory(highlights, "WEAKNESS")
+                .concat(filterByCategory(highlights, "CAPABILITY_GAP"));
+
+        const missing =
+            filterByCategory(highlights, "MISSING_REQUIREMENT");
+
+        renderList(
+            "strengthsList",
+            strengths,
+            "✅",
+            "No strengths available."
+        );
+
+        renderList(
+            "weaknessesList",
+            weaknesses,
+            "❌",
+            "No weaknesses available."
+        );
+
+        renderMissingRequirements(missing);
+        renderFindingsTable(highlights);
+    }
+
+    function filterByCategory(highlights, category) {
+        return highlights.filter(function (highlight) {
+            return highlight.category === category;
+        });
+    }
+
+    function renderList(elementId, items, icon, emptyText) {
+        const element =
+            document.getElementById(elementId);
+
+        if (!items.length) {
+            element.innerHTML =
+                `<li class="empty-state">${escapeHtml(emptyText)}</li>`;
+            return;
+        }
+
+        element.innerHTML =
+            items.map(function (item) {
+                return `
+                    <li>
+                        ${icon} ${escapeHtml(item.title || "Untitled")}
+                    </li>
+                `;
+            }).join("");
+    }
+
+    function renderMissingRequirements(items) {
+        const element =
+            document.getElementById("missingRequirementsList");
+
+        if (!items.length) {
+            element.innerHTML =
+                `<div class="empty-state">No missing requirements available.</div>`;
+            return;
+        }
+
+        element.innerHTML =
+            items.map(function (item) {
+                return `
+                    <div class="missing-item">
+                        ❌ ${escapeHtml(item.title || "Missing requirement")}
+                    </div>
+                `;
+            }).join("");
+    }
+
+    function renderFindingsTable(highlights) {
+        const body =
+            document.getElementById("findingsTableBody");
+
+        if (!highlights.length) {
+            body.innerHTML =
+                `<tr><td colspan="6">No findings available.</td></tr>`;
+            return;
+        }
+
+        body.innerHTML =
+            highlights.map(function (item) {
+                return `
+                    <tr>
+                        <td>${escapeHtml(item.category || "-")}</td>
+                        <td>
+                            <strong>${escapeHtml(item.title || "-")}</strong>
+                            <br>
+                            <span>${escapeHtml(item.description || "")}</span>
+                        </td>
+                        <td>${escapeHtml(item.riskLevel || "-")}</td>
+                        <td>${item.pageNumber || "-"}</td>
+                        <td>${item.bidCapable === true ? "Yes" : item.bidCapable === false ? "No" : "-"}</td>
+                        <td>${escapeHtml(item.recommendedAction || "-")}</td>
+                    </tr>
+                `;
+            }).join("");
+    }
+
+    function askSuggestion(element) {
+        const text =
+            element.innerText.trim();
+
+        addUserMessage(text);
+        addAssistantAnswer(text);
+    }
+
+    function sendMessage(event) {
+        if (event.key !== "Enter") {
+            return;
+        }
+
+        const input =
+            document.getElementById("chatInput");
+
+        const text =
+            input.value.trim();
+
+        if (!text) {
+            return;
+        }
+
+        addUserMessage(text);
+        addAssistantAnswer(text);
+        input.value = "";
+    }
+
+    function addAssistantAnswer(question) {
+        const normalized =
+            question.toLowerCase();
+
+        if (!currentAnalysisResult) {
+            addAiMessage("Please analyse the selected lot first.");
+            return;
+        }
+
+        const analysis =
+            currentAnalysisResult.analysis || {};
+
+        const highlights =
+            currentAnalysisResult.highlights || [];
+
+        if (normalized.includes("missing")) {
+            const missing =
+                filterByCategory(highlights, "MISSING_REQUIREMENT");
+
+            if (!missing.length) {
+                addAiMessage("No missing requirements were found for this lot.");
+                return;
+            }
+
+            addAiMessage(
+                "Missing Requirements:\n\n" +
+                missing.map(function (item) {
+                    return "• " + item.title;
+                }).join("\n")
+            );
+
+            return;
+        }
+
+        if (normalized.includes("risk")) {
+            addAiMessage(
+                "Risk Level: " + (analysis.overallRiskLevel || "-") +
+                "\n\nRecommendation:\n" +
+                (analysis.recommendation || "-")
+            );
+
+            return;
+        }
+
+        if (normalized.includes("bid")) {
+            addAiMessage(
+                "Recommended To Bid: " +
+                (analysis.recommendedToBid === true ? "Yes" : "No") +
+                "\n\nBid Score: " +
+                formatPercent(analysis.bidScore) +
+                "\nWin Probability: " +
+                formatPercent(analysis.winProbability)
+            );
+
+            return;
+        }
+
+        if (normalized.includes("summary")) {
+            addAiMessage(
+                analysis.executiveSummary ||
+                "No executive summary is available."
+            );
+
+            return;
+        }
+
+        addAiMessage(
+            "I can answer based on the current lot analysis, highlights, missing requirements, risk level, and recommendation."
+        );
+    }
+
+    function addUserMessage(message) {
+        const chatBody =
+            document.getElementById("chatBody");
+
+        chatBody.insertAdjacentHTML(
+            "beforeend",
+            `<div class="message user">${escapeHtml(message)}</div>`
+        );
+
+        chatBody.scrollTop =
+            chatBody.scrollHeight;
+    }
+
+    function addAiMessage(message) {
+        const chatBody =
+            document.getElementById("chatBody");
+
+        chatBody.insertAdjacentHTML(
+            "beforeend",
+            `<div class="message ai">${escapeHtml(message)}</div>`
+        );
+
+        chatBody.scrollTop =
+            chatBody.scrollHeight;
+    }
+
+    function getLotIcon(lotName) {
+        const name =
+            String(lotName || "").toLowerCase();
+
+        if (name.includes("medicine") || name.includes("pharma")) {
+            return "💊";
+        }
+
+        if (name.includes("bed") || name.includes("furniture")) {
+            return "🛏️";
+        }
+
+        if (name.includes("device") || name.includes("equipment")) {
+            return "🏥";
+        }
+
+        if (name.includes("lab")) {
+            return "🧪";
+        }
+
+        if (name.includes("ambulance")) {
+            return "🚑";
+        }
+
+        if (name.includes("it") || name.includes("system")) {
+            return "💻";
+        }
+
+        return "📦";
+    }
+
+    function getParticipationStatusClass(status) {
+        if (status === "QUALIFIED") {
+            return "success";
+        }
+
+        if (status === "UNQUALIFIED") {
+            return "danger";
+        }
+
+        return "warning";
+    }
+
+    function buildPageRange(lot) {
+        if (lot.startPage && lot.endPage) {
+            return "Pages " + lot.startPage + " - " + lot.endPage;
+        }
+
+        if (lot.startPage) {
+            return "Page " + lot.startPage;
+        }
+
+        return "-";
+    }
+
+    function formatMoney(value) {
+        if (value === null || value === undefined) {
+            return "-";
+        }
+
+        return "€" + Number(value).toLocaleString();
+    }
+
+    function formatPercent(value) {
+        if (value === null || value === undefined) {
+            return "-";
+        }
+
+        return Math.round(Number(value)) + "%";
+    }
+
+    function valueOrDash(value) {
+        if (value === null || value === undefined || value === "") {
+            return "-";
+        }
+
+        return value;
+    }
+
+    function escapeHtml(value) {
+        return String(value || "")
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+    }
+
+    function showToast(message) {
+        const toast =
+            document.getElementById("toast");
+
+        toast.innerText =
+            message;
+
+        toast.style.display =
+            "block";
+
+        setTimeout(function () {
+            toast.style.display =
+                "none";
+        }, 2500);
+    }
+
+    function navigateTo(url) {
+        window.location.href = url;
+    }
+
+    function navigateToProposal() {
+        window.location.href =
+            `/bids/create?contractId=${contractId}`;
+    }
+</script>
+
+</body>
+</html>

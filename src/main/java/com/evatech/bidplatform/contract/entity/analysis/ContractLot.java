@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +49,7 @@ public class ContractLot {
     private Integer endPage;
 
     @Column(name = "valuation")
-    private double valuation;
+    private BigDecimal valuation;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "qualification_status", nullable = false)

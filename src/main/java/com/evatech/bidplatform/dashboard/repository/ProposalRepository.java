@@ -1,5 +1,6 @@
 package com.evatech.bidplatform.dashboard.repository;
 
+import com.evatech.bidplatform.contract.entity.ContractDocument;
 import com.evatech.bidplatform.dashboard.entity.Proposal;
 import com.evatech.bidplatform.dashboard.entity.ProposalStatus;
 import org.springframework.data.domain.Pageable;
@@ -119,4 +120,6 @@ public interface ProposalRepository extends JpaRepository<Proposal, Long> {
             )
             """)
     long countClosedProposals();
+
+    Proposal getByIdAndContractDocument(Long proposalId, ContractDocument contractDocument);
 }

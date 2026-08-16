@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -28,7 +29,7 @@ public class ContractLotResponse {
 
     private Integer endPage;
 
-    private double valuation;
+    private BigDecimal valuation;
 
     private LotQualificationStatus participationStatus;
 

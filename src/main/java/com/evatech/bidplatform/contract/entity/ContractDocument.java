@@ -4,6 +4,7 @@ import com.evatech.bidplatform.bid.entity.Bid;
 import com.evatech.bidplatform.contract.entity.analysis.ContractAnalysisSummary;
 import com.evatech.bidplatform.contract.entity.analysis.ContractHighlight;
 import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
+import com.evatech.bidplatform.dashboard.entity.Proposal;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -106,6 +107,9 @@ public class ContractDocument {
 
     @OneToMany(mappedBy = "contractDocument", fetch = FetchType.LAZY)
     private List<Bid> bids = new ArrayList<>();
+
+    @OneToOne(mappedBy = "contractDocument")
+    private Proposal proposal;
 
     @PrePersist
     public void prePersist() {

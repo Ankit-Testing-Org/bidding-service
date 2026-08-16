@@ -46,10 +46,10 @@ FLOW STEPS :
        	- // STEP 1) VALIDATE FILE
        	- // STEP 2) STORE FILE
        	- // STEP 3) UPDATE CONTRACT DOCUMENT DB
-        - // STEP 4) Extract text and save pages
-        - // STEP 5) Extract lots and save them
-        - // STEP 6) ANALYSE THE CONTRACT.
-        - // STEP 7) SEND EMAIL TO BIDDERS.
+        - // STEP 4) Extract text and save pages //IGNORE
+        - // STEP 5) ANALYSE THE CONTRACT. //STEP 5 & 6 Combined
+        - // STEP 6) Extract lots and save them
+        - // STEP 7) SEND EMAIL TO BIDDERS. // WE CAN DISCUSS FURTHER.
 
         // EMAIL WILL BE TRIGGERED TO BIDDERS.
 

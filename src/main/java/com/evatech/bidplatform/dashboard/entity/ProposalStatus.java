@@ -7,5 +7,6 @@ public enum ProposalStatus {
     IN_REVIEW,
     WON,
     LOST,
-    NOT_BIDDED
+    NOT_BIDDED,
+    WITHDRAWN
 }

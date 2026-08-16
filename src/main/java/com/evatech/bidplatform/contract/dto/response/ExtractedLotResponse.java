@@ -4,6 +4,8 @@ package com.evatech.bidplatform.contract.dto.response;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 public class ExtractedLotResponse {
@@ -18,5 +20,5 @@ public class ExtractedLotResponse {
 
     private Integer endPage;
 
-    private double valuation;
+    private BigDecimal valuation;
 }
