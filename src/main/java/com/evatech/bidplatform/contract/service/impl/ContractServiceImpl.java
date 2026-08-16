@@ -9,14 +9,10 @@ import com.evatech.bidplatform.contract.entity.analysis.AnalysisStatus;
 import com.evatech.bidplatform.contract.entity.analysis.ContractAnalysisSummary;
 import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
 import com.evatech.bidplatform.contract.repository.*;
-import com.evatech.bidplatform.contract.service.ContractHighlightService;
-import com.evatech.bidplatform.contract.service.ContractLotService;
-import com.evatech.bidplatform.contract.service.ContractService;
-import com.evatech.bidplatform.contract.service.ContractTextExtractionService;
+import com.evatech.bidplatform.contract.service.*;
 import com.evatech.bidplatform.user.dto.RoleType;
 import com.evatech.bidplatform.user.dto.response.ContractHighlightResponse;
 import com.evatech.bidplatform.user.entity.User;
-import com.evatech.bidplatform.user.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -24,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -33,7 +28,6 @@ import java.util.List;
 public class ContractServiceImpl implements ContractService {
 
     private final ContractDocumentRepository contractDocumentRepository;
-    private final ContractHighlightRepository contractHighlightRepository;
     private final ContractAssignmentHistoryRepository contractAssignmentHistoryRepository;
     private final FileStorageService fileStorageService;
     private final ContractLotService contractLotService;
@@ -42,52 +36,29 @@ public class ContractServiceImpl implements ContractService {
     private final ContractDocumentFieldValueRepository contractDocumentFieldValueRepository;
     private final BidTemplateFieldRepository bidTemplateFieldRepository;
     private final ContractHighlightService contractHighlightService;
-    private final EmailService emailService;
+    private final ContractAnalysisOrchestrator contractAnalysisOrchestrator;
 
     @Override
     public ContractDocument uploadContract(
             MultipartFile file,
             User user, List<String> roles) {
 
-        // STEP 1) VALIDATE FILE
         validateFile(file, user.getEmail());
 
-        // STEP 2) STORE FILE
         String storagePath = fileStorageService.storeContract(file);
 
-        // STEP 3) UPDATE CONTRACT DOCUMENT DB
         ContractDocument contractDocument = ContractDocument.builder()
                         .originalFileName(file.getOriginalFilename())
                         .fileType(file.getContentType())
                         .storagePath(storagePath)
                         .uploadedBy(user.getEmail())
                         .status(ContractStatus.UPLOADED)
-                        .assignmentStatus(
-                                ContractAssignmentStatus.UNASSIGNED
-                        )
+                        .assignmentStatus(ContractAssignmentStatus.UNASSIGNED)
                         .build();
-
         contractDocument = contractDocumentRepository.save(contractDocument);
 
-        // STEP 4) Extract text and save pages //TODO : NOT NEEDED.
-        contractTextExtractionService.
-                extractText(contractDocument.getId(), user, roles);
-
-        // STEP 5) Extract lots and save them
-        contractLotService.
-                processExtractingLots(contractDocument, user);
-
-        // STEP 6) Analyse Contract
-        contractHighlightService.analyseContractHighlights(contractDocument.getId(),
-                        false, user, roles);
-
-        // STEP 7) TODO : SEND AN EMAIL TO BIDDERS.
-        emailService.sendEmail(contractDocument.getId(),
-                contractDocument.getOriginalFileName(),
-                new ArrayList<>());
-
-        // STEP 8)
-        return contractDocumentRepository.findById(contractDocument.getId()).orElse(null);
+        contractAnalysisOrchestrator.startAnalysis(contractDocument, user, roles);
+        return contractDocument;
     }
 
 

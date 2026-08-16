@@ -8,8 +8,8 @@ public interface EmailService {
     void sendVerificationEmail(
             String email, String token
     );
-    void  sendEmail(Long contractId,
-                    String contractName,
-                    List<String> emailAddresses);
+    void  sendEmail(List<String> emailAddresses,
+                    String subject,
+                    String textMessage);
 }
 

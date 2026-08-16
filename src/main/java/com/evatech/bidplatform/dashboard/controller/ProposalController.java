@@ -2,11 +2,9 @@ package com.evatech.bidplatform.dashboard.controller;
 
 import com.evatech.bidplatform.contract.entity.ContractDocument;
 import com.evatech.bidplatform.contract.service.ContractService;
-import com.evatech.bidplatform.dashboard.dto.OverviewDashboardResponse;
 import com.evatech.bidplatform.dashboard.dto.ProposalRequest;
 import com.evatech.bidplatform.dashboard.dto.ProposalResponse;
 import com.evatech.bidplatform.dashboard.entity.Proposal;
-import com.evatech.bidplatform.dashboard.service.OverviewDashboardService;
 import com.evatech.bidplatform.dashboard.service.ProposalService;
 import com.evatech.bidplatform.user.entity.User;
 import com.evatech.bidplatform.user.repository.UserRepository;
@@ -26,7 +24,7 @@ public class ProposalController extends AbstractController {
     private final UserRepository userRepository;
     private final ProposalService proposalService;
 
-    @PostMapping
+    @PostMapping("/create")
     public ProposalResponse createProposal(Authentication authentication, @RequestBody @Valid ProposalRequest request) {
 
         User user = authenticateAndFetchUser(userRepository, authentication);
@@ -37,7 +35,7 @@ public class ProposalController extends AbstractController {
         return proposalService.createProposal(contract, user, request);
     }
 
-    @PutMapping("/{proposalId}")
+    @PutMapping("/{proposalId}/update")
     public ProposalResponse updateProposal(Authentication authentication, @PathVariable Long proposalId, @RequestBody @Valid ProposalRequest request) {
         User user = authenticateAndFetchUser(userRepository, authentication);
         List<String> roles = fetchRolesForUser(authentication);

@@ -53,15 +53,9 @@ public class ContractDocument {
     @Column(name = "assignment_status", nullable = false)
     private ContractAssignmentStatus assignmentStatus;
 
-    /**
-     * Current owner of the contract.
-     */
     @Column(name = "assigned_to")
     private String assignedTo;
 
-    /**
-     * User who performed the latest assignment/reassignment.
-     */
     @Column(name = "assigned_by")
     private String assignedBy;
 
@@ -89,9 +83,17 @@ public class ContractDocument {
     @Column(name = "estimated_bid_count")
     private Integer estimatedBidCount;
 
+    @Column(name = "processing_error")
+    private String processingError;
+
+    @Column(name = "processing_started_at")
+    private LocalDateTime processingStartedAt;
+
+    @Column(name = "processing_completed_at")
+    private LocalDateTime processingCompletedAt;
+
     @OneToMany(mappedBy = "contractDocument", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ContractAssignmentHistory> assignmentHistory =
-            new ArrayList<>();
+    private List<ContractAssignmentHistory> assignmentHistory = new ArrayList<>();
 
     @OneToMany(mappedBy = "contractDocument", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ContractLot> lots = new ArrayList<>();

@@ -47,19 +47,13 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendEmail(Long contractId, String contractName, List<String> emailAddresses) {
+    public void sendEmail(List<String> emailAddresses,
+                          String subject, String textMessage) {
 
         SimpleMailMessage message = new SimpleMailMessage();
-
         message.setTo(emailAddresses.toArray(new String[0]));
-
-        message.setSubject("New contract is upload");
-
-        message.setText("""
-                A new contract is being uploaded , please assign it:
-                
-                contract id %s and contract name %s
-                """.formatted(contractId, contractName));
+        message.setSubject(subject);
+        message.setText(textMessage);
 
         mailSender.send(message);
     }
