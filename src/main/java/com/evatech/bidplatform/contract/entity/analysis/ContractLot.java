@@ -115,6 +115,9 @@ public class ContractLot {
     @OneToOne(mappedBy = "contractLot", cascade = CascadeType.ALL, orphanRemoval = true)
     private ContractLotAnalysis analysis;
 
+    @OneToOne(mappedBy = "contractLot", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ContractLotQualificationHistory> history = new ArrayList<>();
+
     @PrePersist
     public void prePersist() {
 

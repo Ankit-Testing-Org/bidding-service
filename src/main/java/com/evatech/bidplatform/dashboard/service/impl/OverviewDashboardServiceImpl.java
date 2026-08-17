@@ -1,5 +1,6 @@
 package com.evatech.bidplatform.dashboard.service.impl;
 
+import com.evatech.bidplatform.audit.service.AuditAction;
 import com.evatech.bidplatform.dashboard.dto.OverviewDashboardResponse;
 import com.evatech.bidplatform.dashboard.service.*;
 import jakarta.transaction.Transactional;
@@ -19,6 +20,7 @@ public class OverviewDashboardServiceImpl
     private final DashboardWorkloadService dashboardWorkloadService;
     private final DashboardActivityService dashboardActivityService;
 
+    @AuditAction(action = "DASHBOARD_OVERVIEW", entity = "Proposal")
     @Override
     public OverviewDashboardResponse getOverview() {
 

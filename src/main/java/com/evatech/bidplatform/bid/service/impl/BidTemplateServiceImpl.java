@@ -1,5 +1,6 @@
 package com.evatech.bidplatform.bid.service.impl;
 
+import com.evatech.bidplatform.audit.service.AuditAction;
 import com.evatech.bidplatform.bid.dto.AiBidTemplateResponse;
 import com.evatech.bidplatform.bid.dto.AiTemplateFieldDefinition;
 import com.evatech.bidplatform.bid.entity.BidTemplateField;
@@ -37,6 +38,8 @@ public class BidTemplateServiceImpl
     private final DocumentGenerator documentGenerator;
     private final GeneratedDocumentRepository generatedDocumentRepository;
     private final BidTemplateFieldRepository bidTemplateFieldRepository;
+
+    @AuditAction(action = "GENERATE_BID_TEMPLATE", entity = "GeneratedDocument")
     @Override
     @Transactional
     public GeneratedDocument generateBidTemplate(
@@ -64,6 +67,7 @@ public class BidTemplateServiceImpl
         return generatedDocument;
     }
 
+    @AuditAction(action = "DOWNLOAD_BID_TEMPLATE", entity = "GeneratedDocument")
     @Override
     @Transactional
     public Resource downloadDocument(Long documentId,

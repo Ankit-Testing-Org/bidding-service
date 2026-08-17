@@ -2,20 +2,16 @@ package com.evatech.bidplatform.contract.service.impl;
 
 import com.evatech.bidplatform.ai.service.AiRequestLoggerService;
 import com.evatech.bidplatform.ai.service.AiService;
+import com.evatech.bidplatform.audit.service.AuditAction;
 import com.evatech.bidplatform.contract.dto.ContractLotAnalysisResult;
 import com.evatech.bidplatform.contract.dto.response.ContractLotAnalysisResultResponse;
 import com.evatech.bidplatform.contract.dto.response.ExtractedLotResponse;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
-import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
+import com.evatech.bidplatform.contract.entity.analysis.*;
 import com.evatech.bidplatform.contract.entity.ContractPageText;
 import com.evatech.bidplatform.contract.entity.LotQualificationStatus;
-import com.evatech.bidplatform.contract.entity.analysis.ContractLotAnalysis;
-import com.evatech.bidplatform.contract.entity.analysis.ContractLotHighlight;
 import com.evatech.bidplatform.contract.mapper.ContractLotAnalysisMapper;
-import com.evatech.bidplatform.contract.repository.ContractLotAnalysisRepository;
-import com.evatech.bidplatform.contract.repository.ContractLotHighlightRepository;
-import com.evatech.bidplatform.contract.repository.ContractLotRepository;
-import com.evatech.bidplatform.contract.repository.ContractPageTextRepository;
+import com.evatech.bidplatform.contract.repository.*;
 import com.evatech.bidplatform.contract.service.ContractLotService;
 import com.evatech.bidplatform.contract.service.ContractService;
 import com.evatech.bidplatform.dashboard.entity.Proposal;
@@ -30,10 +26,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -51,7 +49,9 @@ public class ContractLotServiceImpl implements ContractLotService {
     private final EntityManager entityManager;
     private final ContractLotAnalysisMapper contractLotAnalysisMapper;
     private final ProposalService proposalService;
+    private final ContractLotQualificationHistoryRepository contractLotQualificationHistoryRepository;
 
+    @AuditAction(action = "QUALIFY_LOT", entity = "ContractLot")
     @Override
     public ContractLot qualifyLot(Long contractId, String lotNumber, User user
             , List<String> roles) {
@@ -59,23 +59,43 @@ public class ContractLotServiceImpl implements ContractLotService {
         ContractLot contractLot = getContractLotOrThrow(contractId, lotNumber, user);
         contractLot.qualify(user.getEmail());
         contractLot = contractLotRepository.save(contractLot);
+
+        ContractLotQualificationHistory history = new ContractLotQualificationHistory();
+        history.setNewStatus(ContractLotQualificationStatus.QUALIFIED);
+        history.setComment("Lot qualified");
+        history.setChangedAt(LocalDateTime.now());
+        history.setChangedBy(user.getEmail());
+        contractLotQualificationHistoryRepository.save(history);
+
         Proposal proposal = proposalService.getProposal(null, contractDocument);
         proposalService.updateProposal(proposal, user, roles, null);
 
         return contractLot;
     }
 
+    @AuditAction(action = "UNQUALIFY_LOT", entity = "ContractLot")
     @Override
     public ContractLot unqualifyLot(Long contractId, String lotNumber, User user
             , List<String> roles) {
         ContractDocument contractDocument = contractService.getContract(contractId, user, roles);
         ContractLot contractLot = getContractLotOrThrow(contractId, lotNumber, user);
         contractLot.unqualify(user.getEmail());
+        contractLot = contractLotRepository.save(contractLot);
+
+        ContractLotQualificationHistory history = new ContractLotQualificationHistory();
+        history.setNewStatus(ContractLotQualificationStatus.UNQUALIFIED);
+        history.setComment("Lot unqualified");
+        history.setChangedAt(LocalDateTime.now());
+        history.setChangedBy(user.getEmail());
+        contractLotQualificationHistoryRepository.save(history);
+
         Proposal proposal = proposalService.getProposal(null, contractDocument);
         proposalService.updateProposal(proposal, user, roles, null);
-        return contractLotRepository.save(contractLot);
+
+        return contractLot;
     }
 
+    @AuditAction(action = "FETCH_CONTRACT_LOTS", entity = "ContractLot")
     @Override
     @Transactional
     public List<ContractLot> getContractLots(Long contractId, User user, List<String> roles) {
@@ -83,6 +103,7 @@ public class ContractLotServiceImpl implements ContractLotService {
         return contractLotRepository.findByContractDocumentIdOrderByLotNumberAsc(contractId);
     }
 
+    @AuditAction(action = "FETCH_QUALIFIED_LOTS", entity = "ContractLot")
     @Override
     @Transactional
     public List<ContractLot> getQualifiedLots(Long contractId, User user) {
@@ -90,6 +111,7 @@ public class ContractLotServiceImpl implements ContractLotService {
         return contractLotRepository.findByContractDocumentIdAndQualificationStatus(contractId, LotQualificationStatus.QUALIFIED);
     }
 
+    @AuditAction(action = "FETCH_UNQUALIFIED_LOTS", entity = "ContractLot")
     @Override
     @Transactional
     public List<ContractLot> getUnqualifiedLots(Long contractId, User user) {
@@ -97,12 +119,8 @@ public class ContractLotServiceImpl implements ContractLotService {
         return contractLotRepository.findByContractDocumentIdAndQualificationStatus(contractId, LotQualificationStatus.UNQUALIFIED);
     }
 
-    private ContractLot getContractLotOrThrow(Long contractId, String lotNumber, User user) {
 
-        getContractLotOrThrow(contractId, lotNumber, user);
-        return contractLotRepository.findByContractDocumentIdAndLotNumber(contractId, lotNumber).orElseThrow(() -> new IllegalArgumentException("Lot not found with contract id " + contractId + " and lot number " + lotNumber));
-    }
-
+    @AuditAction(action = "FETCH_LOTS", entity = "ContractLot")
     @Override
     public List<ContractLot> extractLots(Long contractId, User user, String lotNumber) {
 
@@ -114,6 +132,7 @@ public class ContractLotServiceImpl implements ContractLotService {
         return contractLotRepository.findByContractDocumentIdOrderByLotNumberAsc(contractId);
     }
 
+    @AuditAction(action = "PROCESS_EXTRACTING_LOTS", entity = "ContractLot")
     @Override
     public List<ContractLot> processExtractingLots(ContractDocument contractDocument, User user) {
         validateContractDocument(contractDocument);
@@ -138,9 +157,10 @@ public class ContractLotServiceImpl implements ContractLotService {
         if (extractedLots.isEmpty()) {
             return List.of();
         }
-        return saveLots(contractDocument, extractedLots);
+        return saveLots(contractDocument, extractedLots, user);
     }
 
+    @AuditAction(action = "ANALYSE_CONTRACT_LOTS", entity = "ContractLot")
     @Override
     @Transactional
     public ContractLotAnalysisResultResponse analyseContractLot(Long contractLotId,
@@ -194,6 +214,7 @@ public class ContractLotServiceImpl implements ContractLotService {
         }
     }
 
+    @AuditAction(action = "RE_ANALYSE_LOT", entity = "ContractLot")
     @Transactional
     @Override
     public ContractLotAnalysisResultResponse reanalyseLot(Long lotId, String userComment, User user, List<String> roles) {
@@ -202,6 +223,7 @@ public class ContractLotServiceImpl implements ContractLotService {
         return analyseContractLot(lotId, true, user, roles, userComment);
     }
 
+    @AuditAction(action = "APPROVE_ANALYSIS", entity = "ContractLot")
     @Override
     public ContractLot approveAnalysis(Long contractLotId, User user, String comment) {
         ContractLot contractLot = contractLotRepository.findById(contractLotId).orElseThrow(() -> new IllegalArgumentException("Contract lot not found with id: " + contractLotId));
@@ -209,6 +231,7 @@ public class ContractLotServiceImpl implements ContractLotService {
         return contractLotRepository.save(contractLot);
     }
 
+    @AuditAction(action = "REJECT_ANALYSIS", entity = "ContractLot")
     @Override
     public ContractLot rejectAnalysis(
             Long contractLotId,
@@ -217,6 +240,12 @@ public class ContractLotServiceImpl implements ContractLotService {
         ContractLot contractLot = contractLotRepository.findById(contractLotId).orElseThrow(() -> new IllegalArgumentException("Contract lot not found with id: " + contractLotId));
         contractLot.rejectAnalysis(user.getEmail(), comment);
         return contractLotRepository.save(contractLot);
+    }
+
+    private ContractLot getContractLotOrThrow(Long contractId, String lotNumber, User user) {
+
+        getContractLotOrThrow(contractId, lotNumber, user);
+        return contractLotRepository.findByContractDocumentIdAndLotNumber(contractId, lotNumber).orElseThrow(() -> new IllegalArgumentException("Lot not found with contract id " + contractId + " and lot number " + lotNumber));
     }
 
     private ContractLotAnalysisResult getExistingLotAnalysisResult(Long contractLotId) {
@@ -280,7 +309,7 @@ public class ContractLotServiceImpl implements ContractLotService {
         return value == null || value.trim().isEmpty();
     }
 
-    private List<ContractLot> saveLots(ContractDocument contractDocument, List<ExtractedLotResponse> extractedLots) {
+    private List<ContractLot> saveLots(ContractDocument contractDocument, List<ExtractedLotResponse> extractedLots, User user) {
 
         List<ContractLot> savedLots = new ArrayList<>();
 
@@ -288,6 +317,13 @@ public class ContractLotServiceImpl implements ContractLotService {
             validateExtractedLot(extractedLot);
 
             ContractLot contractLot = ContractLot.builder().contractDocument(contractDocument).lotNumber(extractedLot.getLotNumber()).lotName(extractedLot.getLotName()).description(extractedLot.getDescription()).startPage(extractedLot.getStartPage()).endPage(extractedLot.getEndPage()).qualificationStatus(LotQualificationStatus.PENDING).createdAt(LocalDateTime.now()).valuation(extractedLot.getValuation()).build();
+
+            ContractLotQualificationHistory history = new ContractLotQualificationHistory();
+            history.setNewStatus(ContractLotQualificationStatus.PENDING);
+            history.setComment("Lot is extracted");
+            history.setChangedAt(LocalDateTime.now());
+            history.setChangedBy(user.getEmail());
+            contractLotQualificationHistoryRepository.save(history);
 
             savedLots.add(contractLotRepository.save(contractLot));
         }
@@ -368,5 +404,13 @@ public class ContractLotServiceImpl implements ContractLotService {
         if (contractDocument.getId() == null) {
             throw new IllegalArgumentException("Contract document id must not be null");
         }
+    }
+
+    private BigDecimal calculateProposalValue(List<ContractLot> contractLots) {
+        return contractLots.stream().
+                filter(ContractLot::isQualified).
+                map(ContractLot::getValuation).
+                filter(Objects::nonNull).
+                reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

@@ -1,5 +1,6 @@
 package com.evatech.bidplatform.bid.service.impl;
 
+import com.evatech.bidplatform.audit.service.AuditAction;
 import com.evatech.bidplatform.bid.dto.ParsedTemplateFieldValue;
 import com.evatech.bidplatform.bid.dto.request.AssignBidRequest;
 import com.evatech.bidplatform.bid.dto.response.BidTemplateFieldUpdateResponse;
@@ -42,6 +43,7 @@ public class BidServiceImpl implements BidService {
     private final UploadedTemplateParser uploadedTemplateParser;
     private final BidTemplateFieldRepository bidTemplateFieldRepository;
 
+    @AuditAction(action = "ASSIGN_BID", entity = "Bid")
     @Override
     @Transactional
     public Bid assignBid(Long contractId, AssignBidRequest request, User user, List<String> roles) {
@@ -52,6 +54,7 @@ public class BidServiceImpl implements BidService {
         return bidRepository.save(bid);
     }
 
+    @AuditAction(action = "UPLOAD_DOCUMENT", entity = "BidDocument")
     @Override
     @Transactional
     public BidDocument uploadDocument(Long bidId, MultipartFile file, BidDocumentType documentType, User user) {
@@ -62,6 +65,7 @@ public class BidServiceImpl implements BidService {
         return bidDocumentRepository.save(document);
     }
 
+    @AuditAction(action = "UPLOAD_COMPLETED_BID", entity = "BidDocument")
     @Override
     @Transactional
     public BidDocument uploadCompletedBid(Long bidId, MultipartFile file, User user, List<String> roles) {
@@ -80,6 +84,7 @@ public class BidServiceImpl implements BidService {
         return bidDocumentRepository.save(document);
     }
 
+    @AuditAction(action = "DOWNLOAD_DOCUMENT", entity = "BidDocument")
     @Override
     @Transactional(readOnly = true)
     public Resource downloadDocument(Long documentId, User user, List<String> roles) {
@@ -89,6 +94,7 @@ public class BidServiceImpl implements BidService {
         return fileStorageService.loadTemplate(document.getStoragePath());
     }
 
+    @AuditAction(action = "DELETE_DOCUMENT", entity = "BidDocument")
     @Override
     public DeleteDocumentResponse deleteDocument(Long documentId, User user, List<String> roles) {
 
@@ -99,6 +105,7 @@ public class BidServiceImpl implements BidService {
         return DeleteDocumentResponse.builder().documentId(documentId).fileName(document.getFileName()).message("Document deleted successfully").build();
     }
 
+    @AuditAction(action = "UPLOAD_TEMPLATE", entity = "BidDocument")
     @Override
     @Transactional
     public List<BidTemplateFieldUpdateResponse> uploadTemplateToContract(

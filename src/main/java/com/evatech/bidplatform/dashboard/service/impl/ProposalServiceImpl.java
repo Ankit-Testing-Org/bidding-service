@@ -1,5 +1,6 @@
 package com.evatech.bidplatform.dashboard.service.impl;
 
+import com.evatech.bidplatform.audit.service.AuditAction;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
 import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
 import com.evatech.bidplatform.contract.service.ContractLotService;
@@ -7,7 +8,6 @@ import com.evatech.bidplatform.dashboard.dto.ProposalRequest;
 import com.evatech.bidplatform.dashboard.entity.Proposal;
 import com.evatech.bidplatform.dashboard.entity.ProposalHistory;
 import com.evatech.bidplatform.dashboard.entity.ProposalStatus;
-import com.evatech.bidplatform.dashboard.mapper.ProposalMapper;
 import com.evatech.bidplatform.dashboard.repository.ProposalHistoryRepository;
 import com.evatech.bidplatform.dashboard.repository.ProposalRepository;
 import com.evatech.bidplatform.dashboard.service.ProposalService;
@@ -28,11 +28,11 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class ProposalServiceImpl implements ProposalService {
 
-    private final ProposalMapper proposalMapper;
     private final ProposalRepository proposalRepository;
     private final ProposalHistoryRepository proposalHistoryRepository;
     private final ContractLotService contractLotService;
 
+    @AuditAction(action = "CREATE_PROPOSAL", entity = "Proposal")
     @Override
     @Transactional
     public Proposal createProposal(ContractDocument contract, User user,
@@ -53,6 +53,7 @@ public class ProposalServiceImpl implements ProposalService {
         return proposal;
     }
 
+    @AuditAction(action = "UPDATE_PROPOSAL", entity = "Proposal")
     @Override
     @Transactional
     public Proposal updateProposal(Proposal proposal, User user,
@@ -78,6 +79,7 @@ public class ProposalServiceImpl implements ProposalService {
         return proposal;
     }
 
+    @AuditAction(action = "SUBMIT_PROPOSAL", entity = "Proposal")
     @Override
     @Transactional
     public Proposal submitProposal(Proposal proposal, User user) {
@@ -96,6 +98,7 @@ public class ProposalServiceImpl implements ProposalService {
         return proposal;
     }
 
+    @AuditAction(action = "PROPOSAL_MARK_AS_WON", entity = "Proposal")
     @Override
     @Transactional
     public Proposal markAsWon(Proposal proposal, User user) {
@@ -113,6 +116,7 @@ public class ProposalServiceImpl implements ProposalService {
         return proposal;
     }
 
+    @AuditAction(action = "PROPOSAL_MARK_AS_LOST", entity = "Proposal")
     @Override
     @Transactional
     public Proposal markAsLost(Proposal proposal, User user) {
@@ -130,6 +134,7 @@ public class ProposalServiceImpl implements ProposalService {
         return proposal;
     }
 
+    @AuditAction(action = "PROPOSAL_WITHDRAW", entity = "Proposal")
     @Override
     @Transactional
     public Proposal withdrawProposal(Proposal proposal, User user) {
@@ -145,6 +150,7 @@ public class ProposalServiceImpl implements ProposalService {
         return proposal;
     }
 
+    @AuditAction(action = "PROPOSAL_FETCH", entity = "Proposal")
     @Override
     public Proposal getProposal(Long proposalId, ContractDocument contract) {
         if(proposalId != null && contract != null)

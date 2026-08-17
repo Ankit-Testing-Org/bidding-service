@@ -1,5 +1,6 @@
 package com.evatech.bidplatform.contract.service.impl;
 
+import com.evatech.bidplatform.audit.service.AuditAction;
 import com.evatech.bidplatform.bid.entity.BidTemplateField;
 import com.evatech.bidplatform.bid.exception.BidTemplateFieldNotFoundException;
 import com.evatech.bidplatform.bid.repository.BidTemplateFieldRepository;
@@ -42,6 +43,7 @@ public class ContractServiceImpl implements ContractService {
     private final ContractAnalysisOrchestrator contractAnalysisOrchestrator;
     private final ProposalService proposalService;
 
+    @AuditAction(action = "UPLOAD_CONTRACT", entity = "ContractDocument")
     @Override
     public ContractDocument uploadContract(
             MultipartFile file,
@@ -66,6 +68,7 @@ public class ContractServiceImpl implements ContractService {
     }
 
 
+    @AuditAction(action = "FETCH_CONTRACT", entity = "ContractDocument")
     @Override
     @Transactional(readOnly = true)
     public ContractDocument getContract(Long contractId, User user, List<String> roles) {
@@ -73,6 +76,7 @@ public class ContractServiceImpl implements ContractService {
         return getContractOrThrow(contractId, user, roles);
     }
 
+    @AuditAction(action = "SAVE_CONTRACT", entity = "ContractDocument")
     @Override
     public ContractDocument saveContract(ContractDocument contractDocument) {
         if (contractDocument == null) {
@@ -82,6 +86,7 @@ public class ContractServiceImpl implements ContractService {
         return contractDocumentRepository.save(contractDocument);
     }
 
+    @AuditAction(action = "FETCH_CONTRACT_PAGES", entity = "ContractPageText")
     @Override
     @Transactional(readOnly = true)
     public List<ContractPageText> getContractPages(
@@ -93,6 +98,7 @@ public class ContractServiceImpl implements ContractService {
         return contractTextExtractionService.getContractPages(contractDocument, pageNumber, user);
     }
 
+    @AuditAction(action = "FETCH_CONTRACT_LOTS", entity = "ContractLot")
     @Override
     @Transactional(readOnly = true)
     public List<ContractLot> getContractLots(
@@ -102,6 +108,7 @@ public class ContractServiceImpl implements ContractService {
         return contractLotService.extractLots(contractId, user, lotNumber);
     }
 
+    @AuditAction(action = "FETCH_CONTRACT_HIGHLIGHTS", entity = "ContractHighlight")
     @Override
     @Transactional(readOnly = true)
     public List<ContractHighlightResponse> getHighlights(Long contractId, User user, List<String> roles) {
@@ -110,6 +117,7 @@ public class ContractServiceImpl implements ContractService {
         return contractHighlightService.getHighlights(contractId);
     }
 
+    @AuditAction(action = "MARK_ANALYSIS_IN_PROGRESS", entity = "ContractDocument")
     @Override
     public ContractDocument markAnalysisInProgress(Long contractId, User user, List<String> roles) {
         ContractDocument contractDocument = getContractOrThrow(contractId, user, roles);
@@ -123,6 +131,7 @@ public class ContractServiceImpl implements ContractService {
         return contractDocumentRepository.save(contractDocument);
     }
 
+    @AuditAction(action = "MARK_ANALYSED", entity = "ContractDocument")
     @Override
     public ContractDocument markAnalysed(Long contractId, User user, List<String> roles) {
         ContractDocument contractDocument = getContractOrThrow(contractId, user, roles);
@@ -135,6 +144,7 @@ public class ContractServiceImpl implements ContractService {
         return contractDocumentRepository.save(contractDocument);
     }
 
+    @AuditAction(action = "FETCH_UNASSIGNED_CONTRACTS", entity = "ContractDocument")
     @Override
     @Transactional(readOnly = true)
     public List<ContractDocument> getUnassignedContracts(User user, List<String> roles) {
@@ -143,6 +153,7 @@ public class ContractServiceImpl implements ContractService {
         );
     }
 
+    @AuditAction(action = "FETCH_ASSIGNED_CONTRACTS", entity = "ContractDocument")
     @Override
     @Transactional(readOnly = true)
     public List<ContractDocument> getAssignedContracts(String assignedTo, User user, List<String> roles) {
@@ -152,6 +163,7 @@ public class ContractServiceImpl implements ContractService {
         return contractDocumentRepository.findByAssignedToAndAssignmentStatus(assignedTo, ContractAssignmentStatus.ASSIGNED);
     }
 
+    @AuditAction(action = "ASSIGN_CONTRACT", entity = "ContractDocument")
     @Override
     public ContractDocument assignContract(
             Long contractId, String assignedTo, User user, List<String> roles) {
@@ -183,6 +195,7 @@ public class ContractServiceImpl implements ContractService {
         return contractDocument;
     }
 
+    @AuditAction(action = "REASSIGN_CONTRACT", entity = "ContractDocument")
     @Override
     public ContractDocument reassignContract(
             Long contractId,
@@ -207,6 +220,7 @@ public class ContractServiceImpl implements ContractService {
         return contractDocumentRepository.save(contractDocument);
     }
 
+    @AuditAction(action = "UNASSIGN_CONTRACT", entity = "ContractDocument")
     @Override
     public ContractDocument unassignContract(Long contractId, User user, List<String> roles) {
         String assignedBy = getUserEmail(user);
@@ -221,6 +235,7 @@ public class ContractServiceImpl implements ContractService {
         return contractDocumentRepository.save(contractDocument);
     }
 
+    @AuditAction(action = "FETCH_ASSIGNMENT_HISTORY", entity = "ContractAssignmentHistory")
     @Override
     @Transactional(readOnly = true)
     public List<ContractAssignmentHistory> getAssignmentHistory(Long contractId, User user) {

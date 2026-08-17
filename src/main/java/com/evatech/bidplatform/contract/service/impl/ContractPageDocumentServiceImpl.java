@@ -1,5 +1,6 @@
 package com.evatech.bidplatform.contract.service.impl;
 
+import com.evatech.bidplatform.audit.service.AuditAction;
 import com.evatech.bidplatform.bid.service.FileStorageService;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
 import com.evatech.bidplatform.contract.repository.ContractDocumentRepository;
@@ -24,6 +25,7 @@ public class ContractPageDocumentServiceImpl implements ContractPageDocumentServ
     private final FileStorageService fileStorageService;
     private final PdfPageService pdfPageService;
 
+    @AuditAction(action = "FETCH_CONTRACT_PAGE_AS_DOCUMENT", entity = "")
     @Override
     public Resource getContractPageAsDocument(
             Long contractId,

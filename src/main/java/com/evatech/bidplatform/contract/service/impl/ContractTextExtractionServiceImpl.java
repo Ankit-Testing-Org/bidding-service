@@ -1,5 +1,6 @@
 package com.evatech.bidplatform.contract.service.impl;
 
+import com.evatech.bidplatform.audit.service.AuditAction;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
 import com.evatech.bidplatform.contract.entity.ContractPageText;
 import com.evatech.bidplatform.contract.entity.ContractStatus;
@@ -25,6 +26,7 @@ public class ContractTextExtractionServiceImpl
     private final ContractPageTextRepository contractPageTextRepository;
     private final ContractService contractService;
 
+    @AuditAction(action = "EXTRACT_TEXT", entity = "ContractPageText")
     @Override
     public List<ContractPageText> extractText(
             Long contractId,
@@ -64,6 +66,7 @@ public class ContractTextExtractionServiceImpl
         return contractPageTextRepository.findByContractDocumentIdOrderByPageNumberAsc(contractId);
     }
 
+    @AuditAction(action = "FETCH_CONTRACT_PAGES", entity = "ContractPageText")
     @Override
     public List<ContractPageText> getContractPages(ContractDocument contractId, Integer pageNumber, User user) {
         if (pageNumber == null) {

@@ -1,5 +1,6 @@
 package com.evatech.bidplatform.contract.service.impl;
 
+import com.evatech.bidplatform.audit.service.AuditAction;
 import com.evatech.bidplatform.bid.service.FileStorageService;
 import com.evatech.bidplatform.contract.service.PdfPageService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class PdfPageServiceImpl implements PdfPageService {
 
     private final FileStorageService fileStorageService;
 
+    @AuditAction(action = "EXTRACT_SINGLE_PAGE", entity = "")
     @Override
     public Resource extractSinglePage(
             Path pdfPath,

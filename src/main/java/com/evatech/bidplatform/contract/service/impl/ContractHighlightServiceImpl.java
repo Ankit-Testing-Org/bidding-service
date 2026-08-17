@@ -2,6 +2,7 @@ package com.evatech.bidplatform.contract.service.impl;
 
 import com.evatech.bidplatform.ai.service.AiRequestLoggerService;
 import com.evatech.bidplatform.ai.service.AiService;
+import com.evatech.bidplatform.audit.service.AuditAction;
 import com.evatech.bidplatform.contract.dto.ContractAnalysisResult;
 import com.evatech.bidplatform.contract.dto.ContractAnalysisSection;
 import com.evatech.bidplatform.contract.dto.response.HighlightReanalysisResponse;
@@ -39,6 +40,7 @@ public class ContractHighlightServiceImpl implements ContractHighlightService {
     private final ContractAnalysisSummaryRepository contractAnalysisSummaryRepository;
     private final ContractAnalysisMapper contractAnalysisMapper;
 
+    @AuditAction(action = "ANALYSE_CONTRACT_HISTORY", entity = "")
     @Override
     @Transactional
     public ContractAnalysisPageResponse analyseContractHighlights(Long contractDocumentId, boolean reanalyse, User user, List<String> roles) {
@@ -84,30 +86,42 @@ public class ContractHighlightServiceImpl implements ContractHighlightService {
         }
     }
 
+    @AuditAction(action = "APPROVE_HIGHLIGHT", entity = "ContractHighlight")
     @Override
     @Transactional
     public ContractHighlightResponse approveHighlight(Long highlightId, User user) {
         ContractHighlight highlight = contractHighlightRepository.findById(highlightId).orElseThrow();
-        ContractHighlightReviewHistory contractHighlightReviewHistory = addReview(highlight, HighlightReviewStatus.APPROVED, user.getEmail(), null);
+        ContractHighlightReviewHistory contractHighlightReviewHistory = addReview(highlight,
+                HighlightReviewStatus.APPROVED, user.getEmail(), null);
         highlight.getReviewHistory().add(contractHighlightReviewHistory);
         highlight = contractHighlightRepository.save(highlight);
         return contractAnalysisMapper.toHighlightResponse(highlight);
     }
 
+    @AuditAction(
+            action = "REJECT_HIGHLIGHT",
+            entity = "ContractHighlight"
+    )
     @Override
     @Transactional
     public ContractHighlightResponse rejectHighlight(Long highlightId, String comment, User user) {
 
-        ContractHighlight highlight = contractHighlightRepository.findById(highlightId).orElseThrow();
-        highlight.setReviewStatus(HighlightReviewStatus.REJECTED);
-        ContractHighlightReviewHistory contractHighlightReviewHistory = addReview(highlight, HighlightReviewStatus.APPROVED, user.getEmail(), comment);
-        highlight.getReviewHistory().add(contractHighlightReviewHistory);
-        highlight = contractHighlightRepository.save(highlight);
-        return contractAnalysisMapper.toHighlightResponse(highlight);
+        ContractHighlight highlight =
+                contractHighlightRepository.findById(highlightId).orElseThrow();
 
+        highlight.setReviewStatus(HighlightReviewStatus.REJECTED);
+
+        ContractHighlightReviewHistory reviewHistory =
+                addReview(highlight, HighlightReviewStatus.REJECTED, user.getEmail(), comment);
+
+        highlight.getReviewHistory().add(reviewHistory);
+
+        highlight = contractHighlightRepository.save(highlight);
+
+        return contractAnalysisMapper.toHighlightResponse(highlight);
     }
 
-
+    @AuditAction(action = "FETCH_HIGHLIGHT", entity = "ContractHighlight")
     @Override
     @Transactional(readOnly = true)
     public List<ContractHighlightResponse> getHighlights(Long contractId) {
@@ -116,6 +130,7 @@ public class ContractHighlightServiceImpl implements ContractHighlightService {
 
     }
 
+    @AuditAction(action = "REANALYSE_HIGHLIGHT", entity = "ContractHighlight")
     @Override
     @Transactional
     public ContractHighlightResponse reanalyseHighlight(Long highlightId, User user, String userComment) {
