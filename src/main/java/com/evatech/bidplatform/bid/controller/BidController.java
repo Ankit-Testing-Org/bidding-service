@@ -61,12 +61,12 @@ public class BidController extends AbstractController {
 
     @PostMapping("/{bidId}/template/{templateId}/update-contract")
     public ApiResponse<List<BidTemplateFieldUpdateResponse>> updateTemplateToContract(Authentication authentication,
-                                                           @PathVariable Long bidId,
-                                                           @PathVariable Long bidDocumentId,
+                                                           @PathVariable("bidId") Long bidId,
+                                                           @PathVariable("templateId") Long templateId,
                                                            @RequestParam("contractId") Long contractId) {
         User user = authenticateAndFetchUser(userRepository, authentication);
         List<String> roles = fetchRolesForUser(authentication);
-        List<BidTemplateFieldUpdateResponse> responses = bidService.uploadTemplateToContract(bidId, bidDocumentId, contractId, user, roles);
+        List<BidTemplateFieldUpdateResponse> responses = bidService.uploadTemplateToContract(bidId, templateId, contractId, user, roles);
         return ApiResponse.success("Document uploaded successfully", responses);
     }
 

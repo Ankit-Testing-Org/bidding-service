@@ -47,11 +47,11 @@ FLOW STEPS :
        	- // STEP 2) STORE FILE
        	- // STEP 3) UPDATE CONTRACT DOCUMENT DB
         - // STEP 4) Extract text and save pages //IGNORE
-        - // STEP 5) ANALYSE THE CONTRACT. //STEP 5 & 6 Combined
-        - // STEP 6) Extract lots and save them
-        - // STEP 7) SEND EMAIL TO BIDDERS. // WE CAN DISCUSS FURTHER.
+        - // STEP 5) Extract lots and save them
+        - // STEP 6) ANALYSE THE CONTRACT. //STEP 5 & 6 Combined
+        - // STEP 7) ANALYSE THE LOTS. //STEP 5 & 6 Combined
+        - // STEP 8) SEND EMAIL TO BIDDERS. // WE CAN DISCUSS FURTHER.
 
-        // EMAIL WILL BE TRIGGERED TO BIDDERS.
 
         2) - It will be assigned to bidder.
                       (Controller : ContractAssignmentController, @PostMapping("/{contractId}/assign")

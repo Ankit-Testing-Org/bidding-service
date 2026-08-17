@@ -47,6 +47,5 @@ public class Proposal {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<ProposalHistory> history =
-            new ArrayList<>();
+    private List<ProposalHistory> history = new ArrayList<>();
 }

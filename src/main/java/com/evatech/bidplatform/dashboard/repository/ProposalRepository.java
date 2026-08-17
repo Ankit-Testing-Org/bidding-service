@@ -122,4 +122,7 @@ public interface ProposalRepository extends JpaRepository<Proposal, Long> {
     long countClosedProposals();
 
     Proposal getByIdAndContractDocument(Long proposalId, ContractDocument contractDocument);
+
+    Proposal getByContractDocument(ContractDocument contractDocument);
+
 }

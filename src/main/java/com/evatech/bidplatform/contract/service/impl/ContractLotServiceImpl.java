@@ -18,6 +18,8 @@ import com.evatech.bidplatform.contract.repository.ContractLotRepository;
 import com.evatech.bidplatform.contract.repository.ContractPageTextRepository;
 import com.evatech.bidplatform.contract.service.ContractLotService;
 import com.evatech.bidplatform.contract.service.ContractService;
+import com.evatech.bidplatform.dashboard.entity.Proposal;
+import com.evatech.bidplatform.dashboard.service.ProposalService;
 import com.evatech.bidplatform.user.entity.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -48,21 +50,29 @@ public class ContractLotServiceImpl implements ContractLotService {
     private final AiRequestLoggerService aiRequestLoggerService;
     private final EntityManager entityManager;
     private final ContractLotAnalysisMapper contractLotAnalysisMapper;
+    private final ProposalService proposalService;
 
     @Override
-    public ContractLot qualifyLot(Long contractId, String lotNumber, User user) {
-
+    public ContractLot qualifyLot(Long contractId, String lotNumber, User user
+            , List<String> roles) {
+        ContractDocument contractDocument = contractService.getContract(contractId, user, roles);
         ContractLot contractLot = getContractLotOrThrow(contractId, lotNumber, user);
-
         contractLot.qualify(user.getEmail());
+        contractLot = contractLotRepository.save(contractLot);
+        Proposal proposal = proposalService.getProposal(null, contractDocument);
+        proposalService.updateProposal(proposal, user, roles, null);
 
-        return contractLotRepository.save(contractLot);
+        return contractLot;
     }
 
     @Override
-    public ContractLot unqualifyLot(Long contractId, String lotNumber, User user) {
+    public ContractLot unqualifyLot(Long contractId, String lotNumber, User user
+            , List<String> roles) {
+        ContractDocument contractDocument = contractService.getContract(contractId, user, roles);
         ContractLot contractLot = getContractLotOrThrow(contractId, lotNumber, user);
         contractLot.unqualify(user.getEmail());
+        Proposal proposal = proposalService.getProposal(null, contractDocument);
+        proposalService.updateProposal(proposal, user, roles, null);
         return contractLotRepository.save(contractLot);
     }
 

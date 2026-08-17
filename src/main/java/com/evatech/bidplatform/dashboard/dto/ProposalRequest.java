@@ -1,5 +1,6 @@
 package com.evatech.bidplatform.dashboard.dto;
 
+import com.evatech.bidplatform.dashboard.entity.ProposalStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -12,7 +13,7 @@ public record ProposalRequest(
         LocalDate submissionDate,
         @NotNull
         Long contractDocumentId,
-        List<Long> contractLotIds
-
+        List<Long> contractLotIds,
+        ProposalStatus proposalStatus
 ) {
 }

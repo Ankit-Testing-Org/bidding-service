@@ -2,7 +2,6 @@ package com.evatech.bidplatform.contract.controller;
 
 
 import com.evatech.bidplatform.ApiResponse;
-import com.evatech.bidplatform.contract.dto.ContractLotAnalysisResult;
 import com.evatech.bidplatform.contract.dto.request.ApproveAnalysisRequest;
 import com.evatech.bidplatform.contract.dto.request.ReanalyseLotRequest;
 import com.evatech.bidplatform.contract.dto.response.AnalysisReviewResponse;
@@ -53,8 +52,10 @@ public class ContractLotController extends AbstractController {
                                                        @PathVariable String lotNumber) {
 
         User user = authenticateAndFetchUser(userRepository, authentication);
+        List<String> roles = fetchRolesForUser(authentication);
 
-        ContractLot contractLot = contractLotService.qualifyLot(contractId, lotNumber, user);
+        ContractLot contractLot = contractLotService.qualifyLot(contractId, lotNumber, user,
+                roles);
 
         return ApiResponse.success("Lot qualified successfully", contractLotMapper.toResponse(contractLot));
     }
@@ -63,8 +64,10 @@ public class ContractLotController extends AbstractController {
     public ApiResponse<ContractLotResponse> unqualifyLot(Authentication authentication, @PathVariable Long contractId, @PathVariable String lotNumber) {
 
         User user = authenticateAndFetchUser(userRepository, authentication);
+        List<String> roles = fetchRolesForUser(authentication);
 
-        ContractLot contractLot = contractLotService.unqualifyLot(contractId, lotNumber, user);
+        ContractLot contractLot = contractLotService.unqualifyLot(contractId, lotNumber, user,
+                roles);
 
         return ApiResponse.success("Lot unqualified successfully", contractLotMapper.toResponse(contractLot));
     }

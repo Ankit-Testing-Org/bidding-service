@@ -10,6 +10,8 @@ import com.evatech.bidplatform.contract.entity.analysis.ContractAnalysisSummary;
 import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
 import com.evatech.bidplatform.contract.repository.*;
 import com.evatech.bidplatform.contract.service.*;
+import com.evatech.bidplatform.dashboard.dto.ProposalRequest;
+import com.evatech.bidplatform.dashboard.service.ProposalService;
 import com.evatech.bidplatform.user.dto.RoleType;
 import com.evatech.bidplatform.user.dto.response.ContractHighlightResponse;
 import com.evatech.bidplatform.user.entity.User;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -37,6 +40,7 @@ public class ContractServiceImpl implements ContractService {
     private final BidTemplateFieldRepository bidTemplateFieldRepository;
     private final ContractHighlightService contractHighlightService;
     private final ContractAnalysisOrchestrator contractAnalysisOrchestrator;
+    private final ProposalService proposalService;
 
     @Override
     public ContractDocument uploadContract(
@@ -161,7 +165,22 @@ public class ContractServiceImpl implements ContractService {
         contractDocument.assignTo(assignedTo, assignedBy);
         String remarks = resolveAssignmentRemarks(oldAssignee, assignedTo);
         createAssignmentHistory(contractDocument, oldAssignee,  assignedTo,  assignedBy, remarks);
-        return contractDocumentRepository.save(contractDocument);
+        contractDocument = contractDocumentRepository.save(contractDocument);
+
+        List<ContractLot> contractLots = contractLotService.getContractLots(contractId,
+                user, roles);
+        List<Long> contractLotIds = contractLots.stream()
+                .map(ContractLot::getId).toList();
+
+        ProposalRequest proposalRequest = new ProposalRequest(
+                contractDocument.getOriginalFileName(),
+                LocalDate.now(),
+                contractDocument.getId(),
+                contractLotIds,
+                null
+        );
+        proposalService.createProposal(contractDocument, user, proposalRequest);
+        return contractDocument;
     }
 
     @Override
