@@ -35,7 +35,22 @@ public class LocalFileStorageServiceImpl implements FileStorageService {
         createDirectory(contractDirectory);
         copyFile(file, targetPath);
 
-        return "contracts/" + fileName;
+        return targetPath.toString();
+    }
+
+    @Override
+    public Resource loadContract(String fileName) {
+
+        try {
+            Path contractDirectory = getBasePath().resolve("contracts");
+            Path uploadDir = contractDirectory.resolve(fileName);
+            Path target = uploadDir.resolve(fileName);
+
+            return new UrlResource(target.toUri());
+        } catch (MalformedURLException ex) {
+
+            throw new FileStorageException("Failed to load file", ex);
+        }
     }
 
     @Override
@@ -134,14 +149,6 @@ public class LocalFileStorageServiceImpl implements FileStorageService {
             Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException exception) {
             throw new IllegalStateException("Could not store file: " + targetPath, exception);
-        }
-    }
-
-    private void writeBytes(byte[] content, Path targetPath) {
-        try {
-            Files.write(targetPath, content);
-        } catch (IOException exception) {
-            throw new IllegalStateException("Could not store generated document: " + targetPath, exception);
         }
     }
 

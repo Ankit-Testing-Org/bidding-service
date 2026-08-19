@@ -40,7 +40,8 @@ public class ContractAssignmentController extends AbstractController {
                 contractId,
                 assignedTo,
                 user,
-                roles
+                roles,
+                ""
         );
 
         return ApiResponse.success(
@@ -59,7 +60,8 @@ public class ContractAssignmentController extends AbstractController {
         ContractDocument contractDocument = contractService.unassignContract(
                 contractId,
                 user,
-                roles
+                roles,
+                ""
         );
 
         return ApiResponse.success(

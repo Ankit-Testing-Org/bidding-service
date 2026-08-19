@@ -9,6 +9,8 @@ public interface FileStorageService {
 
     String storeContract(MultipartFile file);
 
+    Resource loadContract(String fileName);
+
     Path resolvePath(String relativePath);
 
     Path getTempDirectory();

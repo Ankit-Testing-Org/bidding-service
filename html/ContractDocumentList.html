@@ -1241,7 +1241,11 @@
     */
 
     const API_BASE_URL = "http://localhost:8080";
-    const CONTRACTS_API_URL = API_BASE_URL + "/api/contracts";
+    const CONTRACTS_DASHBOARD_URL =
+            API_BASE_URL + "/api/contracts/dashboard";
+
+    const CONTRACT_SEARCH_URL =
+            API_BASE_URL + "/api/contracts/search";
     const ANALYSIS_PAGE_URL = "ContractDocumentAnalysis.html";
 
     const CURRENT_USER_ID = "ankit";
@@ -1249,74 +1253,6 @@
     let contracts = [];
     let filteredContracts = [];
     let selectedContract = null;
-
-    const mockContracts = [
-      {
-        id: 108,
-        name: "Hospital Medicine Supply Tender 2026",
-        status: "REVIEW_PENDING",
-        assignationStatus: "ASSIGNED_TO_ME",
-        stage: "LEGAL_REVIEW",
-        valuation: 2450000,
-        currency: "EUR",
-        uploadedAt: "2026-08-18T09:20:00",
-        assignedToUserId: "ankit",
-        assignedToName: "Ankit Manchanda",
-        pdfUrl: "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf"
-      },
-      {
-        id: 107,
-        name: "Radiology Equipment Procurement Lot Contract",
-        status: "ANALYSIS_IN_PROGRESS",
-        assignationStatus: "ASSIGNED_TO_OTHER",
-        stage: "AI_ANALYSIS",
-        valuation: 1800000,
-        currency: "EUR",
-        uploadedAt: "2026-08-17T15:42:00",
-        assignedToUserId: "deepika",
-        assignedToName: "Deepika Sharma",
-        pdfUrl: "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf"
-      },
-      {
-        id: 106,
-        name: "Hospital Bed and Device Framework Agreement",
-        status: "UPLOADED",
-        assignationStatus: "UNASSIGNED",
-        stage: "INTAKE",
-        valuation: 950000,
-        currency: "EUR",
-        uploadedAt: "2026-08-16T11:10:00",
-        assignedToUserId: null,
-        assignedToName: null,
-        pdfUrl: "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf"
-      },
-      {
-        id: 105,
-        name: "Managed Clinical Support Service Contract",
-        status: "APPROVED",
-        assignationStatus: "ASSIGNED_TO_ME",
-        stage: "APPROVED_FOR_BID",
-        valuation: 3200000,
-        currency: "EUR",
-        uploadedAt: "2026-08-14T10:05:00",
-        assignedToUserId: "ankit",
-        assignedToName: "Ankit Manchanda",
-        pdfUrl: "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf"
-      },
-      {
-        id: 104,
-        name: "Digital Patient Workflow Automation Contract",
-        status: "REJECTED",
-        assignationStatus: "ASSIGNED_TO_OTHER",
-        stage: "CONTRACT_REJECTED",
-        valuation: 720000,
-        currency: "EUR",
-        uploadedAt: "2026-08-12T16:01:00",
-        assignedToUserId: "maher",
-        assignedToName: "Maher Alsafadi",
-        pdfUrl: "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf"
-      }
-    ];
 
     document.addEventListener("DOMContentLoaded", function () {
       bindEvents();
@@ -1361,40 +1297,92 @@
     }
 
     async function loadContracts() {
+
       showLoading(true);
 
       try {
-        const token = getAccessToken();
 
-        const response = await fetch(CONTRACTS_API_URL, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": token ? "Bearer " + token : ""
-          }
-        });
+        const response = await fetch(
+                CONTRACTS_DASHBOARD_URL,
+                {
+                  method: "GET",
+                  headers: buildAuthHeaders()
+                }
+        );
 
-        if (!response.ok) {
-          throw new Error("API returned status " + response.status);
+        const apiResponse = await response.json();
+
+        if (!apiResponse.success) {
+          throw new Error(apiResponse.message);
         }
 
-        const data = await response.json();
+        const dashboard = apiResponse.data;
 
-        contracts = Array.isArray(data) ? data : [];
-        showToast("Contracts loaded from API");
-      } catch (error) {
-        console.warn("Using mock contracts because API was not available:", error);
-        contracts = mockContracts;
-        showToast("Using mock contracts. Connect API when backend is ready.");
-      } finally {
-        contracts = sortLatestToOld(contracts);
+        contracts = dashboard.contracts || [];
+
+        updateDashboardSummary(
+                dashboard.summary
+        );
+
         filteredContracts = [...contracts];
 
         renderContracts();
-        updateStats();
+
+        showToast(apiResponse.message);
+
+      } catch (error) {
+
+        console.error(error);
+
+        showToast(
+                "Failed to load contracts"
+        );
+
+      } finally {
 
         showLoading(false);
       }
+    }
+
+    function updateDashboardSummary(summary) {
+
+      document.getElementById(
+              "totalContractsStat"
+      ).textContent =
+              summary.totalContracts;
+
+      document.getElementById(
+              "assignedToMeStat"
+      ).textContent =
+              summary.assignedToMe;
+
+      document.getElementById(
+              "totalValuationStat"
+      ).textContent =
+              formatCompactMoney(
+                      summary.totalValuation,
+                      "EUR"
+              );
+
+      document.getElementById(
+              "uploadedCount"
+      ).textContent =
+              summary.uploaded;
+
+      document.getElementById(
+              "analysisCount"
+      ).textContent =
+              summary.underAnalysis;
+
+      document.getElementById(
+              "assignedCount"
+      ).textContent =
+              summary.assignedToMe;
+
+      document.getElementById(
+              "unassignedCount"
+      ).textContent =
+              summary.unassigned;
     }
 
     function refreshContracts() {
@@ -1403,34 +1391,78 @@
       loadContracts();
     }
 
-    function sortLatestToOld(items) {
-      return [...items].sort(function (a, b) {
-        return new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime();
-      });
-    }
 
-    function applyFilters() {
-      const searchValue = document.getElementById("contractSearchInput").value.trim().toLowerCase();
-      const statusValue = document.getElementById("statusFilter").value;
-      const assignmentValue = document.getElementById("assignmentFilter").value;
+    async function applyFilters() {
 
-      filteredContracts = contracts.filter(function (contract) {
-        const searchableText = [
-          contract.name,
-          contract.status,
-          contract.assignationStatus,
-          contract.stage,
-          contract.assignedToName
-        ].join(" ").toLowerCase();
+      try {
 
-        const matchesSearch = !searchValue || searchableText.includes(searchValue);
-        const matchesStatus = statusValue === "ALL" || contract.status === statusValue;
-        const matchesAssignment = assignmentValue === "ALL" || contract.assignationStatus === assignmentValue;
+        const request = {
 
-        return matchesSearch && matchesStatus && matchesAssignment;
-      });
+          searchText:
+          document
+                  .getElementById(
+                          "contractSearchInput"
+                  )
+                  .value,
 
-      renderContracts();
+          status:
+          document
+                  .getElementById(
+                          "statusFilter"
+                  )
+                  .value,
+
+          assignmentStatus:
+          document
+                  .getElementById(
+                          "assignmentFilter"
+                  )
+                  .value,
+
+          page: 0,
+
+          size: 20,
+
+          sortBy: "uploadedAt",
+
+          sortDirection: "DESC"
+        };
+
+        const response = await fetch(
+                CONTRACT_SEARCH_URL,
+                {
+                  method: "POST",
+                  headers: {
+                    ...buildAuthHeaders(),
+                    "Content-Type":
+                            "application/json"
+                  },
+                  body: JSON.stringify(request)
+                }
+        );
+
+        const apiResponse =
+                await response.json();
+
+        if (!apiResponse.success) {
+          throw new Error(
+                  apiResponse.message
+          );
+        }
+
+        filteredContracts =
+                apiResponse.data.content;
+
+        renderContracts();
+
+      } catch (error) {
+
+        console.error(error);
+
+        showToast(
+                "Failed to search contracts"
+        );
+      }
     }
 
     function renderContracts() {
@@ -1448,17 +1480,17 @@
 
       filteredContracts.forEach(function (contract) {
         const tr = document.createElement("tr");
-        tr.dataset.contractId = contract.id;
+        tr.dataset.contractId = contract.contractId;
 
-        if (selectedContract && selectedContract.id === contract.id) {
+        if (selectedContract && selectedContract.id === contract.contractId) {
           tr.classList.add("selected");
         }
 
         tr.innerHTML = `
           <td>
-            <div class="contract-name">${escapeHtml(contract.name)}</div>
+            <div class="contract-name">${escapeHtml(contract.contractName)}</div>
             <div class="contract-meta">
-              Uploaded ${formatDateTime(contract.uploadedAt)} · ID ${contract.id}
+              Uploaded ${formatDateTime(contract.uploadedAt)} · ID ${contract.contractId}
             </div>
           </td>
 
@@ -1470,8 +1502,8 @@
           </td>
 
           <td>
-            <span class="pill ${getAssignmentClass(contract.assignationStatus)}">
-              ${getAssignmentIcon(contract.assignationStatus)}
+            <span class="pill ${getAssignmentClass(contract.assignmentStatus)}">
+              ${getAssignmentIcon(contract.assignmentStatus)}
               ${formatAssignment(contract)}
             </span>
           </td>
@@ -1493,57 +1525,118 @@
       });
     }
 
-    function handleContractClick(contract) {
+    async function handleContractClick(
+            contract
+    ) {
+
       selectedContract = contract;
+
       renderContracts();
 
-      if (isAssignedToCurrentUser(contract)) {
-        showToast("Assigned to you. Opening Contract Analysis.");
-        goToAnalysis(contract);
+      const response = await fetch(
+              API_BASE_URL +
+              "/api/contracts/" +
+              contract.contractId +
+              "/analysis-access",
+              {
+                headers: buildAuthHeaders()
+              }
+      );
+
+      const apiResponse =
+              await response.json();
+
+      if (
+              apiResponse.success &&
+              apiResponse.data.canOpenAnalysis
+      ) {
+
+        window.location.href =
+                "ContractDocumentAnalysis.html?contractId="
+                + contract.contractId;
+
         return;
       }
 
-      showToast("Opening contract PDF preview.");
       loadContractInViewer(contract);
     }
 
     function isAssignedToCurrentUser(contract) {
-      if (contract.assignationStatus === "ASSIGNED_TO_ME") {
+      if (contract.assignmentStatus === "ASSIGNED_TO_ME") {
         return true;
       }
 
-      return contract.assignedToUserId && contract.assignedToUserId === CURRENT_USER_ID;
+      return contract.assignedTo && contract.assignedTo === CURRENT_USER_ID;
     }
 
     function goToAnalysis(contract) {
-      const targetUrl = ANALYSIS_PAGE_URL + "?contractId=" + encodeURIComponent(contract.id);
+      const targetUrl = ANALYSIS_PAGE_URL + "?contractId=" + encodeURIComponent(contract.contractId);
       window.location.href = targetUrl;
     }
 
-    function loadContractInViewer(contract) {
-      const pdfFrame = document.getElementById("pdfFrame");
-      const placeholder = document.getElementById("viewerPlaceholder");
+    async function loadContractInViewer(
+            contract
+    ) {
 
-      document.getElementById("viewerContractTitle").textContent = contract.name;
-      document.getElementById("viewerContractSubtitle").textContent =
-        formatAssignment(contract) + " · " + formatEnum(contract.stage);
+      const response = await fetch(
+              API_BASE_URL +
+              "/api/contracts/" +
+              contract.contractId,
+              {
+                headers: buildAuthHeaders()
+              }
+      );
 
-      document.getElementById("detailStatus").textContent = formatEnum(contract.status);
-      document.getElementById("detailOwner").textContent = contract.assignedToName || "Not assigned";
-      document.getElementById("detailUploadDate").textContent = formatDateTime(contract.uploadedAt);
+      const apiResponse =
+              await response.json();
 
-      document.getElementById("openPdfButton").disabled = !contract.pdfUrl;
-      document.getElementById("analysisButton").disabled = !isAssignedToCurrentUser(contract);
+      const details =
+              apiResponse.data;
 
-      if (contract.pdfUrl) {
-        pdfFrame.src = contract.pdfUrl;
-        pdfFrame.style.display = "block";
-        placeholder.style.display = "none";
-      } else {
-        pdfFrame.removeAttribute("src");
-        pdfFrame.style.display = "none";
-        placeholder.style.display = "flex";
-      }
+      document.getElementById(
+              "viewerContractTitle"
+      ).textContent =
+              details.contractName;
+
+      document.getElementById(
+              "viewerContractSubtitle"
+      ).textContent =
+              details.clientName || "";
+
+      document.getElementById(
+              "detailStatus"
+      ).textContent =
+              details.status;
+
+      document.getElementById(
+              "detailOwner"
+      ).textContent =
+              details.assignedToName || "N/A";
+
+      document.getElementById(
+              "detailUploadDate"
+      ).textContent =
+              formatDateTime(
+                      details.uploadedAt
+              );
+
+      document.getElementById(
+              "pdfFrame"
+      ).src =
+              API_BASE_URL +
+              "/api/contracts/" +
+              details.contractId +
+              "/pdf";
+
+      document.getElementById(
+              "pdfFrame"
+      ).style.display =
+              "block";
+
+      document.getElementById(
+              "viewerPlaceholder"
+      ).style.display =
+              "none";
     }
 
     function resetViewer() {
@@ -1565,60 +1658,20 @@
       placeholder.style.display = "flex";
     }
 
-    function openPdfInNewTab(contract) {
-      if (!contract.pdfUrl) {
-        showToast("PDF is not available for this contract.");
-        return;
-      }
 
-      window.open(contract.pdfUrl, "_blank", "noopener,noreferrer");
+    function openPdfInNewTab(
+            contract
+    ) {
+
+      window.open(
+              API_BASE_URL +
+              "/api/contracts/" +
+              contract.contractId +
+              "/pdf",
+              "_blank"
+      );
     }
 
-    function updateStats() {
-      const totalContracts = contracts.length;
-      const assignedToMe = contracts.filter(isAssignedToCurrentUser).length;
-      const uploaded = contracts.filter(function (contract) {
-        return contract.status === "UPLOADED";
-      }).length;
-      const analysis = contracts.filter(function (contract) {
-        return contract.status === "ANALYSIS_IN_PROGRESS" || contract.status === "REVIEW_PENDING";
-      }).length;
-      const unassigned = contracts.filter(function (contract) {
-        return contract.assignationStatus === "UNASSIGNED";
-      }).length;
-      const totalValuation = contracts.reduce(function (sum, contract) {
-        return sum + (Number(contract.valuation) || 0);
-      }, 0);
-
-      document.getElementById("totalContractsStat").textContent = totalContracts;
-      document.getElementById("assignedToMeStat").textContent = assignedToMe;
-      document.getElementById("totalValuationStat").textContent = formatCompactMoney(totalValuation, "EUR");
-
-      document.getElementById("uploadedCount").textContent = uploaded;
-      document.getElementById("analysisCount").textContent = analysis;
-      document.getElementById("assignedCount").textContent = assignedToMe;
-      document.getElementById("unassignedCount").textContent = unassigned;
-    }
-
-    function getAccessToken() {
-      /*
-        If you use Keycloak JS adapter, token may be available as:
-
-        window.keycloak.token
-
-        Or if you store it manually after login:
-
-        localStorage.setItem("access_token", token)
-
-        This function supports both.
-      */
-
-      if (window.keycloak && window.keycloak.token) {
-        return window.keycloak.token;
-      }
-
-      return localStorage.getItem("access_token") || sessionStorage.getItem("access_token");
-    }
 
     function getStatusClass(status) {
       switch (status) {
@@ -1681,11 +1734,11 @@
     }
 
     function formatAssignment(contract) {
-      if (contract.assignationStatus === "ASSIGNED_TO_ME") {
+      if (contract.assignmentStatus === "ASSIGNED_TO_ME") {
         return "Assigned to Me";
       }
 
-      if (contract.assignationStatus === "ASSIGNED_TO_OTHER") {
+      if (contract.assignmentStatus === "ASSIGNED_TO_OTHER") {
         return contract.assignedToName ? "Assigned to " + contract.assignedToName : "Assigned to Other";
       }
 

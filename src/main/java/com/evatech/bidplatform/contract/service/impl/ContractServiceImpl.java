@@ -12,11 +12,18 @@ import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
 import com.evatech.bidplatform.contract.repository.*;
 import com.evatech.bidplatform.contract.service.*;
 import com.evatech.bidplatform.dashboard.dto.ProposalRequest;
+import com.evatech.bidplatform.dashboard.dto.contract.request.ContractSearchRequest;
 import com.evatech.bidplatform.dashboard.service.ProposalService;
 import com.evatech.bidplatform.user.dto.RoleType;
 import com.evatech.bidplatform.user.dto.response.ContractHighlightResponse;
 import com.evatech.bidplatform.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -166,7 +173,8 @@ public class ContractServiceImpl implements ContractService {
     @AuditAction(action = "ASSIGN_CONTRACT", entity = "ContractDocument")
     @Override
     public ContractDocument assignContract(
-            Long contractId, String assignedTo, User user, List<String> roles) {
+            Long contractId, String assignedTo, User user, List<String> roles,
+            String userComment) {
 
         String assignedBy = getUserEmail(user);
         if (assignedTo == null || assignedTo.isBlank()) {
@@ -201,7 +209,8 @@ public class ContractServiceImpl implements ContractService {
             Long contractId,
             String newAssignee,
             User user,
-            List<String> roles) {
+            List<String> roles,
+            String userComment) {
 
         if (newAssignee == null || newAssignee.isBlank()) {
             throw new IllegalArgumentException("New assignee must not be empty");
@@ -222,7 +231,8 @@ public class ContractServiceImpl implements ContractService {
 
     @AuditAction(action = "UNASSIGN_CONTRACT", entity = "ContractDocument")
     @Override
-    public ContractDocument unassignContract(Long contractId, User user, List<String> roles) {
+    public ContractDocument unassignContract(Long contractId, User user, List<String> roles,
+                                             String userComment) {
         String assignedBy = getUserEmail(user);
 
         ContractDocument contractDocument = getContractOrThrow(contractId, user, roles);
@@ -309,6 +319,61 @@ public class ContractServiceImpl implements ContractService {
         fieldValue.setUpdatedAt(LocalDateTime.now());
 
         return contractDocumentFieldValueRepository.save(fieldValue);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ContractDocument> getContractDashboard() {
+        return contractDocumentRepository.findAllByOrderByUploadedAtDesc();
+    }
+
+    @Override
+    public Page<ContractDocument> searchContracts(User user,
+                                                  List<String> roles,
+                                                  ContractSearchRequest request)  {
+
+        int page = request.page() == null || request.page() < 0
+                ? 0
+                : request.page();
+
+        int size = request.size() == null || request.size() <= 0
+                ? 20
+                : request.size();
+
+        String sortBy = request.sortBy() == null || request.sortBy().isBlank()
+                ? "uploadedAt"
+                : request.sortBy();
+
+        Sort.Direction direction =
+                "ASC".equalsIgnoreCase(request.sortDirection())
+                        ? Sort.Direction.ASC
+                        : Sort.Direction.DESC;
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(direction, sortBy)
+        );
+
+        Specification<ContractDocument> specification =
+                ContractDocumentSpecification.search(
+                        request,
+                        user.getEmail()
+                );
+
+        return contractDocumentRepository.findAll(
+                specification,
+                pageable
+        );
+    }
+
+    @Override
+    public Resource retrieveContractPdf(Long contractId,
+                                        User user,
+                                        List<String> roles) {
+
+        ContractDocument contractDocument = getContract(contractId, user, roles);
+        return fileStorageService.loadContract(contractDocument.getStoragePath());
     }
 
 

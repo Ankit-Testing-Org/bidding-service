@@ -6,5 +6,7 @@ public enum ContractStatus {
     ANALYSIS_IN_PROGRESS,
     ANALYSED,
     FAILED,
-    SUBMITTED_FOR_REVIEW
+    SUBMITTED_FOR_REVIEW,
+    APPROVED,
+    REJECTED
 }

@@ -2,8 +2,11 @@ package com.evatech.bidplatform.contract.service;
 
 import com.evatech.bidplatform.contract.entity.*;
 import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
+import com.evatech.bidplatform.dashboard.dto.contract.request.ContractSearchRequest;
 import com.evatech.bidplatform.user.dto.response.ContractHighlightResponse;
 import com.evatech.bidplatform.user.entity.User;
+import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -32,19 +35,22 @@ public interface ContractService {
             Long contractId,
             String assignedTo,
             User user,
-            List<String> roles);
+            List<String> roles,
+            String userComment);
 
     ContractDocument reassignContract(
             Long contractId,
             String newAssignee,
             User user,
-            List<String> roles
+            List<String> roles,
+            String userComment
     );
 
     ContractDocument unassignContract(
             Long contractId,
             User user,
-            List<String> roles);
+            List<String> roles,
+            String userComment);
 
     List<ContractAssignmentHistory> getAssignmentHistory(
             Long contractId,
@@ -65,4 +71,14 @@ public interface ContractService {
             Long templateFieldId,
             String parsedValue,
             User user);
+
+    List<ContractDocument> getContractDashboard();
+
+    Page<ContractDocument> searchContracts(User user,
+                                           List<String> roles,
+                                           ContractSearchRequest request);
+
+    Resource retrieveContractPdf(Long contractId,
+                                 User user,
+                                 List<String> roles);
 }
