@@ -17,14 +17,6 @@ public interface ProposalRepository extends JpaRepository<Proposal, Long> {
 
     long countByStatus(ProposalStatus status);
 
-    long countByCreatedBy(String createdBy);
-
-    long countByCreatedByAndStatus(String createdBy, ProposalStatus status);
-
-    List<Proposal> findTop10ByOrderByUpdatedAtDesc();
-
-    List<Proposal> findTop10ByOrderByCreatedAtDesc();
-
     @Query("""
             SELECT p
             FROM Proposal p
@@ -120,6 +112,12 @@ public interface ProposalRepository extends JpaRepository<Proposal, Long> {
             )
             """)
     long countClosedProposals();
+
+    @Query("""
+    SELECT COALESCE(SUM(p.proposalValue), 0)
+    FROM Proposal p
+    """)
+    BigDecimal getTotalProposalValue();
 
     Proposal getByIdAndContractDocument(Long proposalId, ContractDocument contractDocument);
 

@@ -1,0 +1,2111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBid AI - Approval Workflow</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 72px;
+            background: #111827;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .logo {
+            width: 100%;
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 800;
+            background: #020617;
+            border-bottom: 1px solid #374151;
+        }
+
+        .sidebar-menu {
+            width: 100%;
+            padding: 16px 0;
+        }
+
+        .menu-item {
+            position: relative;
+            height: 58px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            color: #d1d5db;
+            border-left: 4px solid transparent;
+        }
+
+        .menu-item:hover {
+            background: #1f2937;
+            color: #ffffff;
+        }
+
+        .menu-item.active {
+            background: #1e40af;
+            color: #ffffff;
+            border-left-color: #60a5fa;
+        }
+
+        .menu-icon {
+            font-size: 21px;
+        }
+
+        .menu-tooltip {
+            position: absolute;
+            left: 86px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #111827;
+            color: #ffffff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            white-space: nowrap;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.2s ease;
+            font-size: 13px;
+            z-index: 100;
+            box-shadow: 0 10px 20px rgba(15, 23, 42, 0.25);
+        }
+
+        .menu-item:hover .menu-tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .top-header h1 {
+            font-size: 28px;
+            margin-bottom: 6px;
+            color: #111827;
+        }
+
+        .top-header p {
+            color: #6b7280;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .workspace {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .tiles-grid {
+            display: grid;
+            grid-template-columns: 1.35fr repeat(4, 1fr);
+            gap: 16px;
+            align-items: stretch;
+        }
+
+        .tile {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+            padding: 18px;
+            min-height: 166px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .tile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .tile-title-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .tile-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: #111827;
+        }
+
+        .tile-subtitle {
+            font-size: 12px;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        .tile-icon {
+            width: 34px;
+            height: 34px;
+            min-width: 34px;
+            border-radius: 12px;
+            background: #eff6ff;
+            color: #1d4ed8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .tile-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .tile-footer {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: auto;
+        }
+
+        .search-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 120px;
+            gap: 10px;
+        }
+
+        .search-row input {
+            width: 100%;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 11px 12px;
+            font-size: 14px;
+            outline: none;
+            background: #ffffff;
+        }
+
+        .search-row input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        .metric {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .metric-value {
+            font-size: 22px;
+            font-weight: 900;
+            color: #111827;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .badge-green {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-yellow {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-red {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-blue {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-purple {
+            background: #ede9fe;
+            color: #5b21b6;
+        }
+
+        .badge-gray {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .primary-btn {
+            background: #2563eb;
+            color: #ffffff;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 800;
+            font-size: 13px;
+        }
+
+        .primary-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .primary-btn:disabled {
+            background: #93c5fd;
+            cursor: not-allowed;
+        }
+
+        .secondary-btn {
+            background: #f3f4f6;
+            color: #111827;
+            border: 1px solid #d1d5db;
+            padding: 9px 12px;
+            border-radius: 9px;
+            cursor: pointer;
+            font-weight: 800;
+            font-size: 12px;
+        }
+
+        .secondary-btn:hover {
+            background: #e5e7eb;
+        }
+
+        .workflow-card {
+            background: #ffffff;
+            border-radius: 18px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+            overflow: hidden;
+        }
+
+        .workflow-toolbar {
+            padding: 18px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 14px;
+            background: #ffffff;
+        }
+
+        .workflow-title h2 {
+            font-size: 20px;
+            color: #111827;
+            margin-bottom: 5px;
+        }
+
+        .workflow-title span {
+            font-size: 13px;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+
+        .workflow-body {
+            padding: 22px;
+        }
+
+        .empty-state {
+            min-height: 420px;
+            border: 1px dashed #cbd5e1;
+            background: #f8fafc;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #64748b;
+            padding: 30px;
+        }
+
+        .empty-state h3 {
+            color: #111827;
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .not-approval-state {
+            min-height: 420px;
+            border: 1px solid #facc15;
+            background: #fffbeb;
+            border-radius: 16px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #92400e;
+            padding: 30px;
+        }
+
+        .not-approval-state h3 {
+            color: #92400e;
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .not-approval-state p {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .approval-layout {
+            display: none;
+            grid-template-columns: minmax(0, 1.45fr) minmax(360px, 0.8fr);
+            gap: 20px;
+            align-items: start;
+        }
+
+        .stage-panel,
+        .history-panel {
+            border: 1px solid #e5e7eb;
+            background: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 16px 18px;
+            border-bottom: 1px solid #e5e7eb;
+            background: #f8fafc;
+        }
+
+        .panel-header h3 {
+            font-size: 17px;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .panel-header p {
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        .panel-body {
+            padding: 18px;
+        }
+
+        .stage-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .stage-card {
+            border: 1px solid #e5e7eb;
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 16px;
+            display: grid;
+            grid-template-columns: 44px minmax(0, 1fr);
+            gap: 14px;
+            position: relative;
+        }
+
+        .stage-card.active {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+
+        .stage-card.completed {
+            border-color: #16a34a;
+            background: #f0fdf4;
+        }
+
+        .stage-card.rejected {
+            border-color: #dc2626;
+            background: #fef2f2;
+        }
+
+        .stage-number {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #e5e7eb;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+        }
+
+        .stage-card.active .stage-number {
+            background: #2563eb;
+            color: #ffffff;
+        }
+
+        .stage-card.completed .stage-number {
+            background: #16a34a;
+            color: #ffffff;
+        }
+
+        .stage-card.rejected .stage-number {
+            background: #dc2626;
+            color: #ffffff;
+        }
+
+        .stage-main {
+            min-width: 0;
+        }
+
+        .stage-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .stage-name {
+            font-size: 16px;
+            font-weight: 900;
+            color: #111827;
+        }
+
+        .stage-owner {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        .stage-description {
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.5;
+            margin-top: 8px;
+        }
+
+        .stage-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            font-size: 13px;
+            color: #475569;
+            padding: 12px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 14px;
+            color: #374151;
+            vertical-align: top;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .timeline-item {
+            display: grid;
+            grid-template-columns: 34px minmax(0, 1fr);
+            gap: 12px;
+        }
+
+        .timeline-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: #e0e7ff;
+            color: #3730a3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+        }
+
+        .timeline-content {
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .timeline-item:last-child .timeline-content {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .timeline-content strong {
+            display: block;
+            color: #111827;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .timeline-content span {
+            font-size: 12px;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .assistant-card {
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+            display: grid;
+            grid-template-columns: 280px minmax(0, 1fr);
+            gap: 0;
+            overflow: hidden;
+            min-height: 250px;
+        }
+
+        .assistant-left {
+            padding: 18px;
+            border-right: 1px solid #e5e7eb;
+            background: #f8fafc;
+        }
+
+        .assistant-left h3 {
+            font-size: 18px;
+            margin-bottom: 6px;
+            color: #111827;
+        }
+
+        .assistant-left p {
+            color: #64748b;
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .suggestion-chips {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .chip {
+            border: none;
+            background: #eef2ff;
+            color: #3730a3;
+            padding: 9px 10px;
+            font-size: 12px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-weight: 800;
+            text-align: left;
+        }
+
+        .chip:hover {
+            background: #e0e7ff;
+        }
+
+        .assistant-right {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 4px;
+            margin-bottom: 10px;
+            max-height: 185px;
+        }
+
+        .message {
+            margin-bottom: 10px;
+            max-width: 94%;
+            padding: 10px 12px;
+            border-radius: 14px;
+            line-height: 1.5;
+            font-size: 13px;
+        }
+
+        .ai-message {
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            color: #111827;
+        }
+
+        .user-message {
+            background: #2563eb;
+            color: #ffffff;
+            margin-left: auto;
+        }
+
+        .answer-section {
+            padding: 8px;
+            background: #ffffff;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .answer-section strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .chat-input-area {
+            display: flex;
+            gap: 8px;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 10px;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            outline: none;
+            font-size: 13px;
+        }
+
+        .send-btn {
+            background: #111827;
+            color: #ffffff;
+            border: none;
+            padding: 0 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 800;
+        }
+
+        .toast {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            background: #111827;
+            color: #ffffff;
+            padding: 14px 18px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            display: none;
+            z-index: 1000;
+            max-width: 420px;
+            line-height: 1.4;
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 2000;
+        }
+
+        .modal {
+            width: 640px;
+            max-width: 100%;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 20px 50px rgba(15, 23, 42, 0.28);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .modal-header h3 {
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+
+        .modal-header p {
+            color: #6b7280;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 16px 20px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .modal-body label {
+            font-size: 13px;
+            font-weight: 800;
+            color: #374151;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .modal-body textarea {
+            width: 100%;
+            min-height: 120px;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 12px;
+            resize: vertical;
+            outline: none;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .loading {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .spinner {
+            width: 15px;
+            height: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.55);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 1500px) {
+            .tiles-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .tile.search-tile {
+                grid-column: span 2;
+            }
+
+            .approval-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 1100px) {
+            .tiles-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .tile.search-tile {
+                grid-column: span 2;
+            }
+
+            .assistant-card {
+                grid-template-columns: 1fr;
+            }
+
+            .assistant-left {
+                border-right: none;
+                border-bottom: 1px solid #e5e7eb;
+            }
+
+            .suggestion-chips {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .app-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: 72px;
+                flex-direction: row;
+                overflow-x: auto;
+            }
+
+            .logo {
+                width: 72px;
+                min-width: 72px;
+            }
+
+            .sidebar-menu {
+                display: flex;
+                padding: 0;
+                width: auto;
+            }
+
+            .menu-item {
+                width: 58px;
+                min-width: 58px;
+                border-left: none;
+                border-bottom: 4px solid transparent;
+            }
+
+            .menu-item.active {
+                border-left-color: transparent;
+                border-bottom-color: #60a5fa;
+            }
+
+            .menu-tooltip {
+                display: none;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .main-content {
+                padding: 16px;
+            }
+
+            .top-header,
+            .workflow-toolbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .tiles-grid,
+            .tile.search-tile {
+                grid-template-columns: 1fr;
+                grid-column: auto;
+            }
+
+            .search-row {
+                grid-template-columns: 1fr;
+            }
+
+            .header-actions,
+            .tile-footer {
+                width: 100%;
+            }
+
+            .primary-btn,
+            .secondary-btn,
+            .danger-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app-container">
+
+    <aside class="sidebar">
+        <div class="logo">SB</div>
+
+        <nav class="sidebar-menu">
+            <div class="menu-item" onclick="navigateTo('/dashboard')">
+                <span class="menu-icon">🏠</span>
+                <span class="menu-tooltip">Dashboard</span>
+            </div>
+
+            <div class="menu-item" onclick="navigateTo('/contracts')">
+                <span class="menu-icon">📄</span>
+                <span class="menu-tooltip">Contract Analysis</span>
+            </div>
+
+            <div class="menu-item" onclick="navigateTo('/lots')">
+                <span class="menu-icon">📦</span>
+                <span class="menu-tooltip">Lots</span>
+            </div>
+
+            <div class="menu-item" onclick="navigateTo('/bids')">
+                <span class="menu-icon">📝</span>
+                <span class="menu-tooltip">Bid Preparation</span>
+            </div>
+
+            <div class="menu-item active" onclick="navigateTo('/workflow')">
+                <span class="menu-icon">✅</span>
+                <span class="menu-tooltip">Approval Workflow</span>
+            </div>
+			
+			<div class="menu-item" onclick="navigateTo('/approval-tasks')">
+                <span class="menu-icon">🧾</span>
+                <span class="menu-tooltip">Approval Tasks</span>
+            </div>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+
+        <div class="top-header">
+            <div>
+                <h1>Approval Workflow</h1>
+                <p>
+                    Search contract by Contract ID. If the contract is submitted for approval, approval stages and tasks will be shown.
+                    If the contract is still draft, generated, uploaded, rejected, or not submitted, the page will show that it is not in approval phase.
+                </p>
+            </div>
+
+            <div class="header-actions">
+                <button class="secondary-btn" onclick="previewSearchPayload()">Workflow API</button>
+                <button class="secondary-btn" onclick="resetWorkflow()">Reset</button>
+            </div>
+        </div>
+
+        <div class="workspace">
+
+            <section class="tiles-grid">
+
+                <div class="tile search-tile">
+                    <div class="tile-header">
+                        <div class="tile-title-group">
+                            <div class="tile-title">Search Contract Approval</div>
+                            <div class="tile-subtitle">Search by contract ID to check workflow status.</div>
+                        </div>
+                        <div class="tile-icon">🔎</div>
+                    </div>
+
+                    <div class="tile-content">
+                        <div class="search-row">
+                            <input type="text" id="contractId" value="84" placeholder="Enter Contract ID">
+                            <button class="primary-btn" id="searchBtn" onclick="searchApprovalWorkflow()">Search</button>
+                        </div>
+                    </div>
+
+                    <div class="tile-footer">
+                        <span class="badge badge-blue" id="searchStatusBadge">Search Required</span>
+                    </div>
+                </div>
+
+                <div class="tile">
+                    <div class="tile-header">
+                        <div class="tile-title-group">
+                            <div class="tile-title">Contract Status</div>
+                            <div class="tile-subtitle">Current lifecycle status.</div>
+                        </div>
+                        <div class="tile-icon">📄</div>
+                    </div>
+
+                    <div class="tile-content">
+                        <div class="metric">
+                            <span class="metric-label">Status</span>
+                            <span class="metric-value" id="contractStatusText">Unknown</span>
+                        </div>
+                    </div>
+
+                    <div class="tile-footer">
+                        <span class="badge badge-gray" id="contractStatusBadge">Not Checked</span>
+                    </div>
+                </div>
+
+                <div class="tile">
+                    <div class="tile-header">
+                        <div class="tile-title-group">
+                            <div class="tile-title">Approval Phase</div>
+                            <div class="tile-subtitle">Whether workflow is active.</div>
+                        </div>
+                        <div class="tile-icon">✅</div>
+                    </div>
+
+                    <div class="tile-content">
+                        <div class="metric">
+                            <span class="metric-label">Phase</span>
+                            <span class="metric-value" id="approvalPhaseText">Pending</span>
+                        </div>
+                    </div>
+
+                    <div class="tile-footer">
+                        <span class="badge badge-gray" id="approvalPhaseBadge">Not Checked</span>
+                    </div>
+                </div>
+
+                <div class="tile">
+                    <div class="tile-header">
+                        <div class="tile-title-group">
+                            <div class="tile-title">Current Stage</div>
+                            <div class="tile-subtitle">Active approval stage.</div>
+                        </div>
+                        <div class="tile-icon">🧭</div>
+                    </div>
+
+                    <div class="tile-content">
+                        <div class="metric">
+                            <span class="metric-label">Stage</span>
+                            <span class="metric-value" id="currentStageText">None</span>
+                        </div>
+                    </div>
+
+                    <div class="tile-footer">
+                        <span class="badge badge-gray" id="currentStageBadge">Waiting</span>
+                    </div>
+                </div>
+
+                <div class="tile">
+                    <div class="tile-header">
+                        <div class="tile-title-group">
+                            <div class="tile-title">Pending Tasks</div>
+                            <div class="tile-subtitle">Approver tasks still open.</div>
+                        </div>
+                        <div class="tile-icon">📌</div>
+                    </div>
+
+                    <div class="tile-content">
+                        <div class="metric">
+                            <span class="metric-label">Open Tasks</span>
+                            <span class="metric-value" id="pendingTaskCount">0</span>
+                        </div>
+                    </div>
+
+                    <div class="tile-footer">
+                        <span class="badge badge-gray" id="taskStatusBadge">No Tasks</span>
+                    </div>
+                </div>
+
+            </section>
+
+            <section class="workflow-card">
+                <div class="workflow-toolbar">
+                    <div class="workflow-title">
+                        <h2>Approval Workflow Stages</h2>
+                        <span id="workflowSubtitle">
+                            Search a contract to view approval workflow. Stages will appear only when the contract is in approval phase.
+                        </span>
+                    </div>
+
+                    <div>
+                        <span class="badge badge-gray" id="workflowOverallBadge">Not Checked</span>
+                    </div>
+                </div>
+
+                <div class="workflow-body">
+
+                    <div class="empty-state" id="emptyState">
+                        <div>
+                            <h3>Search Contract Approval</h3>
+                            <p>
+                                Enter a Contract ID and click Search. If the contract has been submitted for approval,
+                                SmartBid AI will show configured workflow stages, approvers, task statuses and history.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="not-approval-state" id="notApprovalState">
+                        <div>
+                            <h3>Current contract is not in Approval phase</h3>
+                            <p id="notApprovalMessage">
+                                This contract has not been submitted to approval workflow yet.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="approval-layout" id="approvalLayout">
+
+                        <div class="stage-panel">
+                            <div class="panel-header">
+                                <h3>Approval Stages</h3>
+                                <p>Configured stages are shown in workflow order.</p>
+                            </div>
+
+                            <div class="panel-body">
+                                <div class="stage-list" id="stageList"></div>
+                            </div>
+                        </div>
+
+                        <div class="history-panel">
+                            <div class="panel-header">
+                                <h3>Approval Tasks</h3>
+                                <p>Current and historical approval task status.</p>
+                            </div>
+
+                            <div class="panel-body">
+                                <table>
+                                    <thead>
+                                    <tr>
+                                        <th>Approver</th>
+                                        <th>Stage</th>
+                                        <th>Status</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="taskTableBody">
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="panel-header" style="border-top: 1px solid #e5e7eb;">
+                                <h3>Workflow History</h3>
+                                <p>Audit trail of approval decisions.</p>
+                            </div>
+
+                            <div class="panel-body">
+                                <div class="timeline" id="historyList"></div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </section>
+
+            <section class="assistant-card">
+                <div class="assistant-left">
+                    <h3>AI Approval Assistant</h3>
+                    <p>Ask about workflow status, pending approvers, current stage, or why approval is not visible.</p>
+
+                    <div class="suggestion-chips">
+                        <button class="chip" onclick="askSuggestedQuestion('What should I do first?')">What should I do first?</button>
+                        <button class="chip" onclick="askSuggestedQuestion('Why stages are not visible?')">Why stages are not visible?</button>
+                        <button class="chip" onclick="askSuggestedQuestion('Who is pending approval?')">Who is pending approval?</button>
+                    </div>
+                </div>
+
+                <div class="assistant-right">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message ai-message">
+                            Hello Ankit, search by Contract ID first.
+                            <br><br>
+                            If the contract is submitted for approval, approval stages will appear. Otherwise, the page will show that the contract is not in approval phase.
+                        </div>
+                    </div>
+
+                    <div class="chat-input-area">
+                        <input
+                                type="text"
+                                id="userQuestion"
+                                placeholder="Ask about approval workflow..."
+                                onkeydown="handleEnter(event)"
+                        >
+                        <button class="send-btn" onclick="sendQuestion()">Send</button>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+    </main>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal-backdrop" id="payloadModalBackdrop">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="payloadModalTitle">Workflow API</h3>
+            <p id="payloadModalSubtitle">Use this structure in your Spring Boot controller.</p>
+        </div>
+
+        <div class="modal-body">
+            <pre id="payloadModalContent" style="white-space: pre-wrap; background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 12px; padding: 14px; font-size: 13px; line-height: 1.5; overflow-x: auto;"></pre>
+        </div>
+
+        <div class="modal-footer">
+            <button class="secondary-btn" onclick="closePayloadModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-backdrop" id="decisionModalBackdrop">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="decisionModalTitle">Approval Decision</h3>
+            <p id="decisionModalSubtitle">Add a comment before saving the decision.</p>
+        </div>
+
+        <div class="modal-body">
+            <label for="decisionComment">Comment</label>
+            <textarea id="decisionComment" placeholder="Example: Approved after reviewing commercial and compliance documents."></textarea>
+        </div>
+
+        <div class="modal-footer">
+            <button class="secondary-btn" onclick="closeDecisionModal()">Cancel</button>
+            <button class="primary-btn" onclick="submitDecision()">Save Decision</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_BASE_URL = "http://localhost:8080/api";
+
+    let approvalState = {
+        searched: false,
+        contractId: null,
+        contractStatus: null,
+        approvalPhase: false,
+        currentStage: null,
+        workflowId: null,
+        stages: [],
+        tasks: [],
+        history: []
+    };
+
+    let pendingDecision = null;
+
+    function getAccessToken() {
+        if (window.keycloak && window.keycloak.token) {
+            return window.keycloak.token;
+        }
+
+        const possibleTokenKeys = [
+            "access_token",
+            "accessToken",
+            "kc_token",
+            "smartbid_access_token"
+        ];
+
+        for (const key of possibleTokenKeys) {
+            const localToken = localStorage.getItem(key);
+            if (localToken) {
+                return localToken;
+            }
+
+            const sessionToken = sessionStorage.getItem(key);
+            if (sessionToken) {
+                return sessionToken;
+            }
+        }
+
+        return "";
+    }
+
+    function buildAuthHeaders(extraHeaders) {
+        const token = getAccessToken();
+        const headers = extraHeaders || {};
+
+        if (token) {
+            headers["Authorization"] = "Bearer " + token;
+        }
+
+        return headers;
+    }
+
+    function getContractId() {
+        return document.getElementById("contractId").value.trim();
+    }
+
+    async function searchApprovalWorkflow() {
+        const contractId = getContractId();
+
+        if (!contractId) {
+            showToast("Contract ID is required");
+            return;
+        }
+
+        setSearchLoading(true);
+        resetWorkflowViewOnly();
+
+        try {
+            const response = await fetch(
+                API_BASE_URL + "/contracts/" + contractId + "/approval-workflow",
+                {
+                    method: "GET",
+                    headers: buildAuthHeaders()
+                }
+            );
+
+            if (response.status === 404) {
+                applyNotInApprovalPhase({
+                    contractId: Number(contractId),
+                    contractStatus: "NOT_SUBMITTED",
+                    message: "Current contract is not in Approval phase."
+                });
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error("Approval workflow API failed with status " + response.status);
+            }
+
+            const result = await response.json();
+            applyWorkflowResponse(result);
+
+        } catch (error) {
+            console.error(error);
+
+            if (contractId === "84") {
+                applyWorkflowResponse(buildMockSubmittedWorkflow(contractId));
+            } else {
+                applyNotInApprovalPhase({
+                    contractId: Number(contractId),
+                    contractStatus: "BID_UPLOADED",
+                    message: "Current contract is not in Approval phase. Submit the prepared bid document first from Bid Preparation page."
+                });
+            }
+        } finally {
+            setSearchLoading(false);
+        }
+    }
+
+    function applyWorkflowResponse(result) {
+        approvalState.searched = true;
+        approvalState.contractId = result.contractId || Number(getContractId());
+        approvalState.contractStatus = result.contractStatus || "UNKNOWN";
+        approvalState.approvalPhase = result.approvalPhase === true;
+        approvalState.workflowId = result.workflowId || null;
+        approvalState.currentStage = result.currentStage || null;
+        approvalState.stages = result.stages || [];
+        approvalState.tasks = result.tasks || [];
+        approvalState.history = result.history || [];
+
+        if (!approvalState.approvalPhase) {
+            applyNotInApprovalPhase({
+                contractId: approvalState.contractId,
+                contractStatus: approvalState.contractStatus,
+                message: result.message || "Current contract is not in Approval phase."
+            });
+            return;
+        }
+
+        updateTopTilesForSubmittedWorkflow();
+        renderWorkflowStages();
+        renderTaskTable();
+        renderHistory();
+
+        document.getElementById("emptyState").style.display = "none";
+        document.getElementById("notApprovalState").style.display = "none";
+        document.getElementById("approvalLayout").style.display = "grid";
+
+        document.getElementById("workflowSubtitle").innerText =
+            "Contract " + approvalState.contractId + " is in approval workflow. Review stages, approver tasks and history below.";
+
+        document.getElementById("workflowOverallBadge").innerText = "In Approval";
+        document.getElementById("workflowOverallBadge").className = "badge badge-purple";
+
+        showToast("Approval workflow loaded");
+        addAiMessage(buildAiAnswer("Approval workflow loaded. Current stage: " + escapeHtml(approvalState.currentStage || "Not available") + "."));
+    }
+
+    function applyNotInApprovalPhase(result) {
+        approvalState.searched = true;
+        approvalState.contractId = result.contractId || Number(getContractId());
+        approvalState.contractStatus = result.contractStatus || "NOT_IN_APPROVAL";
+        approvalState.approvalPhase = false;
+        approvalState.currentStage = null;
+        approvalState.workflowId = null;
+        approvalState.stages = [];
+        approvalState.tasks = [];
+        approvalState.history = [];
+
+        document.getElementById("searchStatusBadge").innerText = "Found";
+        document.getElementById("searchStatusBadge").className = "badge badge-green";
+
+        document.getElementById("contractStatusText").innerText = approvalState.contractStatus;
+        document.getElementById("contractStatusBadge").innerText = approvalState.contractStatus;
+        document.getElementById("contractStatusBadge").className = "badge badge-yellow";
+
+        document.getElementById("approvalPhaseText").innerText = "Not Active";
+        document.getElementById("approvalPhaseBadge").innerText = "Not In Approval";
+        document.getElementById("approvalPhaseBadge").className = "badge badge-yellow";
+
+        document.getElementById("currentStageText").innerText = "None";
+        document.getElementById("currentStageBadge").innerText = "No Stage";
+        document.getElementById("currentStageBadge").className = "badge badge-gray";
+
+        document.getElementById("pendingTaskCount").innerText = "0";
+        document.getElementById("taskStatusBadge").innerText = "No Tasks";
+        document.getElementById("taskStatusBadge").className = "badge badge-gray";
+
+        document.getElementById("workflowSubtitle").innerText =
+            "Contract " + approvalState.contractId + " is not currently in approval workflow.";
+
+        document.getElementById("workflowOverallBadge").innerText = "Not In Approval";
+        document.getElementById("workflowOverallBadge").className = "badge badge-yellow";
+
+        document.getElementById("notApprovalMessage").innerText =
+            result.message || "Current contract is not in Approval phase.";
+
+        document.getElementById("emptyState").style.display = "none";
+        document.getElementById("approvalLayout").style.display = "none";
+        document.getElementById("notApprovalState").style.display = "flex";
+
+        showToast("Contract is not in approval phase");
+        addAiMessage(buildAiAnswer("Current contract is not in Approval phase. Approval stages will be visible only after the contract is submitted for approval."));
+    }
+
+    function updateTopTilesForSubmittedWorkflow() {
+        const pendingTasks = approvalState.tasks.filter(function (task) {
+            return task.status === "PENDING" || task.status === "IN_PROGRESS";
+        });
+
+        document.getElementById("searchStatusBadge").innerText = "Found";
+        document.getElementById("searchStatusBadge").className = "badge badge-green";
+
+        document.getElementById("contractStatusText").innerText = approvalState.contractStatus;
+        document.getElementById("contractStatusBadge").innerText = approvalState.contractStatus;
+        document.getElementById("contractStatusBadge").className = getContractStatusBadgeClass(approvalState.contractStatus);
+
+        document.getElementById("approvalPhaseText").innerText = "Active";
+        document.getElementById("approvalPhaseBadge").innerText = "In Approval";
+        document.getElementById("approvalPhaseBadge").className = "badge badge-purple";
+
+        document.getElementById("currentStageText").innerText = approvalState.currentStage || "Not Available";
+        document.getElementById("currentStageBadge").innerText = approvalState.currentStage || "Current Stage";
+        document.getElementById("currentStageBadge").className = "badge badge-blue";
+
+        document.getElementById("pendingTaskCount").innerText = String(pendingTasks.length);
+
+        if (pendingTasks.length > 0) {
+            document.getElementById("taskStatusBadge").innerText = "Pending";
+            document.getElementById("taskStatusBadge").className = "badge badge-yellow";
+        } else {
+            document.getElementById("taskStatusBadge").innerText = "No Pending Tasks";
+            document.getElementById("taskStatusBadge").className = "badge badge-green";
+        }
+    }
+
+    function renderWorkflowStages() {
+        const stageList = document.getElementById("stageList");
+        stageList.innerHTML = "";
+
+        approvalState.stages.forEach(function (stage, index) {
+            const stageCard = document.createElement("div");
+            stageCard.className = "stage-card " + getStageClass(stage.status);
+
+            stageCard.innerHTML = `
+                <div class="stage-number">${index + 1}</div>
+                <div class="stage-main">
+                    <div class="stage-top">
+                        <div>
+                            <div class="stage-name">${escapeHtml(stage.name)}</div>
+                            <div class="stage-owner">${escapeHtml(stage.ownerGroup || "Approver Group")} | ${escapeHtml(stage.approver || "Assigned Approver")}</div>
+                        </div>
+                        <span class="${getStatusBadgeClass(stage.status)}">${formatStatus(stage.status)}</span>
+                    </div>
+
+                    <div class="stage-description">
+                        ${escapeHtml(stage.description || "Approval stage configured for this contract.")}
+                    </div>
+
+                    <div class="stage-actions">
+                        <button class="secondary-btn" onclick="openStageDetails('${escapeJs(stage.name)}')">View Details</button>
+                        <button class="primary-btn" onclick="openDecisionModal('${escapeJs(stage.name)}', 'APPROVED')" ${stage.status === "IN_PROGRESS" ? "" : "disabled"}>Approve</button>
+                        <button class="danger-btn" onclick="openDecisionModal('${escapeJs(stage.name)}', 'REJECTED')" ${stage.status === "IN_PROGRESS" ? "" : "disabled"}>Reject</button>
+                    </div>
+                </div>
+            `;
+
+            stageList.appendChild(stageCard);
+        });
+    }
+
+    function renderTaskTable() {
+        const taskTableBody = document.getElementById("taskTableBody");
+        taskTableBody.innerHTML = "";
+
+        if (approvalState.tasks.length === 0) {
+            taskTableBody.innerHTML = `
+                <tr>
+                    <td colspan="3">No approval tasks available.</td>
+                </tr>
+            `;
+            return;
+        }
+
+        approvalState.tasks.forEach(function (task) {
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+                <td>
+                    <strong>${escapeHtml(task.approver || "Approver")}</strong>
+                    <br>
+                    <span style="font-size: 12px; color: #64748b;">${escapeHtml(task.role || "Role not specified")}</span>
+                </td>
+                <td>${escapeHtml(task.stage || "Stage")}</td>
+                <td><span class="${getStatusBadgeClass(task.status)}">${formatStatus(task.status)}</span></td>
+            `;
+
+            taskTableBody.appendChild(row);
+        });
+    }
+
+    function renderHistory() {
+        const historyList = document.getElementById("historyList");
+        historyList.innerHTML = "";
+
+        if (approvalState.history.length === 0) {
+            historyList.innerHTML = `
+                <div class="timeline-item">
+                    <div class="timeline-icon">i</div>
+                    <div class="timeline-content">
+                        <strong>No workflow history yet</strong>
+                        <span>Approval decisions will be shown here.</span>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        approvalState.history.forEach(function (item) {
+            const historyItem = document.createElement("div");
+            historyItem.className = "timeline-item";
+
+            historyItem.innerHTML = `
+                <div class="timeline-icon">${getHistoryIcon(item.action)}</div>
+                <div class="timeline-content">
+                    <strong>${escapeHtml(item.action || "Workflow Event")}</strong>
+                    <span>
+                        ${escapeHtml(item.message || "")}
+                        <br>
+                        ${escapeHtml(item.performedBy || "System")} | ${escapeHtml(item.performedAt || "")}
+                    </span>
+                </div>
+            `;
+
+            historyList.appendChild(historyItem);
+        });
+    }
+
+    function openStageDetails(stageName) {
+        addAiMessage(buildAiAnswer("Stage details: " + escapeHtml(stageName) + ". In backend, open the stage task details, approver group, decision history and escalation rules."));
+        showToast("Stage details shown in assistant");
+    }
+
+    function openDecisionModal(stageName, decision) {
+        pendingDecision = {
+            stageName: stageName,
+            decision: decision
+        };
+
+        document.getElementById("decisionModalTitle").innerText =
+            decision === "APPROVED" ? "Approve Stage" : "Reject Stage";
+
+        document.getElementById("decisionModalSubtitle").innerText =
+            stageName + " will be marked as " + formatStatus(decision) + ".";
+
+        document.getElementById("decisionComment").value = "";
+        document.getElementById("decisionModalBackdrop").style.display = "flex";
+    }
+
+    function closeDecisionModal() {
+        pendingDecision = null;
+        document.getElementById("decisionModalBackdrop").style.display = "none";
+    }
+
+    async function submitDecision() {
+        if (!pendingDecision) {
+            return;
+        }
+
+        const comment = document.getElementById("decisionComment").value.trim();
+
+        try {
+            const response = await fetch(
+                API_BASE_URL + "/approval-workflows/" + approvalState.workflowId + "/stages/decision",
+                {
+                    method: "POST",
+                    headers: buildAuthHeaders({
+                        "Content-Type": "application/json"
+                    }),
+                    body: JSON.stringify({
+                        contractId: approvalState.contractId,
+                        stageName: pendingDecision.stageName,
+                        decision: pendingDecision.decision,
+                        comment: comment || "No comment provided"
+                    })
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Decision API failed with status " + response.status);
+            }
+
+            showToast("Decision saved");
+
+        } catch (error) {
+            console.error(error);
+            showToast("Decision simulated for UI testing");
+        }
+
+        addAiMessage(buildAiAnswer(
+            pendingDecision.stageName + " marked as " + formatStatus(pendingDecision.decision) +
+            ". Comment: " + escapeHtml(comment || "No comment provided")
+        ));
+
+        closeDecisionModal();
+    }
+
+    function previewSearchPayload() {
+        const details = {
+            endpoint: "/api/contracts/{contractId}/approval-workflow",
+            method: "GET",
+            auth: "Authorization: Bearer <keycloak-access-token>",
+            contractId: getContractId(),
+            responseWhenInApprovalPhase: {
+                contractId: Number(getContractId() || 84),
+                contractStatus: "SUBMITTED_FOR_APPROVAL",
+                approvalPhase: true,
+                workflowId: 301,
+                currentStage: "Finance Review",
+                stages: [
+                    {
+                        name: "Manager Review",
+                        status: "COMPLETED",
+                        ownerGroup: "Bid Management",
+                        approver: "Bid Manager"
+                    },
+                    {
+                        name: "Finance Review",
+                        status: "IN_PROGRESS",
+                        ownerGroup: "Finance",
+                        approver: "Finance Approver"
+                    }
+                ],
+                tasks: [
+                    {
+                        approver: "Finance Approver",
+                        stage: "Finance Review",
+                        status: "PENDING"
+                    }
+                ]
+            },
+            responseWhenNotInApprovalPhase: {
+                contractId: Number(getContractId() || 84),
+                contractStatus: "BID_UPLOADED",
+                approvalPhase: false,
+                message: "Current contract is not in Approval phase."
+            }
+        };
+
+        openPayloadModal(
+            "Approval Workflow Search API",
+            "Use this endpoint to determine whether contract is in approval phase.",
+            JSON.stringify(details, null, 4)
+        );
+    }
+
+    function resetWorkflow() {
+        approvalState = {
+            searched: false,
+            contractId: null,
+            contractStatus: null,
+            approvalPhase: false,
+            currentStage: null,
+            workflowId: null,
+            stages: [],
+            tasks: [],
+            history: []
+        };
+
+        resetWorkflowViewOnly();
+
+        document.getElementById("searchStatusBadge").innerText = "Search Required";
+        document.getElementById("searchStatusBadge").className = "badge badge-blue";
+
+        document.getElementById("contractStatusText").innerText = "Unknown";
+        document.getElementById("contractStatusBadge").innerText = "Not Checked";
+        document.getElementById("contractStatusBadge").className = "badge badge-gray";
+
+        document.getElementById("approvalPhaseText").innerText = "Pending";
+        document.getElementById("approvalPhaseBadge").innerText = "Not Checked";
+        document.getElementById("approvalPhaseBadge").className = "badge badge-gray";
+
+        document.getElementById("currentStageText").innerText = "None";
+        document.getElementById("currentStageBadge").innerText = "Waiting";
+        document.getElementById("currentStageBadge").className = "badge badge-gray";
+
+        document.getElementById("pendingTaskCount").innerText = "0";
+        document.getElementById("taskStatusBadge").innerText = "No Tasks";
+        document.getElementById("taskStatusBadge").className = "badge badge-gray";
+
+        document.getElementById("workflowSubtitle").innerText =
+            "Search a contract to view approval workflow. Stages will appear only when the contract is in approval phase.";
+
+        document.getElementById("workflowOverallBadge").innerText = "Not Checked";
+        document.getElementById("workflowOverallBadge").className = "badge badge-gray";
+
+        showToast("Workflow reset");
+    }
+
+    function resetWorkflowViewOnly() {
+        document.getElementById("emptyState").style.display = "flex";
+        document.getElementById("notApprovalState").style.display = "none";
+        document.getElementById("approvalLayout").style.display = "none";
+        document.getElementById("stageList").innerHTML = "";
+        document.getElementById("taskTableBody").innerHTML = "";
+        document.getElementById("historyList").innerHTML = "";
+    }
+
+    function buildMockSubmittedWorkflow(contractId) {
+        return {
+            contractId: Number(contractId),
+            contractStatus: "SUBMITTED_FOR_APPROVAL",
+            approvalPhase: true,
+            workflowId: 301,
+            currentStage: "Finance Review",
+            stages: [
+                {
+                    name: "Manager Review",
+                    status: "COMPLETED",
+                    ownerGroup: "Bid Management",
+                    approver: "Bid Manager",
+                    description: "Initial review of bid completeness, selected lots and supporting documents."
+                },
+                {
+                    name: "Finance Review",
+                    status: "IN_PROGRESS",
+                    ownerGroup: "Finance",
+                    approver: "Finance Approver",
+                    description: "Review commercial value, pricing assumptions, margin, payment terms and financial exposure."
+                },
+                {
+                    name: "Legal Review",
+                    status: "PENDING",
+                    ownerGroup: "Legal",
+                    approver: "Legal Approver",
+                    description: "Review contractual risks, penalties, liability clauses and compliance language."
+                },
+                {
+                    name: "Final Approval",
+                    status: "PENDING",
+                    ownerGroup: "Leadership",
+                    approver: "Business Owner",
+                    description: "Final approval before bid submission to hospital procurement authority."
+                }
+            ],
+            tasks: [
+                {
+                    approver: "Bid Manager",
+                    role: "Bid Management",
+                    stage: "Manager Review",
+                    status: "APPROVED"
+                },
+                {
+                    approver: "Finance Approver",
+                    role: "Finance",
+                    stage: "Finance Review",
+                    status: "PENDING"
+                },
+                {
+                    approver: "Legal Approver",
+                    role: "Legal",
+                    stage: "Legal Review",
+                    status: "WAITING"
+                },
+                {
+                    approver: "Business Owner",
+                    role: "Leadership",
+                    stage: "Final Approval",
+                    status: "WAITING"
+                }
+            ],
+            history: [
+                {
+                    action: "Submitted For Approval",
+                    message: "Prepared bid document submitted to approval workflow.",
+                    performedBy: "Ankit Manchanda",
+                    performedAt: "Today"
+                },
+                {
+                    action: "Manager Review Approved",
+                    message: "Bid completeness and selected lots were approved.",
+                    performedBy: "Bid Manager",
+                    performedAt: "Today"
+                }
+            ]
+        };
+    }
+
+    function getContractStatusBadgeClass(status) {
+        if (status === "SUBMITTED_FOR_APPROVAL") {
+            return "badge badge-purple";
+        }
+
+        if (status === "APPROVED") {
+            return "badge badge-green";
+        }
+
+        if (status === "REJECTED") {
+            return "badge badge-red";
+        }
+
+        if (status === "BID_UPLOADED" || status === "DOCUMENT_GENERATED") {
+            return "badge badge-yellow";
+        }
+
+        return "badge badge-gray";
+    }
+
+    function getStageClass(status) {
+        if (status === "COMPLETED" || status === "APPROVED") {
+            return "completed";
+        }
+
+        if (status === "IN_PROGRESS" || status === "PENDING") {
+            return "active";
+        }
+
+        if (status === "REJECTED") {
+            return "rejected";
+        }
+
+        return "";
+    }
+
+    function getStatusBadgeClass(status) {
+        if (status === "COMPLETED" || status === "APPROVED") {
+            return "badge badge-green";
+        }
+
+        if (status === "IN_PROGRESS" || status === "PENDING") {
+            return "badge badge-yellow";
+        }
+
+        if (status === "REJECTED") {
+            return "badge badge-red";
+        }
+
+        if (status === "WAITING") {
+            return "badge badge-gray";
+        }
+
+        return "badge badge-gray";
+    }
+
+    function formatStatus(status) {
+        if (!status) {
+            return "Unknown";
+        }
+
+        return String(status)
+            .replaceAll("_", " ")
+            .toLowerCase()
+            .replace(/\b\w/g, function (char) {
+                return char.toUpperCase();
+            });
+    }
+
+    function getHistoryIcon(action) {
+        if (!action) {
+            return "i";
+        }
+
+        const normalized = String(action).toLowerCase();
+
+        if (normalized.includes("approved")) {
+            return "✓";
+        }
+
+        if (normalized.includes("rejected")) {
+            return "!";
+        }
+
+        if (normalized.includes("submitted")) {
+            return "→";
+        }
+
+        return "i";
+    }
+
+    function openPayloadModal(title, subtitle, content) {
+        document.getElementById("payloadModalTitle").innerText = title;
+        document.getElementById("payloadModalSubtitle").innerText = subtitle;
+        document.getElementById("payloadModalContent").innerText = content;
+        document.getElementById("payloadModalBackdrop").style.display = "flex";
+    }
+
+    function closePayloadModal() {
+        document.getElementById("payloadModalBackdrop").style.display = "none";
+    }
+
+    function setSearchLoading(isLoading) {
+        const searchBtn = document.getElementById("searchBtn");
+
+        if (isLoading) {
+            searchBtn.disabled = true;
+            searchBtn.innerHTML = '<span class="loading"><span class="spinner"></span>Searching</span>';
+        } else {
+            searchBtn.disabled = false;
+            searchBtn.innerText = "Search";
+        }
+    }
+
+    function askSuggestedQuestion(question) {
+        document.getElementById("userQuestion").value = question;
+        sendQuestion();
+    }
+
+    function sendQuestion() {
+        const input = document.getElementById("userQuestion");
+        const question = input.value.trim();
+
+        if (!question) {
+            return;
+        }
+
+        addUserMessage(question);
+
+        const normalizedQuestion = question.toLowerCase();
+
+        setTimeout(function () {
+            if (normalizedQuestion.includes("first")) {
+                addAiMessage(buildAiAnswer("First enter Contract ID and click Search. Stages are shown only if the contract is submitted for approval."));
+            } else if (normalizedQuestion.includes("not visible") || normalizedQuestion.includes("why")) {
+                addAiMessage(buildAiAnswer("Approval stages are hidden when approvalPhase is false. Backend should return approvalPhase: true only for statuses like SUBMITTED_FOR_APPROVAL or APPROVAL_IN_PROGRESS."));
+            } else if (normalizedQuestion.includes("pending") || normalizedQuestion.includes("who")) {
+                addAiMessage(buildPendingApproverAnswer());
+            } else {
+                addAiMessage(buildAiAnswer("This page follows search-first logic: search contract approval status, show stages if submitted, otherwise show that the contract is not in approval phase."));
+            }
+        }, 250);
+
+        input.value = "";
+    }
+
+    function buildPendingApproverAnswer() {
+        if (!approvalState.approvalPhase) {
+            return buildAiAnswer("No pending approver is available because the current contract is not in approval phase.");
+        }
+
+        const pendingTasks = approvalState.tasks.filter(function (task) {
+            return task.status === "PENDING" || task.status === "IN_PROGRESS";
+        });
+
+        if (pendingTasks.length === 0) {
+            return buildAiAnswer("There are no pending approval tasks.");
+        }
+
+        let message = "Pending approval tasks: ";
+
+        pendingTasks.forEach(function (task, index) {
+            message += (index + 1) + ". " + task.approver + " for " + task.stage + ". ";
+        });
+
+        return buildAiAnswer(message);
+    }
+
+    function addUserMessage(message) {
+        const chatMessages = document.getElementById("chatMessages");
+
+        const messageDiv = document.createElement("div");
+        messageDiv.className = "message user-message";
+        messageDiv.innerText = message;
+
+        chatMessages.appendChild(messageDiv);
+        scrollChatToBottom();
+    }
+
+    function addAiMessage(messageHtml) {
+        const chatMessages = document.getElementById("chatMessages");
+
+        const messageDiv = document.createElement("div");
+        messageDiv.className = "message ai-message";
+        messageDiv.innerHTML = messageHtml;
+
+        chatMessages.appendChild(messageDiv);
+        scrollChatToBottom();
+    }
+
+    function buildAiAnswer(message) {
+        return `
+            <div class="answer-section">
+                <strong>AI Approval Assistant</strong>
+                ${message}
+            </div>
+        `;
+    }
+
+    function scrollChatToBottom() {
+        const chatMessages = document.getElementById("chatMessages");
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function handleEnter(event) {
+        if (event.key === "Enter") {
+            sendQuestion();
+        }
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById("toast");
+        toast.innerText = message;
+        toast.style.display = "block";
+
+        setTimeout(function () {
+            toast.style.display = "none";
+        }, 2500);
+    }
+
+    function escapeHtml(value) {
+        return String(value)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+    }
+
+    function escapeJs(value) {
+        return String(value)
+            .replaceAll("\\", "\\\\")
+            .replaceAll("'", "\\'")
+            .replaceAll('"', '\\"');
+    }
+
+    function navigateTo(url) {
+        window.location.href = url;
+    }
+
+    resetWorkflow();
+</script>
+
+</body>
+</html>

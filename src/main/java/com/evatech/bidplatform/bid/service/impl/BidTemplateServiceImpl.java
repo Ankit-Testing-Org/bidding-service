@@ -4,6 +4,7 @@ import com.evatech.bidplatform.audit.service.AuditAction;
 import com.evatech.bidplatform.bid.dto.AiBidTemplateResponse;
 import com.evatech.bidplatform.bid.dto.AiTemplateFieldDefinition;
 import com.evatech.bidplatform.bid.entity.BidTemplateField;
+import com.evatech.bidplatform.bid.exception.BusinessException;
 import com.evatech.bidplatform.bid.exception.DocumentGenerationException;
 import com.evatech.bidplatform.bid.exception.DocumentNotFoundException;
 import com.evatech.bidplatform.bid.repository.BidTemplateFieldRepository;
@@ -11,6 +12,7 @@ import com.evatech.bidplatform.bid.service.AiTemplateGenerationService;
 import com.evatech.bidplatform.bid.service.BidTemplateService;
 import com.evatech.bidplatform.bid.service.DocumentGenerator;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
+import com.evatech.bidplatform.contract.entity.LotQualificationStatus;
 import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
 import com.evatech.bidplatform.contract.repository.ContractDocumentRepository;
 import com.evatech.bidplatform.bid.entity.GeneratedDocument;
@@ -74,8 +76,13 @@ public class BidTemplateServiceImpl
                                      Long contractId,
                                      User user,
                                      List<String> roles) {
-        ContractDocument contract = contractRepository.findById(contractId)
-                .orElseThrow();
+        ContractDocument contract = contractRepository.findById(contractId).orElseThrow();
+
+        if (!canGenerateBid(contract)) {
+            throw new BusinessException(
+                    "All lots must be qualified or disqualified before generating bid templates."
+            );
+        }
         GeneratedDocument document = generatedDocumentRepository.findByIdAndContract(documentId, contract).
                 orElseThrow(() -> new DocumentNotFoundException("Document not found"));
 
@@ -105,4 +112,14 @@ public class BidTemplateServiceImpl
         }
         bidTemplateFieldRepository.saveAll(generatedDocument.getTemplateFields());
     }
+
+    private boolean canGenerateBid(ContractDocument contract) {
+
+        return contract.getLots()
+                .stream()
+                .allMatch(lot ->
+                        lot.getQualificationStatus()
+                                != LotQualificationStatus.PENDING);
+    }
+
 }

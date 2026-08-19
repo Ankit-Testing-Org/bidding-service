@@ -26,4 +26,8 @@ public class OverviewSummaryDto {
 
     private long noBidProposalCount;
     private BigDecimal noBidProposalValue;
+
+    // ADD
+    private long totalProposalCount;
+    private BigDecimal totalProposalValue;
 }

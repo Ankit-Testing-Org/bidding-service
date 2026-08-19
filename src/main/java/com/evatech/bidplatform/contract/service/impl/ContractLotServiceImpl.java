@@ -316,7 +316,16 @@ public class ContractLotServiceImpl implements ContractLotService {
         for (ExtractedLotResponse extractedLot : extractedLots) {
             validateExtractedLot(extractedLot);
 
-            ContractLot contractLot = ContractLot.builder().contractDocument(contractDocument).lotNumber(extractedLot.getLotNumber()).lotName(extractedLot.getLotName()).description(extractedLot.getDescription()).startPage(extractedLot.getStartPage()).endPage(extractedLot.getEndPage()).qualificationStatus(LotQualificationStatus.PENDING).createdAt(LocalDateTime.now()).valuation(extractedLot.getValuation()).build();
+            ContractLot contractLot = ContractLot.builder().contractDocument(contractDocument).
+                    lotNumber(extractedLot.getLotNumber()).
+                    lotName(extractedLot.getLotName()).
+                    description(extractedLot.getDescription()).
+                    startPage(extractedLot.getStartPage()).
+                    endPage(extractedLot.getEndPage()).
+                    qualificationStatus(LotQualificationStatus.PENDING).
+                    createdAt(LocalDateTime.now()).
+                    valuation(extractedLot.getValuation()).
+                    build();
 
             ContractLotQualificationHistory history = new ContractLotQualificationHistory();
             history.setNewStatus(ContractLotQualificationStatus.PENDING);
@@ -404,13 +413,5 @@ public class ContractLotServiceImpl implements ContractLotService {
         if (contractDocument.getId() == null) {
             throw new IllegalArgumentException("Contract document id must not be null");
         }
-    }
-
-    private BigDecimal calculateProposalValue(List<ContractLot> contractLots) {
-        return contractLots.stream().
-                filter(ContractLot::isQualified).
-                map(ContractLot::getValuation).
-                filter(Objects::nonNull).
-                reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

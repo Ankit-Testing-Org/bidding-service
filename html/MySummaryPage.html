@@ -1,0 +1,1763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Summary | SmartBid AI</title>
+
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e5e7eb;
+      --purple: #7c3aed;
+      --purple-light: #f3e8ff;
+      --blue: #0284c7;
+      --blue-light: #e0f2fe;
+      --green: #059669;
+      --green-light: #dcfce7;
+      --orange: #ea580c;
+      --orange-light: #ffedd5;
+      --red: #dc2626;
+      --red-light: #fee2e2;
+      --slate: #334155;
+      --slate-light: #f1f5f9;
+      --yellow: #ca8a04;
+      --yellow-light: #fef9c3;
+      --shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+      --radius-lg: 28px;
+      --radius-md: 20px;
+      --radius-sm: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Inter, Segoe UI, Arial, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+      padding: 24px;
+      gap: 24px;
+    }
+
+    .sidebar {
+      width: 280px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      border-radius: 32px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 34px;
+    }
+
+    .brand-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 12px 30px rgba(124, 58, 237, 0.35);
+      flex-shrink: 0;
+    }
+
+    .brand-title {
+      font-size: 20px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .brand-subtitle {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 3px;
+      white-space: nowrap;
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .nav-item {
+      text-decoration: none;
+      border: none;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 16px;
+      border-radius: 18px;
+      color: #475569;
+      font-size: 14px;
+      font-weight: 750;
+      cursor: pointer;
+      text-align: left;
+      transition: 0.2s ease;
+    }
+
+    .nav-item:hover {
+      background: #f1f5f9;
+      color: var(--text);
+    }
+
+    .nav-item.active {
+      background: #0f172a;
+      color: white;
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.25);
+    }
+
+    .sidebar-card {
+      margin-top: 40px;
+      padding: 22px;
+      border-radius: 26px;
+      background: linear-gradient(135deg, #7c3aed, #2563eb, #06b6d4);
+      color: white;
+      box-shadow: 0 18px 40px rgba(79, 70, 229, 0.3);
+    }
+
+    .sidebar-card small {
+      opacity: 0.8;
+      font-weight: 750;
+    }
+
+    .sidebar-card h3 {
+      margin-top: 10px;
+      font-size: 22px;
+      line-height: 1.2;
+    }
+
+    .sidebar-card p {
+      margin-top: 10px;
+      font-size: 13px;
+      opacity: 0.82;
+      line-height: 1.5;
+    }
+
+    .main {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .topbar {
+      background: rgba(255, 255, 255, 0.86);
+      border-radius: 32px;
+      padding: 18px 22px;
+      box-shadow: 0 14px 38px rgba(15, 23, 42, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .page-label {
+      font-size: 12px;
+      color: var(--purple);
+      font-weight: 850;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .page-title {
+      font-size: 26px;
+      font-weight: 900;
+      margin-top: 3px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .search-box {
+      width: 360px;
+      background: #f1f5f9;
+      border-radius: 18px;
+      padding: 11px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .search-box input {
+      border: none;
+      outline: none;
+      background: transparent;
+      width: 100%;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 16px;
+      border: none;
+      background: #f1f5f9;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #ede9fe;
+      color: var(--purple);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 900;
+      border: 4px solid white;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.12);
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #0f172a, #3b0764, #312e81);
+      color: white;
+      border-radius: 36px;
+      padding: 30px 32px;
+      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.22);
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.12);
+      padding: 8px 13px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 850;
+      margin-bottom: 16px;
+    }
+
+    .hero h2 {
+      font-size: 34px;
+      line-height: 1.15;
+      margin-bottom: 10px;
+    }
+
+    .hero p {
+      color: rgba(255, 255, 255, 0.72);
+      max-width: 720px;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .hero-profile {
+      display: grid;
+      grid-template-columns: 86px 1fr;
+      gap: 16px;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 28px;
+      padding: 18px;
+      backdrop-filter: blur(12px);
+    }
+
+    .profile-circle {
+      width: 86px;
+      height: 86px;
+      border-radius: 30px;
+      background: rgba(255, 255, 255, 0.16);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 950;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+    }
+
+    .profile-name {
+      font-size: 22px;
+      font-weight: 950;
+      margin-bottom: 6px;
+    }
+
+    .profile-meta {
+      color: rgba(255, 255, 255, 0.72);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .hero-stat {
+      background: rgba(255, 255, 255, 0.12);
+      padding: 16px;
+      border-radius: 22px;
+      backdrop-filter: blur(12px);
+    }
+
+    .hero-stat span {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.65);
+    }
+
+    .hero-stat strong {
+      display: block;
+      font-size: 23px;
+      margin-top: 6px;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    .kpi-card,
+    .card {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow);
+      min-width: 0;
+    }
+
+    .kpi-card {
+      min-height: 145px;
+      transition: 0.2s ease;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.13);
+    }
+
+    .kpi-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .kpi-title {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .kpi-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 22px;
+    }
+
+    .purple { background: linear-gradient(135deg, #8b5cf6, #4f46e5); }
+    .blue { background: linear-gradient(135deg, #06b6d4, #2563eb); }
+    .green { background: linear-gradient(135deg, #10b981, #059669); }
+    .orange { background: linear-gradient(135deg, #f97316, #ea580c); }
+    .slate { background: linear-gradient(135deg, #64748b, #0f172a); }
+    .red { background: linear-gradient(135deg, #ef4444, #dc2626); }
+
+    .kpi-count {
+      font-size: 32px;
+      font-weight: 950;
+      margin-top: 14px;
+    }
+
+    .kpi-help {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 8px;
+      line-height: 1.45;
+    }
+
+    .summary-layout {
+      display: grid;
+      grid-template-columns: minmax(620px, 1fr) minmax(430px, 0.78fr);
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .card-subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 5px;
+      line-height: 1.45;
+    }
+
+    .btn {
+      border: none;
+      background: #0f172a;
+      color: white;
+      border-radius: 16px;
+      padding: 11px 16px;
+      font-size: 13px;
+      font-weight: 850;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn.secondary { background: #f1f5f9; color: var(--text); }
+    .btn.purple-btn { background: linear-gradient(135deg, #7c3aed, #2563eb); color: white; }
+    .btn.green-btn { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+    .btn.orange-btn { background: linear-gradient(135deg, #f97316, #ea580c); color: white; }
+    .btn.red-btn { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
+
+    .filter-row {
+      display: grid;
+      grid-template-columns: 1fr 170px 170px;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .filter-input,
+    .filter-select {
+      width: 100%;
+      border: 1px solid var(--border);
+      outline: none;
+      background: #f8fafc;
+      color: var(--text);
+      border-radius: 16px;
+      padding: 12px 14px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .table-wrap {
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: #f8fafc;
+    }
+
+    th {
+      text-align: left;
+      padding: 15px 16px;
+      color: #475569;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-weight: 900;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      font-size: 13px;
+    }
+
+    tbody tr {
+      cursor: pointer;
+      transition: 0.16s ease;
+    }
+
+    tbody tr:hover { background: #f8fafc; }
+    tbody tr.selected { background: #f3e8ff; }
+    tbody tr:last-child td { border-bottom: none; }
+
+    .task-title {
+      font-weight: 900;
+      color: #0f172a;
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+
+    .task-meta {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .pill.pending { background: var(--orange-light); color: var(--orange); }
+    .pill.approved { background: var(--green-light); color: var(--green); }
+    .pill.rejected { background: var(--red-light); color: var(--red); }
+    .pill.changes { background: var(--yellow-light); color: var(--yellow); }
+    .pill.draft { background: var(--slate-light); color: var(--slate); }
+    .pill.submitted { background: var(--purple-light); color: var(--purple); }
+    .pill.contract { background: var(--blue-light); color: var(--blue); }
+    .pill.proposal { background: var(--purple-light); color: var(--purple); }
+    .pill.review { background: var(--orange-light); color: var(--orange); }
+    .pill.approval { background: var(--green-light); color: var(--green); }
+    .pill.report { background: var(--slate-light); color: var(--slate); }
+
+    .priority {
+      font-weight: 950;
+      white-space: nowrap;
+    }
+
+    .priority.high { color: var(--red); }
+    .priority.medium { color: var(--orange); }
+    .priority.low { color: var(--green); }
+
+    .detail-panel {
+      min-height: 720px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .detail-shell {
+      flex: 1;
+      border: 1px solid var(--border);
+      border-radius: 26px;
+      overflow: hidden;
+      background: #0f172a;
+      position: relative;
+    }
+
+    .detail-placeholder {
+      min-height: 380px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 34px;
+      color: white;
+      text-align: center;
+      background:
+        radial-gradient(circle at top left, rgba(124, 58, 237, 0.38), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(37, 99, 235, 0.38), transparent 36%),
+        #0f172a;
+    }
+
+    .detail-placeholder-icon {
+      width: 74px;
+      height: 74px;
+      border-radius: 26px;
+      background: rgba(255, 255, 255, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 34px;
+      margin: 0 auto 18px;
+    }
+
+    .detail-placeholder h3 {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    .detail-placeholder p {
+      color: rgba(255, 255, 255, 0.72);
+      line-height: 1.6;
+      max-width: 420px;
+      font-size: 14px;
+    }
+
+    .detail-content {
+      display: none;
+      background: white;
+      min-height: 380px;
+      padding: 22px;
+    }
+
+    .summary-title {
+      font-size: 22px;
+      font-weight: 950;
+      line-height: 1.25;
+      margin-bottom: 8px;
+    }
+
+    .summary-subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      margin-bottom: 18px;
+    }
+
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .detail-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px;
+    }
+
+    .detail-box span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
+
+    .detail-box strong {
+      font-size: 14px;
+      font-weight: 950;
+      color: #0f172a;
+      line-height: 1.35;
+    }
+
+    .summary-section {
+      margin-top: 18px;
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 950;
+      margin-bottom: 10px;
+    }
+
+    .summary-text-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 16px;
+      color: #334155;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .activity-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .activity-list,
+    .timeline-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .activity-item,
+    .timeline-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 15px;
+      border-radius: 20px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+    }
+
+    .timeline-item {
+      justify-content: flex-start;
+      align-items: flex-start;
+    }
+
+    .timeline-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 14px;
+      background: #ede9fe;
+      color: var(--purple);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .activity-title,
+    .timeline-title {
+      font-weight: 900;
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+
+    .activity-desc,
+    .timeline-text {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .activity-meta {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+      font-weight: 750;
+    }
+
+    .focus-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .focus-card {
+      background: white;
+      border-radius: 32px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .progress-row {
+      margin-top: 15px;
+      display: grid;
+      grid-template-columns: 1fr 50px;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .progress-track {
+      height: 12px;
+      border-radius: 999px;
+      background: #eef2f7;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+    }
+
+    .empty-state {
+      padding: 34px;
+      text-align: center;
+      color: var(--muted);
+      display: none;
+    }
+
+    .empty-state strong {
+      color: var(--text);
+      display: block;
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      background: #0f172a;
+      color: white;
+      padding: 14px 18px;
+      border-radius: 18px;
+      box-shadow: 0 18px 48px rgba(15, 23, 42, 0.28);
+      font-size: 13px;
+      font-weight: 850;
+      display: none;
+      z-index: 100;
+    }
+
+    .loading {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 850;
+      margin-bottom: 14px;
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 3px solid #e5e7eb;
+      border-top-color: var(--purple);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 1280px) {
+      .summary-layout,
+      .activity-grid,
+      .focus-grid {
+        grid-template-columns: 1fr;
+      }
+      .hero {
+        grid-template-columns: 1fr;
+      }
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 980px) {
+      .app { padding: 14px; }
+      .sidebar { display: none; }
+      .topbar { flex-direction: column; align-items: flex-start; }
+      .top-actions { width: 100%; }
+      .search-box { width: 100%; }
+      .filter-row { grid-template-columns: 1fr; }
+      .hero-stats { grid-template-columns: 1fr; }
+      .table-wrap { overflow-x: auto; }
+      table { min-width: 980px; }
+      .detail-grid,
+      .quick-actions { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 680px) {
+      .kpi-grid { grid-template-columns: 1fr; }
+      .hero h2 { font-size: 28px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <aside class="sidebar">
+      <div>
+        <div class="brand">
+          <div class="brand-icon">👤</div>
+          <div>
+            <div class="brand-title">My Summary</div>
+            <div class="brand-subtitle">Contract bidding platform</div>
+          </div>
+        </div>
+
+        <nav class="nav">
+          <button class="nav-item" onclick="goToPage('CompanyOverviewDashboard.html')">🏠 Overview</button>
+          <button class="nav-item" onclick="goToPage('Contracts.html')">📂 Contracts</button>
+          <button class="nav-item" onclick="goToPage('Proposals.html')">📝 Proposals</button>
+          <button class="nav-item" onclick="goToPage('Reviews.html')">✅ Reviews</button>
+          <button class="nav-item" onclick="goToPage('Approvals.html')">✔ Approvals</button>
+          <button class="nav-item" onclick="goToPage('Report.html')">📊 Reports</button>
+          <button class="nav-item active" onclick="goToPage('MySummary.html')">👤 My Summary</button>
+        </nav>
+      </div>
+
+      <div class="sidebar-card">
+        <small>Personal Workspace</small>
+        <h3>Focus on your bidding work</h3>
+        <p>
+          View your assigned proposals, reviews, approvals, risks, deadlines, and recent SmartBid AI activities.
+        </p>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <div class="page-label">Personal Dashboard</div>
+          <div class="page-title">My Summary</div>
+        </div>
+
+        <div class="top-actions">
+          <div class="search-box">
+            🔍
+            <input id="globalSearchInput" type="text" placeholder="Search my tasks, proposals, approvals..." />
+          </div>
+          <button class="icon-btn" type="button" title="Notifications">🔔</button>
+          <div class="avatar">AM</div>
+        </div>
+      </header>
+
+      <section class="hero">
+        <div>
+          <span class="hero-badge">My SmartBid AI Workspace</span>
+          <h2>Good overview of your contracts, proposals and pending actions</h2>
+          <p>
+            Track the work assigned to you across proposal creation, review decisions, approval gates, report follow-ups, and upcoming deadlines. This page is designed as your personal work queue and priority board.
+          </p>
+          <div class="hero-stats">
+            <div class="hero-stat">
+              <span>My Open Tasks</span>
+              <strong id="openTasksStat">0</strong>
+            </div>
+            <div class="hero-stat">
+              <span>Due Soon</span>
+              <strong id="dueSoonStat">0</strong>
+            </div>
+            <div class="hero-stat">
+              <span>My Pipeline</span>
+              <strong id="myPipelineStat">€0</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-profile">
+          <div class="profile-circle">AM</div>
+          <div>
+            <div class="profile-name" id="profileName">Ankit Manchanda</div>
+            <div class="profile-meta" id="profileMeta">
+              Custom Software Engineering Specialist<br>
+              Frankfurt · Contract bidding platform
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-title">Assigned Proposals</div>
+            <div class="kpi-icon purple">📝</div>
+          </div>
+          <div class="kpi-count" id="proposalCount">0</div>
+          <div class="kpi-help">Proposals owned, authored, or being updated by you.</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-title">Review Actions</div>
+            <div class="kpi-icon orange">✅</div>
+          </div>
+          <div class="kpi-count" id="reviewCount">0</div>
+          <div class="kpi-help">Review tasks waiting for your validation or comments.</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-title">Approval Actions</div>
+            <div class="kpi-icon green">✔</div>
+          </div>
+          <div class="kpi-count" id="approvalCount">0</div>
+          <div class="kpi-help">Approval tasks assigned to you or delegated to you.</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-title">High Priority</div>
+            <div class="kpi-icon red">🔥</div>
+          </div>
+          <div class="kpi-count" id="highPriorityCount">0</div>
+          <div class="kpi-help">Urgent tasks that need close attention.</div>
+        </div>
+      </section>
+
+      <section class="summary-layout">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">My Work Queue</div>
+              <div class="card-subtitle">
+                Latest assigned work first. Select an item to view details and navigate to the correct workspace.
+              </div>
+            </div>
+            <button class="btn purple-btn" type="button" onclick="refreshSummary()">Refresh</button>
+          </div>
+
+          <div class="loading" id="loadingIndicator">
+            <span class="spinner"></span>
+            <span>Loading my summary...</span>
+          </div>
+
+          <div class="filter-row">
+            <input id="taskSearchInput" class="filter-input" type="text" placeholder="Search my work..." />
+            <select id="typeFilter" class="filter-select">
+              <option value="ALL">All Types</option>
+              <option value="PROPOSAL">Proposal</option>
+              <option value="REVIEW">Review</option>
+              <option value="APPROVAL">Approval</option>
+              <option value="CONTRACT">Contract</option>
+              <option value="REPORT">Report</option>
+            </select>
+            <select id="statusFilter" class="filter-select">
+              <option value="ALL">All Status</option>
+              <option value="PENDING">Pending</option>
+              <option value="IN_PROGRESS">In Progress</option>
+              <option value="DRAFT">Draft</option>
+              <option value="APPROVED">Approved</option>
+              <option value="CHANGES_REQUESTED">Changes Requested</option>
+              <option value="SUBMITTED">Submitted</option>
+            </select>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Work Item</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                  <th>Priority</th>
+                  <th>Due</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody id="tasksTableBody"></tbody>
+            </table>
+            <div class="empty-state" id="emptyState">
+              <strong>No work items found</strong>
+              Change your search or filter criteria.
+            </div>
+          </div>
+        </div>
+
+        <div class="card detail-panel">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Selected Work Detail</div>
+              <div class="card-subtitle">Open the related workspace, view ownership, priority, due date, and context.</div>
+            </div>
+          </div>
+
+          <div class="detail-shell">
+            <div class="detail-placeholder" id="detailPlaceholder">
+              <div>
+                <div class="detail-placeholder-icon">👤</div>
+                <h3>Select a work item</h3>
+                <p>
+                  Details, context, due date, owner, related object, and quick actions will appear here.
+                </p>
+              </div>
+            </div>
+
+            <div class="detail-content" id="detailContent">
+              <div class="summary-title" id="detailTitle">-</div>
+              <div class="summary-subtitle" id="detailSubtitle">-</div>
+
+              <div class="quick-actions">
+                <button class="btn purple-btn" id="openItemButton" type="button">Open Workspace</button>
+                <button class="btn secondary" id="auditTrailButton" type="button">Audit Trail</button>
+              </div>
+
+              <div class="detail-grid">
+                <div class="detail-box">
+                  <span>Type</span>
+                  <strong id="detailType">-</strong>
+                </div>
+                <div class="detail-box">
+                  <span>Status</span>
+                  <strong id="detailStatus">-</strong>
+                </div>
+                <div class="detail-box">
+                  <span>Priority</span>
+                  <strong id="detailPriority">-</strong>
+                </div>
+                <div class="detail-box">
+                  <span>Due Date</span>
+                  <strong id="detailDueDate">-</strong>
+                </div>
+                <div class="detail-box">
+                  <span>Related Object</span>
+                  <strong id="detailObject">-</strong>
+                </div>
+                <div class="detail-box">
+                  <span>Value</span>
+                  <strong id="detailValue">-</strong>
+                </div>
+              </div>
+
+              <div class="summary-section">
+                <div class="section-title">Context</div>
+                <div class="summary-text-box" id="detailContext">-</div>
+              </div>
+
+              <div class="summary-section">
+                <div class="section-title">Next Best Action</div>
+                <div class="summary-text-box" id="detailNextAction">-</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="focus-grid">
+        <div class="focus-card">
+          <div class="card-title">Today's Focus</div>
+          <div class="card-subtitle">Recommended focus areas based on due date and priority.</div>
+          <div class="timeline-list" id="focusList"></div>
+        </div>
+
+        <div class="focus-card">
+          <div class="card-title">My Progress</div>
+          <div class="card-subtitle">Personal workload progress across active bid work.</div>
+          <div class="progress-row">
+            <div class="progress-track"><div class="progress-fill" id="reviewProgress" style="width:0%"></div></div>
+            <strong id="reviewProgressText">0%</strong>
+          </div>
+          <div class="task-meta" style="margin-top:8px;">Reviews completed</div>
+          <div class="progress-row">
+            <div class="progress-track"><div class="progress-fill" id="approvalProgress" style="width:0%"></div></div>
+            <strong id="approvalProgressText">0%</strong>
+          </div>
+          <div class="task-meta" style="margin-top:8px;">Approvals completed</div>
+          <div class="progress-row">
+            <div class="progress-track"><div class="progress-fill" id="proposalProgress" style="width:0%"></div></div>
+            <strong id="proposalProgressText">0%</strong>
+          </div>
+          <div class="task-meta" style="margin-top:8px;">Proposal work completed</div>
+        </div>
+
+        <div class="focus-card">
+          <div class="card-title">Upcoming Deadlines</div>
+          <div class="card-subtitle">Nearest deadlines from your assigned SmartBid AI work.</div>
+          <div class="timeline-list" id="deadlineList"></div>
+        </div>
+      </section>
+
+      <section class="activity-grid">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Recent Activities</div>
+              <div class="card-subtitle">Latest activity across your proposals, reviews, approvals, and reports.</div>
+            </div>
+          </div>
+          <div class="activity-list" id="activityList"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Recent Audit Trail</div>
+              <div class="card-subtitle">Your recent status changes and workflow events.</div>
+            </div>
+          </div>
+          <div class="timeline-list" id="auditList"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    /*
+      SmartBid AI My Summary Page
+
+      Expected backend response:
+
+      GET /api/my-summary
+
+      {
+        "profile": {
+          "userId": "ankit",
+          "displayName": "Ankit Manchanda",
+          "role": "Custom Software Engineering Specialist",
+          "location": "Frankfurt"
+        },
+        "stats": {
+          "openTasks": 12,
+          "dueSoon": 4,
+          "pipelineValue": 5400000,
+          "assignedProposals": 5,
+          "reviewActions": 4,
+          "approvalActions": 3,
+          "highPriority": 2
+        },
+        "workItems": []
+      }
+    */
+
+    const API_BASE_URL = "http://localhost:8080";
+    const MY_SUMMARY_API_URL = API_BASE_URL + "/api/my-summary";
+    const AUDIT_TRAIL_URL = "AuditTrail.html";
+
+    let summary = null;
+    let workItems = [];
+    let filteredWorkItems = [];
+    let selectedItem = null;
+
+    const mockSummary = {
+      profile: {
+        userId: "ankit",
+        displayName: "Ankit Manchanda",
+        role: "Custom Software Engineering Specialist",
+        location: "Frankfurt"
+      },
+      stats: {
+        openTasks: 12,
+        dueSoon: 4,
+        pipelineValue: 5400000,
+        assignedProposals: 5,
+        reviewActions: 4,
+        approvalActions: 3,
+        highPriority: 2,
+        reviewProgress: 68,
+        approvalProgress: 55,
+        proposalProgress: 72
+      },
+      workItems: [
+        {
+          id: 901,
+          title: "Complete Hospital Medicines Bid Proposal",
+          type: "PROPOSAL",
+          status: "DRAFT",
+          priority: "HIGH",
+          dueDate: "2026-08-25",
+          relatedObject: "Hospital Medicine Supply Tender 2026",
+          value: 2450000,
+          currency: "EUR",
+          sourcePageUrl: "ProposalWorkspace.html?proposalId=205",
+          context: "Proposal is in authoring stage and includes three qualified medicine lots.",
+          nextAction: "Review generated proposal sections and complete pricing assumptions before moving to review."
+        },
+        {
+          id: 902,
+          title: "Review AI risk highlights",
+          type: "REVIEW",
+          status: "PENDING",
+          priority: "HIGH",
+          dueDate: "2026-08-20",
+          relatedObject: "Hospital Medicine Supply Tender 2026",
+          value: 0,
+          currency: "EUR",
+          sourcePageUrl: "Reviews.html?reviewId=305",
+          context: "AI detected payment terms, penalty clauses, compliance requirements, and termination clauses requiring manual confirmation.",
+          nextAction: "Open review workspace, validate risks, add comments, and approve or request changes."
+        },
+        {
+          id: 903,
+          title: "Finance Approval for Hospital Medicines Bid",
+          type: "APPROVAL",
+          status: "PENDING",
+          priority: "MEDIUM",
+          dueDate: "2026-08-25",
+          relatedObject: "PROP-2026-105",
+          value: 2450000,
+          currency: "EUR",
+          sourcePageUrl: "Approvals.html?approvalId=405",
+          context: "Finance approval required due to proposal value and lot pricing assumptions.",
+          nextAction: "Check margin, risk score, reviewer comments, and submit approval decision."
+        },
+        {
+          id: 904,
+          title: "Validate lot qualification decision",
+          type: "REVIEW",
+          status: "CHANGES_REQUESTED",
+          priority: "MEDIUM",
+          dueDate: "2026-08-19",
+          relatedObject: "Hospital Bed and Device Framework Agreement",
+          value: 950000,
+          currency: "EUR",
+          sourcePageUrl: "Reviews.html?reviewId=303",
+          context: "Lot qualification requires additional justification for delivery capacity.",
+          nextAction: "Add capacity explanation and update qualification decision history."
+        },
+        {
+          id: 905,
+          title: "Generate Proposal Performance Report",
+          type: "REPORT",
+          status: "IN_PROGRESS",
+          priority: "LOW",
+          dueDate: "2026-08-23",
+          relatedObject: "Proposal Performance Report",
+          value: 0,
+          currency: "EUR",
+          sourcePageUrl: "Report.html?reportId=503",
+          context: "Monthly proposal performance report is being prepared for proposal lifecycle and pipeline insights.",
+          nextAction: "Open Reports page and export report after data refresh."
+        },
+        {
+          id: 906,
+          title: "Review Radiology Proposal Pricing",
+          type: "REVIEW",
+          status: "PENDING",
+          priority: "MEDIUM",
+          dueDate: "2026-08-22",
+          relatedObject: "Radiology Equipment Procurement Proposal",
+          value: 1800000,
+          currency: "EUR",
+          sourcePageUrl: "Reviews.html?reviewId=304",
+          context: "Proposal contains radiology equipment pricing and delivery assumptions requiring validation.",
+          nextAction: "Open review and validate pricing assumptions before approval workflow."
+        }
+      ],
+      focusItems: [
+        { icon: "🔥", title: "Review AI risk highlights", text: "High priority task due soon for Hospital Medicine Supply Tender 2026." },
+        { icon: "📝", title: "Complete proposal draft", text: "Hospital Medicines Bid Proposal still needs pricing and final proposal sections." },
+        { icon: "✔", title: "Prepare approval context", text: "Finance approval will need clear margin, value, and risk summary." }
+      ],
+      deadlines: [
+        { icon: "⏰", title: "19 Aug 2026", text: "Lot qualification justification due." },
+        { icon: "⏰", title: "20 Aug 2026", text: "AI risk highlight review due." },
+        { icon: "⏰", title: "22 Aug 2026", text: "Radiology proposal pricing review due." },
+        { icon: "⏰", title: "25 Aug 2026", text: "Hospital Medicines proposal and finance approval due." }
+      ],
+      activities: [
+        { title: "Proposal Draft Updated", description: "Hospital Medicines Bid Proposal draft was updated with qualified lots.", meta: "Today" },
+        { title: "Review Assigned", description: "AI risk highlights assigned for manual validation.", meta: "Today" },
+        { title: "Changes Requested", description: "Lot qualification requires delivery capacity explanation.", meta: "Yesterday" },
+        { title: "Report Generated", description: "Proposal Performance Report refreshed with latest pipeline data.", meta: "2 days ago" }
+      ],
+      audits: [
+        { icon: "📝", title: "Proposal status changed", text: "PROP-2026-105 moved to Draft authoring." },
+        { icon: "✅", title: "Review task created", text: "AI risk highlights review assigned to Ankit Manchanda." },
+        { icon: "🔁", title: "Changes requested", text: "Lot qualification needs additional delivery capacity justification." },
+        { icon: "📊", title: "Report refreshed", text: "Proposal Performance Report generated for this month." }
+      ]
+    };
+
+    document.addEventListener("DOMContentLoaded", function () {
+      bindEvents();
+      loadMySummary();
+    });
+
+    function bindEvents() {
+      document.getElementById("taskSearchInput").addEventListener("input", applyFilters);
+      document.getElementById("globalSearchInput").addEventListener("input", syncGlobalSearch);
+      document.getElementById("typeFilter").addEventListener("change", applyFilters);
+      document.getElementById("statusFilter").addEventListener("change", applyFilters);
+
+      document.getElementById("openItemButton").addEventListener("click", function () {
+        if (!selectedItem) {
+          return;
+        }
+        window.location.href = selectedItem.sourcePageUrl;
+      });
+
+      document.getElementById("auditTrailButton").addEventListener("click", function () {
+        if (!selectedItem) {
+          return;
+        }
+        window.location.href = AUDIT_TRAIL_URL + "?itemId=" + encodeURIComponent(selectedItem.id) + "&type=" + encodeURIComponent(selectedItem.type);
+      });
+    }
+
+    function goToPage(url) {
+      window.location.href = url;
+    }
+
+    function syncGlobalSearch(event) {
+      document.getElementById("taskSearchInput").value = event.target.value;
+      applyFilters();
+    }
+
+    async function loadMySummary() {
+      showLoading(true);
+
+      try {
+        const token = getAccessToken();
+        const response = await fetch(MY_SUMMARY_API_URL, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": token ? "Bearer " + token : ""
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error("API returned status " + response.status);
+        }
+
+        summary = await response.json();
+        showToast("My summary loaded from API");
+      } catch (error) {
+        console.warn("Using mock my summary because API was not available:", error);
+        summary = mockSummary;
+        showToast("Using mock summary. Connect API when backend is ready.");
+      } finally {
+        workItems = Array.isArray(summary.workItems) ? sortByDueDate(summary.workItems) : [];
+        filteredWorkItems = [...workItems];
+        renderProfile(summary.profile || {});
+        renderStats(summary.stats || {});
+        renderWorkItems();
+        renderFocus(summary.focusItems || []);
+        renderDeadlines(summary.deadlines || []);
+        renderActivities(summary.activities || []);
+        renderAudits(summary.audits || []);
+        showLoading(false);
+      }
+    }
+
+    function refreshSummary() {
+      selectedItem = null;
+      resetDetailPanel();
+      loadMySummary();
+    }
+
+    function sortByDueDate(items) {
+      return [...items].sort(function (a, b) {
+        return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+      });
+    }
+
+    function applyFilters() {
+      const searchValue = document.getElementById("taskSearchInput").value.trim().toLowerCase();
+      const typeValue = document.getElementById("typeFilter").value;
+      const statusValue = document.getElementById("statusFilter").value;
+
+      filteredWorkItems = workItems.filter(function (item) {
+        const searchableText = [
+          item.title,
+          item.type,
+          item.status,
+          item.priority,
+          item.relatedObject,
+          item.context,
+          item.nextAction
+        ].join(" ").toLowerCase();
+
+        const matchesSearch = !searchValue || searchableText.includes(searchValue);
+        const matchesType = typeValue === "ALL" || item.type === typeValue;
+        const matchesStatus = statusValue === "ALL" || item.status === statusValue;
+
+        return matchesSearch && matchesType && matchesStatus;
+      });
+
+      renderWorkItems();
+    }
+
+    function renderProfile(profile) {
+      document.getElementById("profileName").textContent = profile.displayName || "Ankit Manchanda";
+      document.getElementById("profileMeta").innerHTML =
+        escapeHtml(profile.role || "Custom Software Engineering Specialist") + "<br>" +
+        escapeHtml(profile.location || "Frankfurt") + " · Contract bidding platform";
+    }
+
+    function renderStats(stats) {
+      document.getElementById("openTasksStat").textContent = stats.openTasks || 0;
+      document.getElementById("dueSoonStat").textContent = stats.dueSoon || 0;
+      document.getElementById("myPipelineStat").textContent = formatCompactMoney(stats.pipelineValue || 0, "EUR");
+      document.getElementById("proposalCount").textContent = stats.assignedProposals || 0;
+      document.getElementById("reviewCount").textContent = stats.reviewActions || 0;
+      document.getElementById("approvalCount").textContent = stats.approvalActions || 0;
+      document.getElementById("highPriorityCount").textContent = stats.highPriority || 0;
+
+      updateProgress("reviewProgress", "reviewProgressText", stats.reviewProgress || 0);
+      updateProgress("approvalProgress", "approvalProgressText", stats.approvalProgress || 0);
+      updateProgress("proposalProgress", "proposalProgressText", stats.proposalProgress || 0);
+    }
+
+    function updateProgress(barId, textId, value) {
+      const normalized = Math.max(0, Math.min(100, Number(value) || 0));
+      document.getElementById(barId).style.width = normalized + "%";
+      document.getElementById(textId).textContent = normalized + "%";
+    }
+
+    function renderWorkItems() {
+      const tbody = document.getElementById("tasksTableBody");
+      const emptyState = document.getElementById("emptyState");
+      tbody.innerHTML = "";
+
+      if (filteredWorkItems.length === 0) {
+        emptyState.style.display = "block";
+        return;
+      }
+
+      emptyState.style.display = "none";
+
+      filteredWorkItems.forEach(function (item) {
+        const tr = document.createElement("tr");
+        tr.dataset.itemId = item.id;
+
+        if (selectedItem && selectedItem.id === item.id) {
+          tr.classList.add("selected");
+        }
+
+        tr.innerHTML = `
+          <td>
+            <div class="task-title">${escapeHtml(item.title)}</div>
+            <div class="task-meta">${escapeHtml(item.relatedObject)} · ${escapeHtml(item.nextAction)}</div>
+          </td>
+          <td>
+            <span class="pill ${getTypeClass(item.type)}">${getTypeIcon(item.type)} ${formatEnum(item.type)}</span>
+          </td>
+          <td>
+            <span class="pill ${getStatusClass(item.status)}">${getStatusIcon(item.status)} ${formatEnum(item.status)}</span>
+          </td>
+          <td>
+            <span class="priority ${getPriorityClass(item.priority)}">${formatEnum(item.priority)}</span>
+          </td>
+          <td>
+            <span class="task-title">${formatDate(item.dueDate)}</span>
+          </td>
+          <td>
+            <span class="task-title">${formatMoney(item.value, item.currency)}</span>
+          </td>
+        `;
+
+        tr.addEventListener("click", function () {
+          handleItemClick(item);
+        });
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    function handleItemClick(item) {
+      selectedItem = item;
+      renderWorkItems();
+      loadDetailPanel(item);
+      showToast("Work item selected.");
+    }
+
+    function loadDetailPanel(item) {
+      document.getElementById("detailPlaceholder").style.display = "none";
+      document.getElementById("detailContent").style.display = "block";
+      document.getElementById("detailTitle").textContent = item.title;
+      document.getElementById("detailSubtitle").textContent = item.relatedObject;
+      document.getElementById("detailType").textContent = formatEnum(item.type);
+      document.getElementById("detailStatus").textContent = formatEnum(item.status);
+      document.getElementById("detailPriority").textContent = formatEnum(item.priority);
+      document.getElementById("detailDueDate").textContent = formatDate(item.dueDate);
+      document.getElementById("detailObject").textContent = item.relatedObject || "-";
+      document.getElementById("detailValue").textContent = formatMoney(item.value, item.currency);
+      document.getElementById("detailContext").textContent = item.context || "-";
+      document.getElementById("detailNextAction").textContent = item.nextAction || "-";
+    }
+
+    function resetDetailPanel() {
+      document.getElementById("detailPlaceholder").style.display = "flex";
+      document.getElementById("detailContent").style.display = "none";
+    }
+
+    function renderFocus(items) {
+      const list = document.getElementById("focusList");
+      list.innerHTML = "";
+      items.forEach(function (item) {
+        list.appendChild(createTimelineItem(item.icon, item.title, item.text));
+      });
+    }
+
+    function renderDeadlines(items) {
+      const list = document.getElementById("deadlineList");
+      list.innerHTML = "";
+      items.forEach(function (item) {
+        list.appendChild(createTimelineItem(item.icon, item.title, item.text));
+      });
+    }
+
+    function renderActivities(items) {
+      const list = document.getElementById("activityList");
+      list.innerHTML = "";
+      items.forEach(function (activity) {
+        const row = document.createElement("div");
+        row.className = "activity-item";
+        row.innerHTML = `
+          <div>
+            <div class="activity-title">${escapeHtml(activity.title)}</div>
+            <div class="activity-desc">${escapeHtml(activity.description)}</div>
+          </div>
+          <div class="activity-meta">${escapeHtml(activity.meta)}</div>
+        `;
+        list.appendChild(row);
+      });
+    }
+
+    function renderAudits(items) {
+      const list = document.getElementById("auditList");
+      list.innerHTML = "";
+      items.forEach(function (item) {
+        list.appendChild(createTimelineItem(item.icon, item.title, item.text));
+      });
+    }
+
+    function createTimelineItem(icon, title, text) {
+      const row = document.createElement("div");
+      row.className = "timeline-item";
+      row.innerHTML = `
+        <div class="timeline-icon">${icon}</div>
+        <div>
+          <div class="timeline-title">${escapeHtml(title)}</div>
+          <div class="timeline-text">${escapeHtml(text)}</div>
+        </div>
+      `;
+      return row;
+    }
+
+    function getAccessToken() {
+      if (window.keycloak && window.keycloak.token) {
+        return window.keycloak.token;
+      }
+      return localStorage.getItem("access_token") || sessionStorage.getItem("access_token");
+    }
+
+    function getTypeClass(type) {
+      switch (type) {
+        case "CONTRACT": return "contract";
+        case "PROPOSAL": return "proposal";
+        case "REVIEW": return "review";
+        case "APPROVAL": return "approval";
+        case "REPORT": return "report";
+        default: return "report";
+      }
+    }
+
+    function getTypeIcon(type) {
+      switch (type) {
+        case "CONTRACT": return "📂";
+        case "PROPOSAL": return "📝";
+        case "REVIEW": return "✅";
+        case "APPROVAL": return "✔";
+        case "REPORT": return "📊";
+        default: return "👤";
+      }
+    }
+
+    function getStatusClass(status) {
+      switch (status) {
+        case "PENDING": return "pending";
+        case "IN_PROGRESS": return "pending";
+        case "DRAFT": return "draft";
+        case "APPROVED": return "approved";
+        case "CHANGES_REQUESTED": return "changes";
+        case "REJECTED": return "rejected";
+        case "SUBMITTED": return "submitted";
+        default: return "draft";
+      }
+    }
+
+    function getStatusIcon(status) {
+      switch (status) {
+        case "PENDING": return "⏳";
+        case "IN_PROGRESS": return "🔄";
+        case "DRAFT": return "📝";
+        case "APPROVED": return "✅";
+        case "CHANGES_REQUESTED": return "🔁";
+        case "REJECTED": return "❌";
+        case "SUBMITTED": return "📤";
+        default: return "👤";
+      }
+    }
+
+    function getPriorityClass(priority) {
+      switch (priority) {
+        case "HIGH": return "high";
+        case "MEDIUM": return "medium";
+        case "LOW": return "low";
+        default: return "medium";
+      }
+    }
+
+    function formatEnum(value) {
+      if (!value) {
+        return "-";
+      }
+      return String(value)
+        .replaceAll("_", " ")
+        .toLowerCase()
+        .replace(/\b\w/g, function (char) {
+          return char.toUpperCase();
+        });
+    }
+
+    function formatDate(value) {
+      if (!value) {
+        return "-";
+      }
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) {
+        return value;
+      }
+      return new Intl.DateTimeFormat("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+      }).format(date);
+    }
+
+    function formatMoney(value, currency) {
+      const numericValue = Number(value) || 0;
+      if (numericValue === 0) {
+        return "-";
+      }
+      return new Intl.NumberFormat("en-DE", {
+        style: "currency",
+        currency: currency || "EUR",
+        maximumFractionDigits: 0
+      }).format(numericValue);
+    }
+
+    function formatCompactMoney(value, currency) {
+      const numericValue = Number(value) || 0;
+      return new Intl.NumberFormat("en-DE", {
+        style: "currency",
+        currency: currency || "EUR",
+        notation: "compact",
+        maximumFractionDigits: 1
+      }).format(numericValue);
+    }
+
+    function escapeHtml(value) {
+      if (value === null || value === undefined) {
+        return "";
+      }
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function showLoading(isLoading) {
+      document.getElementById("loadingIndicator").style.display = isLoading ? "flex" : "none";
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.style.display = "block";
+      window.clearTimeout(showToast.timeoutId);
+      showToast.timeoutId = window.setTimeout(function () {
+        toast.style.display = "none";
+      }, 2600);
+    }
+  </script>
+</body>
+</html>

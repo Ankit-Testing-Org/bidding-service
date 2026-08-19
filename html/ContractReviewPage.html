@@ -1,0 +1,1918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reviews | SmartBid AI</title>
+
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e5e7eb;
+
+      --purple: #7c3aed;
+      --purple-light: #f3e8ff;
+
+      --blue: #0284c7;
+      --blue-light: #e0f2fe;
+
+      --green: #059669;
+      --green-light: #dcfce7;
+
+      --orange: #ea580c;
+      --orange-light: #ffedd5;
+
+      --red: #dc2626;
+      --red-light: #fee2e2;
+
+      --slate: #334155;
+      --slate-light: #f1f5f9;
+
+      --yellow: #ca8a04;
+      --yellow-light: #fef9c3;
+
+      --shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+      --radius-lg: 28px;
+      --radius-md: 20px;
+      --radius-sm: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Inter, Segoe UI, Arial, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+      padding: 24px;
+      gap: 24px;
+    }
+
+    .sidebar {
+      width: 280px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      border-radius: 32px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 34px;
+    }
+
+    .brand-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 12px 30px rgba(124, 58, 237, 0.35);
+      flex-shrink: 0;
+    }
+
+    .brand-title {
+      font-size: 20px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .brand-subtitle {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 3px;
+      white-space: nowrap;
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+	
+
+
+    .nav-item {
+      text-decoration: none;
+      border: none;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 16px;
+      border-radius: 18px;
+      color: #475569;
+      font-size: 14px;
+      font-weight: 750;
+      cursor: pointer;
+      text-align: left;
+      transition: 0.2s ease;
+    }
+
+    .nav-item:hover {
+      background: #f1f5f9;
+      color: var(--text);
+    }
+
+    .nav-item.active {
+      background: #0f172a;
+      color: white;
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.25);
+    }
+
+    .sidebar-card {
+      margin-top: 40px;
+      padding: 22px;
+      border-radius: 26px;
+      background: linear-gradient(135deg, #7c3aed, #2563eb, #06b6d4);
+      color: white;
+      box-shadow: 0 18px 40px rgba(79, 70, 229, 0.3);
+    }
+
+    .sidebar-card small {
+      opacity: 0.8;
+      font-weight: 750;
+    }
+
+    .sidebar-card h3 {
+      margin-top: 10px;
+      font-size: 22px;
+      line-height: 1.2;
+    }
+
+    .sidebar-card p {
+      margin-top: 10px;
+      font-size: 13px;
+      opacity: 0.82;
+      line-height: 1.5;
+    }
+
+    .main {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .topbar {
+      background: rgba(255, 255, 255, 0.86);
+      border-radius: 32px;
+      padding: 18px 22px;
+      box-shadow: 0 14px 38px rgba(15, 23, 42, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .page-label {
+      font-size: 12px;
+      color: var(--purple);
+      font-weight: 850;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .page-title {
+      font-size: 26px;
+      font-weight: 900;
+      margin-top: 3px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .search-box {
+      width: 360px;
+      background: #f1f5f9;
+      border-radius: 18px;
+      padding: 11px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .search-box input {
+      border: none;
+      outline: none;
+      background: transparent;
+      width: 100%;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 16px;
+      border: none;
+      background: #f1f5f9;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #ede9fe;
+      color: var(--purple);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 900;
+      border: 4px solid white;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.12);
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #0f172a, #3b0764, #312e81);
+      color: white;
+      border-radius: 36px;
+      padding: 30px 32px;
+      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.22);
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.12);
+      padding: 8px 13px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 850;
+      margin-bottom: 16px;
+    }
+
+    .hero h2 {
+      font-size: 34px;
+      line-height: 1.15;
+      margin-bottom: 10px;
+    }
+
+    .hero p {
+      color: rgba(255, 255, 255, 0.72);
+      max-width: 720px;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .hero-stat {
+      background: rgba(255, 255, 255, 0.12);
+      padding: 18px;
+      border-radius: 24px;
+      backdrop-filter: blur(12px);
+    }
+
+    .hero-stat span {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.65);
+    }
+
+    .hero-stat strong {
+      display: block;
+      font-size: 24px;
+      margin-top: 6px;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    .kpi-card {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow);
+      min-height: 145px;
+      transition: 0.2s ease;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.13);
+    }
+
+    .kpi-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .kpi-title {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .kpi-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 22px;
+    }
+
+    .purple {
+      background: linear-gradient(135deg, #8b5cf6, #4f46e5);
+    }
+
+    .blue {
+      background: linear-gradient(135deg, #06b6d4, #2563eb);
+    }
+
+    .green {
+      background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .orange {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+    }
+
+    .slate {
+      background: linear-gradient(135deg, #64748b, #0f172a);
+    }
+
+    .red {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+
+    .kpi-count {
+      font-size: 32px;
+      font-weight: 950;
+      margin-top: 14px;
+    }
+
+    .kpi-help {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 8px;
+      line-height: 1.45;
+    }
+
+    .reviews-layout {
+      display: grid;
+      grid-template-columns: minmax(620px, 1fr) minmax(430px, 0.78fr);
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 32px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      min-width: 0;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .card-subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 5px;
+      line-height: 1.45;
+    }
+
+    .btn {
+      border: none;
+      background: #0f172a;
+      color: white;
+      border-radius: 16px;
+      padding: 11px 16px;
+      font-size: 13px;
+      font-weight: 850;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn.secondary {
+      background: #f1f5f9;
+      color: var(--text);
+    }
+
+    .btn.purple-btn {
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+      color: white;
+    }
+
+    .btn.green-btn {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+    }
+
+    .btn.orange-btn {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: white;
+    }
+
+    .btn.red-btn {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+    }
+
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .filter-row {
+      display: grid;
+      grid-template-columns: 1fr 170px 170px;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .filter-input,
+    .filter-select {
+      width: 100%;
+      border: 1px solid var(--border);
+      outline: none;
+      background: #f8fafc;
+      color: var(--text);
+      border-radius: 16px;
+      padding: 12px 14px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .table-wrap {
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: #f8fafc;
+    }
+
+    th {
+      text-align: left;
+      padding: 15px 16px;
+      color: #475569;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-weight: 900;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      font-size: 13px;
+    }
+
+    tbody tr {
+      cursor: pointer;
+      transition: 0.16s ease;
+    }
+
+    tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    tbody tr.selected {
+      background: #f3e8ff;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .review-title {
+      font-weight: 900;
+      color: #0f172a;
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+
+    .review-meta {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .pill.pending {
+      background: var(--orange-light);
+      color: var(--orange);
+    }
+
+    .pill.approved {
+      background: var(--green-light);
+      color: var(--green);
+    }
+
+    .pill.rejected {
+      background: var(--red-light);
+      color: var(--red);
+    }
+
+    .pill.changes {
+      background: var(--yellow-light);
+      color: var(--yellow);
+    }
+
+    .pill.contract {
+      background: var(--blue-light);
+      color: var(--blue);
+    }
+
+    .pill.proposal {
+      background: var(--purple-light);
+      color: var(--purple);
+    }
+
+    .pill.lot {
+      background: var(--green-light);
+      color: var(--green);
+    }
+
+    .pill.highlight {
+      background: var(--slate-light);
+      color: var(--slate);
+    }
+
+    .priority {
+      font-weight: 950;
+      white-space: nowrap;
+    }
+
+    .priority.high {
+      color: var(--red);
+    }
+
+    .priority.medium {
+      color: var(--orange);
+    }
+
+    .priority.low {
+      color: var(--green);
+    }
+
+    .empty-state {
+      padding: 34px;
+      text-align: center;
+      color: var(--muted);
+      display: none;
+    }
+
+    .empty-state strong {
+      color: var(--text);
+      display: block;
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+
+    .review-panel {
+      min-height: 720px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .review-shell {
+      flex: 1;
+      border: 1px solid var(--border);
+      border-radius: 26px;
+      overflow: hidden;
+      background: #0f172a;
+      position: relative;
+    }
+
+    .review-placeholder {
+      min-height: 360px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 34px;
+      color: white;
+      text-align: center;
+      background:
+        radial-gradient(circle at top left, rgba(124, 58, 237, 0.38), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(37, 99, 235, 0.38), transparent 36%),
+        #0f172a;
+    }
+
+    .review-placeholder-icon {
+      width: 74px;
+      height: 74px;
+      border-radius: 26px;
+      background: rgba(255, 255, 255, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 34px;
+      margin: 0 auto 18px;
+    }
+
+    .review-placeholder h3 {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    .review-placeholder p {
+      color: rgba(255, 255, 255, 0.72);
+      line-height: 1.6;
+      max-width: 420px;
+      font-size: 14px;
+    }
+
+    .review-content {
+      display: none;
+      background: white;
+      min-height: 360px;
+      padding: 22px;
+    }
+
+    .summary-title {
+      font-size: 22px;
+      font-weight: 950;
+      line-height: 1.25;
+      margin-bottom: 8px;
+    }
+
+    .summary-subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      margin-bottom: 18px;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .detail-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px;
+    }
+
+    .detail-box span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
+
+    .detail-box strong {
+      font-size: 14px;
+      font-weight: 950;
+      color: #0f172a;
+      line-height: 1.35;
+    }
+
+    .review-section {
+      margin-top: 18px;
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 950;
+      margin-bottom: 10px;
+    }
+
+    .review-text-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 16px;
+      color: #334155;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .comment-box {
+      width: 100%;
+      min-height: 120px;
+      resize: vertical;
+      border: 1px solid var(--border);
+      outline: none;
+      border-radius: 20px;
+      padding: 14px;
+      font-size: 13px;
+      color: var(--text);
+      background: #f8fafc;
+      line-height: 1.5;
+    }
+
+    .decision-actions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .quick-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .history-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 13px;
+      border-radius: 18px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+    }
+
+    .history-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 14px;
+      background: #ede9fe;
+      color: var(--purple);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .history-title {
+      font-size: 13px;
+      font-weight: 900;
+      margin-bottom: 4px;
+    }
+
+    .history-text {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      background: #0f172a;
+      color: white;
+      padding: 14px 18px;
+      border-radius: 18px;
+      box-shadow: 0 18px 48px rgba(15, 23, 42, 0.28);
+      font-size: 13px;
+      font-weight: 850;
+      display: none;
+      z-index: 100;
+    }
+
+    .loading {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 850;
+      margin-bottom: 14px;
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 3px solid #e5e7eb;
+      border-top-color: var(--purple);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @media (max-width: 1280px) {
+      .reviews-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 980px) {
+      .app {
+        padding: 14px;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .top-actions {
+        width: 100%;
+      }
+
+      .search-box {
+        width: 100%;
+      }
+
+      .filter-row {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+      }
+
+      table {
+        min-width: 980px;
+      }
+
+      .detail-grid,
+      .quick-actions,
+      .decision-actions {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .kpi-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h2 {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <aside class="sidebar">
+      <div>
+        <div class="brand">
+          <div class="brand-icon">📄</div>
+          <div>
+            <div class="brand-title">Review</div>
+            <div class="brand-subtitle">Contract bidding platform</div>
+          </div>
+        </div>
+
+        <nav class="nav">
+          <button class="nav-item">🏠 Overview</button>
+          <button class="nav-item">📂 Contracts</button>
+          <button class="nav-item">📝 Proposals</button>
+          <button class="nav-item active">✅ Reviews</button>
+          <button class="nav-item">✔ Approvals</button>
+          <button class="nav-item">📊 Reports</button>
+          <button class="nav-item">👤 My Summary</button>
+        </nav>
+      </div>
+
+      <div class="sidebar-card">
+        <small>Review Focus</small>
+        <h3>Clear review decisions</h3>
+        <p>
+          Review contracts, lots, highlights, and proposals with comments, decisions, and complete audit trace.
+        </p>
+      </div>
+    </aside>
+
+    <main class="main">
+
+      <header class="topbar">
+        <div>
+          <div class="page-label">Review Management</div>
+          <div class="page-title">Review Queue</div>
+        </div>
+
+        <div class="top-actions">
+          <div class="search-box">
+            🔍
+            <input id="globalSearchInput" type="text" placeholder="Search review, contract, proposal, reviewer..." />
+          </div>
+
+          <button class="icon-btn" type="button" title="Notifications">🔔</button>
+          <div class="avatar">AM</div>
+        </div>
+      </header>
+
+      <section class="hero">
+        <div>
+          <span class="hero-badge">Pending Review Work</span>
+          <h2>Review contracts, proposals, lots and AI findings</h2>
+          <p>
+            Central queue for reviewer decisions. Select a review task, inspect the context, add review comments, then approve, reject, or request changes.
+          </p>
+        </div>
+
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <span>Total Reviews</span>
+            <strong id="totalReviewsStat">0</strong>
+          </div>
+          <div class="hero-stat">
+            <span>Pending</span>
+            <strong id="pendingReviewsStat">0</strong>
+          </div>
+          <div class="hero-stat">
+            <span>High Priority</span>
+            <strong id="highPriorityStat">0</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-title">Pending Review</div>
+            <div class="kpi-icon orange">⏳</div>
+          </div>
+          <div class="kpi-count" id="pendingCount">0</div>
+          <div class="kpi-help">Items waiting for reviewer action.</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-title">Approved</div>
+            <div class="kpi-icon green">✅</div>
+          </div>
+          <div class="kpi-count" id="approvedCount">0</div>
+          <div class="kpi-help">Items reviewed and approved.</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-title">Changes Requested</div>
+            <div class="kpi-icon purple">🔁</div>
+          </div>
+          <div class="kpi-count" id="changesCount">0</div>
+          <div class="kpi-help">Items sent back for revision.</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-title">Rejected</div>
+            <div class="kpi-icon red">❌</div>
+          </div>
+          <div class="kpi-count" id="rejectedCount">0</div>
+          <div class="kpi-help">Items rejected during review.</div>
+        </div>
+      </section>
+
+      <section class="reviews-layout">
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Review Tasks</div>
+              <div class="card-subtitle">
+                Latest review tasks first. Open a task to review details and record decision.
+              </div>
+            </div>
+
+            <button class="btn purple-btn" type="button" onclick="refreshReviews()">
+              Refresh
+            </button>
+          </div>
+
+          <div class="loading" id="loadingIndicator">
+            <span class="spinner"></span>
+            <span>Loading review tasks...</span>
+          </div>
+
+          <div class="filter-row">
+            <input id="reviewSearchInput" class="filter-input" type="text" placeholder="Search review task..." />
+
+            <select id="statusFilter" class="filter-select">
+              <option value="ALL">All Status</option>
+              <option value="PENDING">Pending</option>
+              <option value="APPROVED">Approved</option>
+              <option value="CHANGES_REQUESTED">Changes Requested</option>
+              <option value="REJECTED">Rejected</option>
+            </select>
+
+            <select id="typeFilter" class="filter-select">
+              <option value="ALL">All Types</option>
+              <option value="CONTRACT">Contract</option>
+              <option value="PROPOSAL">Proposal</option>
+              <option value="LOT">Lot</option>
+              <option value="HIGHLIGHT">Highlight</option>
+            </select>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Review Item</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                  <th>Reviewer</th>
+                  <th>Priority</th>
+                  <th>Due</th>
+                </tr>
+              </thead>
+              <tbody id="reviewsTableBody"></tbody>
+            </table>
+
+            <div class="empty-state" id="emptyState">
+              <strong>No review tasks found</strong>
+              Change your search or filter criteria.
+            </div>
+          </div>
+        </div>
+
+        <div class="card review-panel">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Review Detail</div>
+              <div class="card-subtitle">
+                Review selected item, add comment, and submit a decision.
+              </div>
+            </div>
+          </div>
+
+          <div class="review-shell">
+            <div class="review-placeholder" id="reviewPlaceholder">
+              <div>
+                <div class="review-placeholder-icon">✅</div>
+                <h3>Select a review task</h3>
+                <p>
+                  Once selected, the task context, review history, comment box, and decision actions will appear here.
+                </p>
+              </div>
+            </div>
+
+            <div class="review-content" id="reviewContent">
+              <div class="summary-title" id="detailTitle">-</div>
+              <div class="summary-subtitle" id="detailSubtitle">-</div>
+
+              <div class="quick-actions">
+                <button class="btn secondary" id="openSourceButton" type="button">Open Source</button>
+                <button class="btn secondary" id="auditTrailButton" type="button">Audit Trail</button>
+              </div>
+
+              <div class="detail-grid">
+                <div class="detail-box">
+                  <span>Review Type</span>
+                  <strong id="detailType">-</strong>
+                </div>
+
+                <div class="detail-box">
+                  <span>Status</span>
+                  <strong id="detailStatus">-</strong>
+                </div>
+
+                <div class="detail-box">
+                  <span>Reviewer</span>
+                  <strong id="detailReviewer">-</strong>
+                </div>
+
+                <div class="detail-box">
+                  <span>Priority</span>
+                  <strong id="detailPriority">-</strong>
+                </div>
+
+                <div class="detail-box">
+                  <span>Due Date</span>
+                  <strong id="detailDueDate">-</strong>
+                </div>
+
+                <div class="detail-box">
+                  <span>Related Object</span>
+                  <strong id="detailObject">-</strong>
+                </div>
+              </div>
+
+              <div class="review-section">
+                <div class="section-title">Review Context</div>
+                <div class="review-text-box" id="reviewContextText">
+                  -
+                </div>
+              </div>
+
+              <div class="review-section">
+                <div class="section-title">Reviewer Comment</div>
+                <textarea id="reviewComment" class="comment-box" placeholder="Write review comment here..."></textarea>
+
+                <div class="decision-actions">
+                  <button class="btn green-btn" type="button" onclick="submitDecision('APPROVED')">
+                    Approve
+                  </button>
+                  <button class="btn orange-btn" type="button" onclick="submitDecision('CHANGES_REQUESTED')">
+                    Request Changes
+                  </button>
+                  <button class="btn red-btn" type="button" onclick="submitDecision('REJECTED')">
+                    Reject
+                  </button>
+                </div>
+              </div>
+
+              <div class="review-section">
+                <div class="section-title">Review History</div>
+                <div class="history-list" id="historyList"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    /*
+      SmartBid AI Reviews Page
+
+      Expected backend response:
+
+      GET /api/reviews
+
+      [
+        {
+          "id": 301,
+          "title": "Review AI risk highlights",
+          "reviewType": "HIGHLIGHT",
+          "status": "PENDING",
+          "priority": "HIGH",
+          "sourceId": 108,
+          "sourceName": "Hospital Medicine Supply Tender 2026",
+          "sourcePageUrl": "ContractDocumentAnalysis.html?contractId=108",
+          "reviewerUserId": "ankit",
+          "reviewerName": "Ankit Manchanda",
+          "dueDate": "2026-08-20",
+          "createdAt": "2026-08-18T09:30:00",
+          "context": "AI detected payment, penalty, and compliance clauses that require manual confirmation.",
+          "history": [
+            {
+              "title": "Review Assigned",
+              "text": "Assigned to Ankit Manchanda.",
+              "createdAt": "2026-08-18T09:30:00"
+            }
+          ]
+        }
+      ]
+
+      Decision endpoints:
+
+      POST /api/reviews/{reviewId}/approve
+      POST /api/reviews/{reviewId}/request-changes
+      POST /api/reviews/{reviewId}/reject
+
+      Request body:
+      {
+        "comment": "Reviewed and approved."
+      }
+    */
+
+    const API_BASE_URL = "http://localhost:8080";
+    const REVIEWS_API_URL = API_BASE_URL + "/api/reviews";
+    const AUDIT_TRAIL_URL = "ReviewAuditTrail.html";
+
+    let reviews = [];
+    let filteredReviews = [];
+    let selectedReview = null;
+
+    const mockReviews = [
+      {
+        id: 305,
+        title: "Review AI risk highlights",
+        reviewType: "HIGHLIGHT",
+        status: "PENDING",
+        priority: "HIGH",
+        sourceId: 108,
+        sourceName: "Hospital Medicine Supply Tender 2026",
+        sourcePageUrl: "ContractDocumentAnalysis.html?contractId=108",
+        reviewerUserId: "ankit",
+        reviewerName: "Ankit Manchanda",
+        dueDate: "2026-08-20",
+        createdAt: "2026-08-18T09:30:00",
+        context: "AI detected payment terms, penalty clauses, compliance requirements, and termination clauses that require manual confirmation before proposal creation.",
+        history: [
+          {
+            title: "Review Assigned",
+            text: "Assigned to Ankit Manchanda for legal and commercial validation.",
+            createdAt: "2026-08-18T09:30:00"
+          }
+        ]
+      },
+      {
+        id: 304,
+        title: "Review proposal pricing details",
+        reviewType: "PROPOSAL",
+        status: "PENDING",
+        priority: "MEDIUM",
+        sourceId: 205,
+        sourceName: "Hospital Medicines Bid Proposal",
+        sourcePageUrl: "ProposalReview.html?proposalId=205",
+        reviewerUserId: "ankit",
+        reviewerName: "Ankit Manchanda",
+        dueDate: "2026-08-22",
+        createdAt: "2026-08-17T16:10:00",
+        context: "Proposal contains medicine lot pricing, delivery timelines, and qualified lot details. Pricing and assumptions need review before approval workflow.",
+        history: [
+          {
+            title: "Proposal Created",
+            text: "Proposal was generated from qualified lots.",
+            createdAt: "2026-08-17T16:10:00"
+          },
+          {
+            title: "Review Started",
+            text: "Pricing review requested.",
+            createdAt: "2026-08-17T17:00:00"
+          }
+        ]
+      },
+      {
+        id: 303,
+        title: "Validate lot qualification decision",
+        reviewType: "LOT",
+        status: "CHANGES_REQUESTED",
+        priority: "HIGH",
+        sourceId: 106,
+        sourceName: "Hospital Bed and Device Framework Agreement",
+        sourcePageUrl: "ContractDocumentAnalysis.html?contractId=106",
+        reviewerUserId: "deepika",
+        reviewerName: "Deepika Sharma",
+        dueDate: "2026-08-19",
+        createdAt: "2026-08-16T13:20:00",
+        context: "Lot qualification decision was marked as qualified but missing delivery capacity explanation. Reviewer requested additional justification.",
+        history: [
+          {
+            title: "Review Submitted",
+            text: "Initial review completed.",
+            createdAt: "2026-08-16T14:05:00"
+          },
+          {
+            title: "Changes Requested",
+            text: "Add justification for delivery capacity and device availability.",
+            createdAt: "2026-08-16T15:10:00"
+          }
+        ]
+      },
+      {
+        id: 302,
+        title: "Review contract eligibility criteria",
+        reviewType: "CONTRACT",
+        status: "APPROVED",
+        priority: "LOW",
+        sourceId: 105,
+        sourceName: "Managed Clinical Support Service Contract",
+        sourcePageUrl: "ContractDocumentAnalysis.html?contractId=105",
+        reviewerUserId: "ankit",
+        reviewerName: "Ankit Manchanda",
+        dueDate: "2026-08-21",
+        createdAt: "2026-08-14T11:00:00",
+        context: "Eligibility criteria and minimum qualification requirements were reviewed and approved.",
+        history: [
+          {
+            title: "Review Assigned",
+            text: "Assigned for contract eligibility validation.",
+            createdAt: "2026-08-14T11:00:00"
+          },
+          {
+            title: "Approved",
+            text: "Eligibility requirements are acceptable.",
+            createdAt: "2026-08-14T12:30:00"
+          }
+        ]
+      },
+      {
+        id: 301,
+        title: "Review rejected contract reason",
+        reviewType: "CONTRACT",
+        status: "REJECTED",
+        priority: "MEDIUM",
+        sourceId: 104,
+        sourceName: "Digital Patient Workflow Automation Contract",
+        sourcePageUrl: "ContractDocumentAnalysis.html?contractId=104",
+        reviewerUserId: "maher",
+        reviewerName: "Maher Alsafadi",
+        dueDate: "2026-08-17",
+        createdAt: "2026-08-12T14:45:00",
+        context: "Contract was rejected because mandatory compliance requirement was not satisfied.",
+        history: [
+          {
+            title: "Review Assigned",
+            text: "Assigned for final contract review.",
+            createdAt: "2026-08-12T14:45:00"
+          },
+          {
+            title: "Rejected",
+            text: "Mandatory compliance requirement failed.",
+            createdAt: "2026-08-12T16:20:00"
+          }
+        ]
+      }
+    ];
+
+    document.addEventListener("DOMContentLoaded", function () {
+      bindEvents();
+      loadReviews();
+    });
+
+    function bindEvents() {
+      document.getElementById("reviewSearchInput").addEventListener("input", applyFilters);
+      document.getElementById("globalSearchInput").addEventListener("input", syncGlobalSearch);
+      document.getElementById("statusFilter").addEventListener("change", applyFilters);
+      document.getElementById("typeFilter").addEventListener("change", applyFilters);
+
+      document.getElementById("openSourceButton").addEventListener("click", function () {
+        if (!selectedReview) {
+          return;
+        }
+
+        window.location.href = selectedReview.sourcePageUrl;
+      });
+
+      document.getElementById("auditTrailButton").addEventListener("click", function () {
+        if (!selectedReview) {
+          return;
+        }
+
+        window.location.href = AUDIT_TRAIL_URL + "?reviewId=" + encodeURIComponent(selectedReview.id);
+      });
+    }
+
+    function syncGlobalSearch(event) {
+      document.getElementById("reviewSearchInput").value = event.target.value;
+      applyFilters();
+    }
+
+    async function loadReviews() {
+      showLoading(true);
+
+      try {
+        const token = getAccessToken();
+
+        const response = await fetch(REVIEWS_API_URL, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": token ? "Bearer " + token : ""
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error("API returned status " + response.status);
+        }
+
+        const data = await response.json();
+        reviews = Array.isArray(data) ? data : [];
+        showToast("Review tasks loaded from API");
+      } catch (error) {
+        console.warn("Using mock reviews because API was not available:", error);
+        reviews = mockReviews;
+        showToast("Using mock reviews. Connect API when backend is ready.");
+      } finally {
+        reviews = sortLatestToOld(reviews);
+        filteredReviews = [...reviews];
+        renderReviews();
+        updateStats();
+        showLoading(false);
+      }
+    }
+
+    function refreshReviews() {
+      selectedReview = null;
+      resetReviewPanel();
+      loadReviews();
+    }
+
+    function sortLatestToOld(items) {
+      return [...items].sort(function (a, b) {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      });
+    }
+
+    function applyFilters() {
+      const searchValue = document.getElementById("reviewSearchInput").value.trim().toLowerCase();
+      const statusValue = document.getElementById("statusFilter").value;
+      const typeValue = document.getElementById("typeFilter").value;
+
+      filteredReviews = reviews.filter(function (review) {
+        const searchableText = [
+          review.title,
+          review.reviewType,
+          review.status,
+          review.priority,
+          review.sourceName,
+          review.reviewerName,
+          review.context
+        ].join(" ").toLowerCase();
+
+        const matchesSearch = !searchValue || searchableText.includes(searchValue);
+        const matchesStatus = statusValue === "ALL" || review.status === statusValue;
+        const matchesType = typeValue === "ALL" || review.reviewType === typeValue;
+
+        return matchesSearch && matchesStatus && matchesType;
+      });
+
+      renderReviews();
+    }
+
+    function renderReviews() {
+      const tbody = document.getElementById("reviewsTableBody");
+      const emptyState = document.getElementById("emptyState");
+
+      tbody.innerHTML = "";
+
+      if (filteredReviews.length === 0) {
+        emptyState.style.display = "block";
+        return;
+      }
+
+      emptyState.style.display = "none";
+
+      filteredReviews.forEach(function (review) {
+        const tr = document.createElement("tr");
+        tr.dataset.reviewId = review.id;
+
+        if (selectedReview && selectedReview.id === review.id) {
+          tr.classList.add("selected");
+        }
+
+        tr.innerHTML = `
+          <td>
+            <div class="review-title">${escapeHtml(review.title)}</div>
+            <div class="review-meta">
+              ${escapeHtml(review.sourceName)} · Created ${formatDateTime(review.createdAt)}
+            </div>
+          </td>
+
+          <td>
+            <span class="pill ${getTypeClass(review.reviewType)}">
+              ${getTypeIcon(review.reviewType)}
+              ${formatEnum(review.reviewType)}
+            </span>
+          </td>
+
+          <td>
+            <span class="pill ${getStatusClass(review.status)}">
+              ${getStatusIcon(review.status)}
+              ${formatEnum(review.status)}
+            </span>
+          </td>
+
+          <td>
+            <div class="review-title">${escapeHtml(review.reviewerName)}</div>
+            <div class="review-meta">${escapeHtml(review.reviewerUserId)}</div>
+          </td>
+
+          <td>
+            <span class="priority ${getPriorityClass(review.priority)}">${formatEnum(review.priority)}</span>
+          </td>
+
+          <td>
+            <span class="review-title">${formatDate(review.dueDate)}</span>
+          </td>
+        `;
+
+        tr.addEventListener("click", function () {
+          handleReviewClick(review);
+        });
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    function handleReviewClick(review) {
+      selectedReview = review;
+      renderReviews();
+      loadReviewPanel(review);
+      showToast("Review task selected.");
+    }
+
+    function loadReviewPanel(review) {
+      document.getElementById("reviewPlaceholder").style.display = "none";
+      document.getElementById("reviewContent").style.display = "block";
+
+      document.getElementById("detailTitle").textContent = review.title;
+      document.getElementById("detailSubtitle").textContent = review.sourceName;
+
+      document.getElementById("detailType").textContent = formatEnum(review.reviewType);
+      document.getElementById("detailStatus").textContent = formatEnum(review.status);
+      document.getElementById("detailReviewer").textContent = review.reviewerName || "-";
+      document.getElementById("detailPriority").textContent = formatEnum(review.priority);
+      document.getElementById("detailDueDate").textContent = formatDate(review.dueDate);
+      document.getElementById("detailObject").textContent = review.sourceName || "-";
+      document.getElementById("reviewContextText").textContent = review.context || "-";
+
+      document.getElementById("reviewComment").value = "";
+
+      renderHistory(review);
+    }
+
+    function resetReviewPanel() {
+      document.getElementById("reviewPlaceholder").style.display = "flex";
+      document.getElementById("reviewContent").style.display = "none";
+      document.getElementById("reviewComment").value = "";
+    }
+
+    function renderHistory(review) {
+      const historyList = document.getElementById("historyList");
+      historyList.innerHTML = "";
+
+      const history = Array.isArray(review.history) ? review.history : [];
+
+      if (history.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "history-item";
+        empty.innerHTML = `
+          <div class="history-icon">ℹ</div>
+          <div>
+            <div class="history-title">No history</div>
+            <div class="history-text">No review history available for this item.</div>
+          </div>
+        `;
+        historyList.appendChild(empty);
+        return;
+      }
+
+      history.forEach(function (item) {
+        const row = document.createElement("div");
+        row.className = "history-item";
+
+        row.innerHTML = `
+          <div class="history-icon">🕘</div>
+          <div>
+            <div class="history-title">${escapeHtml(item.title)}</div>
+            <div class="history-text">${escapeHtml(item.text)} · ${formatDateTime(item.createdAt)}</div>
+          </div>
+        `;
+
+        historyList.appendChild(row);
+      });
+    }
+
+    async function submitDecision(decision) {
+      if (!selectedReview) {
+        showToast("Select a review task first.");
+        return;
+      }
+
+      const comment = document.getElementById("reviewComment").value.trim();
+
+      if (!comment && decision !== "APPROVED") {
+        showToast("Please add a comment before requesting changes or rejecting.");
+        return;
+      }
+
+      try {
+        const token = getAccessToken();
+        const endpoint = getDecisionEndpoint(selectedReview.id, decision);
+
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": token ? "Bearer " + token : ""
+          },
+          body: JSON.stringify({
+            comment: comment
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error("Decision API returned status " + response.status);
+        }
+
+        selectedReview.status = decision;
+        selectedReview.history = selectedReview.history || [];
+        selectedReview.history.unshift({
+          title: formatEnum(decision),
+          text: comment || "Decision submitted without comment.",
+          createdAt: new Date().toISOString()
+        });
+
+        renderReviews();
+        loadReviewPanel(selectedReview);
+        updateStats();
+        showToast("Review decision submitted.");
+      } catch (error) {
+        console.warn("Decision API unavailable. Updating mock state only.", error);
+
+        selectedReview.status = decision;
+        selectedReview.history = selectedReview.history || [];
+        selectedReview.history.unshift({
+          title: formatEnum(decision),
+          text: comment || "Decision submitted without comment.",
+          createdAt: new Date().toISOString()
+        });
+
+        renderReviews();
+        loadReviewPanel(selectedReview);
+        updateStats();
+        showToast("Mock decision saved. Connect backend endpoint when ready.");
+      }
+    }
+
+    function getDecisionEndpoint(reviewId, decision) {
+      if (decision === "APPROVED") {
+        return REVIEWS_API_URL + "/" + reviewId + "/approve";
+      }
+
+      if (decision === "CHANGES_REQUESTED") {
+        return REVIEWS_API_URL + "/" + reviewId + "/request-changes";
+      }
+
+      if (decision === "REJECTED") {
+        return REVIEWS_API_URL + "/" + reviewId + "/reject";
+      }
+
+      return REVIEWS_API_URL + "/" + reviewId + "/decision";
+    }
+
+    function updateStats() {
+      const totalReviews = reviews.length;
+
+      const pending = reviews.filter(function (review) {
+        return review.status === "PENDING";
+      }).length;
+
+      const approved = reviews.filter(function (review) {
+        return review.status === "APPROVED";
+      }).length;
+
+      const changes = reviews.filter(function (review) {
+        return review.status === "CHANGES_REQUESTED";
+      }).length;
+
+      const rejected = reviews.filter(function (review) {
+        return review.status === "REJECTED";
+      }).length;
+
+      const highPriority = reviews.filter(function (review) {
+        return review.priority === "HIGH";
+      }).length;
+
+      document.getElementById("totalReviewsStat").textContent = totalReviews;
+      document.getElementById("pendingReviewsStat").textContent = pending;
+      document.getElementById("highPriorityStat").textContent = highPriority;
+
+      document.getElementById("pendingCount").textContent = pending;
+      document.getElementById("approvedCount").textContent = approved;
+      document.getElementById("changesCount").textContent = changes;
+      document.getElementById("rejectedCount").textContent = rejected;
+    }
+
+    function getAccessToken() {
+      if (window.keycloak && window.keycloak.token) {
+        return window.keycloak.token;
+      }
+
+      return localStorage.getItem("access_token") || sessionStorage.getItem("access_token");
+    }
+
+    function getTypeClass(type) {
+      switch (type) {
+        case "CONTRACT":
+          return "contract";
+        case "PROPOSAL":
+          return "proposal";
+        case "LOT":
+          return "lot";
+        case "HIGHLIGHT":
+          return "highlight";
+        default:
+          return "highlight";
+      }
+    }
+
+    function getTypeIcon(type) {
+      switch (type) {
+        case "CONTRACT":
+          return "📂";
+        case "PROPOSAL":
+          return "📝";
+        case "LOT":
+          return "📦";
+        case "HIGHLIGHT":
+          return "🔎";
+        default:
+          return "✅";
+      }
+    }
+
+    function getStatusClass(status) {
+      switch (status) {
+        case "PENDING":
+          return "pending";
+        case "APPROVED":
+          return "approved";
+        case "CHANGES_REQUESTED":
+          return "changes";
+        case "REJECTED":
+          return "rejected";
+        default:
+          return "pending";
+      }
+    }
+
+    function getStatusIcon(status) {
+      switch (status) {
+        case "PENDING":
+          return "⏳";
+        case "APPROVED":
+          return "✅";
+        case "CHANGES_REQUESTED":
+          return "🔁";
+        case "REJECTED":
+          return "❌";
+        default:
+          return "⏳";
+      }
+    }
+
+    function getPriorityClass(priority) {
+      switch (priority) {
+        case "HIGH":
+          return "high";
+        case "MEDIUM":
+          return "medium";
+        case "LOW":
+          return "low";
+        default:
+          return "medium";
+      }
+    }
+
+    function formatEnum(value) {
+      if (!value) {
+        return "-";
+      }
+
+      return String(value)
+        .replaceAll("_", " ")
+        .toLowerCase()
+        .replace(/\b\w/g, function (char) {
+          return char.toUpperCase();
+        });
+    }
+
+    function formatDate(value) {
+      if (!value) {
+        return "-";
+      }
+
+      const date = new Date(value);
+
+      if (Number.isNaN(date.getTime())) {
+        return value;
+      }
+
+      return new Intl.DateTimeFormat("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+      }).format(date);
+    }
+
+    function formatDateTime(value) {
+      if (!value) {
+        return "-";
+      }
+
+      const date = new Date(value);
+
+      if (Number.isNaN(date.getTime())) {
+        return value;
+      }
+
+      return new Intl.DateTimeFormat("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      }).format(date);
+    }
+
+    function escapeHtml(value) {
+      if (value === null || value === undefined) {
+        return "";
+      }
+
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function showLoading(isLoading) {
+      document.getElementById("loadingIndicator").style.display = isLoading ? "flex" : "none";
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.style.display = "block";
+
+      window.clearTimeout(showToast.timeoutId);
+      showToast.timeoutId = window.setTimeout(function () {
+        toast.style.display = "none";
+      }, 2600);
+    }
+  </script>
+</body>
+</html>

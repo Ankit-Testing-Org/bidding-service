@@ -1,0 +1,1793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reports | SmartBid AI</title>
+
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e5e7eb;
+      --purple: #7c3aed;
+      --purple-light: #f3e8ff;
+      --blue: #0284c7;
+      --blue-light: #e0f2fe;
+      --green: #059669;
+      --green-light: #dcfce7;
+      --orange: #ea580c;
+      --orange-light: #ffedd5;
+      --red: #dc2626;
+      --red-light: #fee2e2;
+      --slate: #334155;
+      --slate-light: #f1f5f9;
+      --yellow: #ca8a04;
+      --yellow-light: #fef9c3;
+      --shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+      --radius-lg: 28px;
+      --radius-md: 20px;
+      --radius-sm: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Inter, Segoe UI, Arial, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+      padding: 24px;
+      gap: 24px;
+    }
+
+    .sidebar {
+      width: 280px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      border-radius: 32px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 34px;
+    }
+
+    .brand-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 12px 30px rgba(124, 58, 237, 0.35);
+      flex-shrink: 0;
+    }
+
+    .brand-title {
+      font-size: 20px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .brand-subtitle {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 3px;
+      white-space: nowrap;
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .nav-item {
+      text-decoration: none;
+      border: none;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 16px;
+      border-radius: 18px;
+      color: #475569;
+      font-size: 14px;
+      font-weight: 750;
+      cursor: pointer;
+      text-align: left;
+      transition: 0.2s ease;
+    }
+
+    .nav-item:hover {
+      background: #f1f5f9;
+      color: var(--text);
+    }
+
+    .nav-item.active {
+      background: #0f172a;
+      color: white;
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.25);
+    }
+
+    .sidebar-card {
+      margin-top: 40px;
+      padding: 22px;
+      border-radius: 26px;
+      background: linear-gradient(135deg, #7c3aed, #2563eb, #06b6d4);
+      color: white;
+      box-shadow: 0 18px 40px rgba(79, 70, 229, 0.3);
+    }
+
+    .sidebar-card small {
+      opacity: 0.8;
+      font-weight: 750;
+    }
+
+    .sidebar-card h3 {
+      margin-top: 10px;
+      font-size: 22px;
+      line-height: 1.2;
+    }
+
+    .sidebar-card p {
+      margin-top: 10px;
+      font-size: 13px;
+      opacity: 0.82;
+      line-height: 1.5;
+    }
+
+    .main {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .topbar {
+      background: rgba(255, 255, 255, 0.86);
+      border-radius: 32px;
+      padding: 18px 22px;
+      box-shadow: 0 14px 38px rgba(15, 23, 42, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .page-label {
+      font-size: 12px;
+      color: var(--purple);
+      font-weight: 850;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .page-title {
+      font-size: 26px;
+      font-weight: 900;
+      margin-top: 3px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .search-box {
+      width: 360px;
+      background: #f1f5f9;
+      border-radius: 18px;
+      padding: 11px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .search-box input {
+      border: none;
+      outline: none;
+      background: transparent;
+      width: 100%;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 16px;
+      border: none;
+      background: #f1f5f9;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #ede9fe;
+      color: var(--purple);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 900;
+      border: 4px solid white;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.12);
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #0f172a, #3b0764, #312e81);
+      color: white;
+      border-radius: 36px;
+      padding: 30px 32px;
+      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.22);
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.12);
+      padding: 8px 13px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 850;
+      margin-bottom: 16px;
+    }
+
+    .hero h2 {
+      font-size: 34px;
+      line-height: 1.15;
+      margin-bottom: 10px;
+    }
+
+    .hero p {
+      color: rgba(255, 255, 255, 0.72);
+      max-width: 720px;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .hero-stat {
+      background: rgba(255, 255, 255, 0.12);
+      padding: 18px;
+      border-radius: 24px;
+      backdrop-filter: blur(12px);
+    }
+
+    .hero-stat span {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.65);
+    }
+
+    .hero-stat strong {
+      display: block;
+      font-size: 24px;
+      margin-top: 6px;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    .kpi-card,
+    .card {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow);
+      min-width: 0;
+    }
+
+    .kpi-card {
+      min-height: 145px;
+      transition: 0.2s ease;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.13);
+    }
+
+    .kpi-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .kpi-title {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .kpi-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 22px;
+    }
+
+    .purple { background: linear-gradient(135deg, #8b5cf6, #4f46e5); }
+    .blue { background: linear-gradient(135deg, #06b6d4, #2563eb); }
+    .green { background: linear-gradient(135deg, #10b981, #059669); }
+    .orange { background: linear-gradient(135deg, #f97316, #ea580c); }
+    .slate { background: linear-gradient(135deg, #64748b, #0f172a); }
+    .red { background: linear-gradient(135deg, #ef4444, #dc2626); }
+
+    .kpi-count {
+      font-size: 32px;
+      font-weight: 950;
+      margin-top: 14px;
+    }
+
+    .kpi-help {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 8px;
+      line-height: 1.45;
+    }
+
+    .reports-layout {
+      display: grid;
+      grid-template-columns: minmax(640px, 1fr) minmax(430px, 0.78fr);
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .card-subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 5px;
+      line-height: 1.45;
+    }
+
+    .btn {
+      border: none;
+      background: #0f172a;
+      color: white;
+      border-radius: 16px;
+      padding: 11px 16px;
+      font-size: 13px;
+      font-weight: 850;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn.secondary { background: #f1f5f9; color: var(--text); }
+    .btn.purple-btn { background: linear-gradient(135deg, #7c3aed, #2563eb); color: white; }
+    .btn.green-btn { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+    .btn.orange-btn { background: linear-gradient(135deg, #f97316, #ea580c); color: white; }
+    .btn.red-btn { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
+
+    .filter-row {
+      display: grid;
+      grid-template-columns: 1fr 160px 160px 160px;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .filter-input,
+    .filter-select {
+      width: 100%;
+      border: 1px solid var(--border);
+      outline: none;
+      background: #f8fafc;
+      color: var(--text);
+      border-radius: 16px;
+      padding: 12px 14px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .table-wrap {
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead { background: #f8fafc; }
+
+    th {
+      text-align: left;
+      padding: 15px 16px;
+      color: #475569;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-weight: 900;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      font-size: 13px;
+    }
+
+    tbody tr { cursor: pointer; transition: 0.16s ease; }
+    tbody tr:hover { background: #f8fafc; }
+    tbody tr.selected { background: #f3e8ff; }
+    tbody tr:last-child td { border-bottom: none; }
+
+    .report-title {
+      font-weight: 900;
+      color: #0f172a;
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+
+    .report-meta {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .pill.ready { background: var(--green-light); color: var(--green); }
+    .pill.scheduled { background: var(--blue-light); color: var(--blue); }
+    .pill.draft { background: var(--slate-light); color: var(--slate); }
+    .pill.failed { background: var(--red-light); color: var(--red); }
+    .pill.contract { background: var(--blue-light); color: var(--blue); }
+    .pill.proposal { background: var(--purple-light); color: var(--purple); }
+    .pill.review { background: var(--orange-light); color: var(--orange); }
+    .pill.approval { background: var(--green-light); color: var(--green); }
+    .pill.executive { background: var(--yellow-light); color: var(--yellow); }
+    .pill.ai { background: var(--slate-light); color: var(--slate); }
+
+    .report-panel {
+      min-height: 760px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .report-shell {
+      flex: 1;
+      border: 1px solid var(--border);
+      border-radius: 26px;
+      overflow: hidden;
+      background: #0f172a;
+      position: relative;
+    }
+
+    .report-placeholder {
+      min-height: 450px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 34px;
+      color: white;
+      text-align: center;
+      background:
+        radial-gradient(circle at top left, rgba(124, 58, 237, 0.38), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(37, 99, 235, 0.38), transparent 36%),
+        #0f172a;
+    }
+
+    .report-placeholder-icon {
+      width: 74px;
+      height: 74px;
+      border-radius: 26px;
+      background: rgba(255, 255, 255, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 34px;
+      margin: 0 auto 18px;
+    }
+
+    .report-placeholder h3 {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    .report-placeholder p {
+      color: rgba(255, 255, 255, 0.72);
+      line-height: 1.6;
+      max-width: 420px;
+      font-size: 14px;
+    }
+
+    .report-content {
+      display: none;
+      background: white;
+      min-height: 450px;
+      padding: 22px;
+    }
+
+    .summary-title {
+      font-size: 22px;
+      font-weight: 950;
+      line-height: 1.25;
+      margin-bottom: 8px;
+    }
+
+    .summary-subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      margin-bottom: 18px;
+    }
+
+    .summary-actions {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .detail-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px;
+    }
+
+    .detail-box span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
+
+    .detail-box strong {
+      font-size: 14px;
+      font-weight: 950;
+      color: #0f172a;
+      line-height: 1.35;
+    }
+
+    .chart-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-top: 24px;
+    }
+
+    .chart-card {
+      background: white;
+      border-radius: 32px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .bar-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 150px 1fr 55px;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .bar-bg {
+      height: 12px;
+      border-radius: 999px;
+      background: #eef2f7;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+    }
+
+    .donut-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 18px;
+    }
+
+    .donut {
+      width: 190px;
+      height: 190px;
+      border-radius: 50%;
+      background: conic-gradient(#7c3aed 0deg 145deg, #059669 145deg 245deg, #ea580c 245deg 310deg, #0284c7 310deg 360deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .donut:after {
+      content: "";
+      width: 118px;
+      height: 118px;
+      border-radius: 50%;
+      background: white;
+      position: absolute;
+    }
+
+    .donut-center {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+    }
+
+    .donut-center strong {
+      display: block;
+      font-size: 22px;
+      font-weight: 950;
+    }
+
+    .donut-center span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .report-section {
+      margin-top: 18px;
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 950;
+      margin-bottom: 10px;
+    }
+
+    .insight-list,
+    .activity-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .insight-item,
+    .activity-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 15px;
+      border-radius: 20px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+    }
+
+    .insight-title,
+    .activity-title {
+      font-weight: 900;
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+
+    .insight-desc,
+    .activity-desc {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .activity-meta {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+      font-weight: 750;
+    }
+
+    .empty-state {
+      padding: 34px;
+      text-align: center;
+      color: var(--muted);
+      display: none;
+    }
+
+    .empty-state strong {
+      color: var(--text);
+      display: block;
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      background: #0f172a;
+      color: white;
+      padding: 14px 18px;
+      border-radius: 18px;
+      box-shadow: 0 18px 48px rgba(15, 23, 42, 0.28);
+      font-size: 13px;
+      font-weight: 850;
+      display: none;
+      z-index: 100;
+    }
+
+    .loading {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 850;
+      margin-bottom: 14px;
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 3px solid #e5e7eb;
+      border-top-color: var(--purple);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 1280px) {
+      .reports-layout,
+      .chart-grid {
+        grid-template-columns: 1fr;
+      }
+      .hero {
+        grid-template-columns: 1fr;
+      }
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 980px) {
+      .app { padding: 14px; }
+      .sidebar { display: none; }
+      .topbar { flex-direction: column; align-items: flex-start; }
+      .top-actions { width: 100%; }
+      .search-box { width: 100%; }
+      .filter-row { grid-template-columns: 1fr; }
+      .hero-stats { grid-template-columns: 1fr; }
+      .table-wrap { overflow-x: auto; }
+      table { min-width: 980px; }
+      .detail-grid,
+      .summary-actions { grid-template-columns: 1fr; }
+      .bar-row { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 680px) {
+      .kpi-grid { grid-template-columns: 1fr; }
+      .hero h2 { font-size: 28px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <aside class="sidebar">
+      <div>
+        <div class="brand">
+          <div class="brand-icon">📊</div>
+          <div>
+            <div class="brand-title">Reports</div>
+            <div class="brand-subtitle">Contract bidding platform</div>
+          </div>
+        </div>
+
+        <nav class="nav">
+          <button class="nav-item" onclick="goToPage('CompanyOverviewDashboard.html')">🏠 Overview</button>
+          <button class="nav-item" onclick="goToPage('Contracts.html')">📂 Contracts</button>
+          <button class="nav-item" onclick="goToPage('Proposals.html')">📝 Proposals</button>
+          <button class="nav-item" onclick="goToPage('Reviews.html')">✅ Reviews</button>
+          <button class="nav-item" onclick="goToPage('Approvals.html')">✔ Approvals</button>
+          <button class="nav-item active" onclick="goToPage('Report.html')">📊 Reports</button>
+          <button class="nav-item" onclick="goToPage('MySummary.html')">👤 My Summary</button>
+        </nav>
+      </div>
+
+      <div class="sidebar-card">
+        <small>Report Focus</small>
+        <h3>Measure bid performance</h3>
+        <p>
+          Track contracts, proposals, lots, reviews, approvals, valuation, risk trends, and win/loss performance.
+        </p>
+      </div>
+    </aside>
+
+    <main class="main">
+
+      <header class="topbar">
+        <div>
+          <div class="page-label">Reporting Analytics</div>
+          <div class="page-title">Reports Dashboard</div>
+        </div>
+
+        <div class="top-actions">
+          <div class="search-box">
+            🔍
+            <input id="globalSearchInput" type="text" placeholder="Search report, category, status, owner..." />
+          </div>
+          <button class="icon-btn" type="button" title="Notifications">🔔</button>
+          <div class="avatar">AM</div>
+        </div>
+      </header>
+
+      <section class="hero">
+        <div>
+          <span class="hero-badge">Executive Reporting</span>
+          <h2>Bid portfolio intelligence and operational analytics</h2>
+          <p>
+            Analyze contract intake, proposal pipeline, lot qualification, review queues, approval bottlenecks, AI findings, win/loss trends, revenue value, and margin performance from one reporting workspace.
+          </p>
+        </div>
+
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <span>Pipeline Value</span>
+            <strong id="pipelineValueStat">€0</strong>
+          </div>
+          <div class="hero-stat">
+            <span>Win Rate</span>
+            <strong id="winRateStat">0%</strong>
+          </div>
+          <div class="hero-stat">
+            <span>Open Risks</span>
+            <strong id="openRisksStat">0</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-title">Total Contracts</div>
+            <div class="kpi-icon blue">📂</div>
+          </div>
+          <div class="kpi-count" id="contractsCount">0</div>
+          <div class="kpi-help">Contracts uploaded, analyzed, qualified, or rejected.</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-title">Total Proposals</div>
+            <div class="kpi-icon purple">📝</div>
+          </div>
+          <div class="kpi-count" id="proposalsCount">0</div>
+          <div class="kpi-help">Draft, review, approval, submitted, won, and lost proposals.</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-title">Pending Reviews</div>
+            <div class="kpi-icon orange">✅</div>
+          </div>
+          <div class="kpi-count" id="pendingReviewsCount">0</div>
+          <div class="kpi-help">Review tasks waiting for user or group action.</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-title">Approval Bottlenecks</div>
+            <div class="kpi-icon red">⏳</div>
+          </div>
+          <div class="kpi-count" id="approvalBottlenecksCount">0</div>
+          <div class="kpi-help">Pending approvals that may delay submission.</div>
+        </div>
+      </section>
+
+      <section class="reports-layout">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Report Catalog</div>
+              <div class="card-subtitle">
+                Select a report to view summary, included metrics, generated insights, and export options.
+              </div>
+            </div>
+            <button class="btn purple-btn" type="button" onclick="refreshReports()">Refresh</button>
+          </div>
+
+          <div class="loading" id="loadingIndicator">
+            <span class="spinner"></span>
+            <span>Loading reports...</span>
+          </div>
+
+          <div class="filter-row">
+            <input id="reportSearchInput" class="filter-input" type="text" placeholder="Search report catalog..." />
+
+            <select id="categoryFilter" class="filter-select">
+              <option value="ALL">All Categories</option>
+              <option value="CONTRACT">Contract</option>
+              <option value="PROPOSAL">Proposal</option>
+              <option value="REVIEW">Review</option>
+              <option value="APPROVAL">Approval</option>
+              <option value="EXECUTIVE">Executive</option>
+              <option value="AI">AI Analysis</option>
+            </select>
+
+            <select id="statusFilter" class="filter-select">
+              <option value="ALL">All Status</option>
+              <option value="READY">Ready</option>
+              <option value="SCHEDULED">Scheduled</option>
+              <option value="DRAFT">Draft</option>
+              <option value="FAILED">Failed</option>
+            </select>
+
+            <select id="periodFilter" class="filter-select">
+              <option value="ALL">All Periods</option>
+              <option value="THIS_MONTH">This Month</option>
+              <option value="LAST_MONTH">Last Month</option>
+              <option value="THIS_QUARTER">This Quarter</option>
+              <option value="THIS_YEAR">This Year</option>
+            </select>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Report</th>
+                  <th>Category</th>
+                  <th>Status</th>
+                  <th>Period</th>
+                  <th>Owner</th>
+                  <th>Last Run</th>
+                </tr>
+              </thead>
+              <tbody id="reportsTableBody"></tbody>
+            </table>
+
+            <div class="empty-state" id="emptyState">
+              <strong>No reports found</strong>
+              Change your search or filter criteria.
+            </div>
+          </div>
+        </div>
+
+        <div class="card report-panel">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Report Summary</div>
+              <div class="card-subtitle">
+                View selected report details, included metrics, insights, and export actions.
+              </div>
+            </div>
+          </div>
+
+          <div class="report-shell">
+            <div class="report-placeholder" id="reportPlaceholder">
+              <div>
+                <div class="report-placeholder-icon">📊</div>
+                <h3>Select a report</h3>
+                <p>
+                  Metrics, report description, generated insights, source modules, schedule, and export actions will appear here.
+                </p>
+              </div>
+            </div>
+
+            <div class="report-content" id="reportContent">
+              <div class="summary-title" id="summaryTitle">-</div>
+              <div class="summary-subtitle" id="summarySubtitle">-</div>
+
+              <div class="summary-actions">
+                <button class="btn purple-btn" id="openReportButton" type="button">Open</button>
+                <button class="btn secondary" id="exportPdfButton" type="button">Export PDF</button>
+                <button class="btn secondary" id="exportExcelButton" type="button">Export Excel</button>
+                <button class="btn green-btn" id="scheduleButton" type="button">Schedule</button>
+              </div>
+
+              <div class="detail-grid">
+                <div class="detail-box">
+                  <span>Category</span>
+                  <strong id="detailCategory">-</strong>
+                </div>
+                <div class="detail-box">
+                  <span>Status</span>
+                  <strong id="detailStatus">-</strong>
+                </div>
+                <div class="detail-box">
+                  <span>Period</span>
+                  <strong id="detailPeriod">-</strong>
+                </div>
+                <div class="detail-box">
+                  <span>Owner</span>
+                  <strong id="detailOwner">-</strong>
+                </div>
+                <div class="detail-box">
+                  <span>Source Modules</span>
+                  <strong id="detailSources">-</strong>
+                </div>
+                <div class="detail-box">
+                  <span>Last Run</span>
+                  <strong id="detailLastRun">-</strong>
+                </div>
+              </div>
+
+              <div class="report-section">
+                <div class="section-title">Included Metrics</div>
+                <div class="insight-list" id="metricsList"></div>
+              </div>
+
+              <div class="report-section">
+                <div class="section-title">Generated Insights</div>
+                <div class="insight-list" id="insightsList"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="chart-grid">
+        <div class="chart-card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Pipeline Distribution</div>
+              <div class="card-subtitle">Proposal value split by lifecycle status</div>
+            </div>
+          </div>
+          <div class="bar-list" id="pipelineBars"></div>
+        </div>
+
+        <div class="chart-card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Bid Outcome Mix</div>
+              <div class="card-subtitle">Won, lost, withdrawn, and active pipeline</div>
+            </div>
+          </div>
+          <div class="donut-wrap">
+            <div class="donut">
+              <div class="donut-center">
+                <strong id="donutValue">€0</strong>
+                <span>Total Value</span>
+              </div>
+            </div>
+          </div>
+          <div class="insight-list" id="outcomeLegend"></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Recent Report Activities</div>
+            <div class="card-subtitle">Latest reporting updates, exports, and scheduled report runs.</div>
+          </div>
+          <button class="btn secondary" type="button" onclick="showToast('Report activity log can be connected later.')">Open Activity Log</button>
+        </div>
+        <div class="activity-list" id="activityList"></div>
+      </section>
+
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    /*
+      SmartBid AI Reports Page
+
+      Expected backend response:
+
+      GET /api/reports
+
+      [
+        {
+          "id": 501,
+          "name": "Proposal Performance Report",
+          "category": "PROPOSAL",
+          "status": "READY",
+          "period": "THIS_MONTH",
+          "ownerName": "Ankit Manchanda",
+          "lastRunAt": "2026-08-18T09:30:00",
+          "description": "Tracks proposal lifecycle, active value, won/lost outcome, and margin performance.",
+          "sourceModules": ["Contracts", "Proposals", "Approvals"],
+          "metrics": ["Total Proposals", "Active Value", "Won Value"],
+          "insights": ["Win value increased compared with previous period."],
+          "reportUrl": "/api/reports/501/view",
+          "pdfUrl": "/api/reports/501/pdf",
+          "excelUrl": "/api/reports/501/excel"
+        }
+      ]
+    */
+
+    const API_BASE_URL = "http://localhost:8080";
+    const REPORTS_API_URL = API_BASE_URL + "/api/reports";
+
+    let reports = [];
+    let filteredReports = [];
+    let selectedReport = null;
+
+    const dashboardSummary = {
+      pipelineValue: 18400000,
+      winRate: 42,
+      openRisks: 17,
+      contracts: 128,
+      proposals: 94,
+      pendingReviews: 21,
+      approvalBottlenecks: 8,
+      totalValue: 18400000
+    };
+
+    const mockReports = [
+      {
+        id: 501,
+        name: "Executive Bid Portfolio Report",
+        category: "EXECUTIVE",
+        status: "READY",
+        period: "THIS_MONTH",
+        ownerName: "Ankit Manchanda",
+        lastRunAt: "2026-08-18T09:30:00",
+        description: "Executive view of contract intake, proposal pipeline, approvals, revenue value, margin, and won/lost outcomes.",
+        sourceModules: ["Contracts", "Proposals", "Reviews", "Approvals"],
+        metrics: ["Pipeline Value", "Win Rate", "Active Proposals", "Approval Bottlenecks", "Won Value"],
+        insights: [
+          "Approval bottlenecks are concentrated in Finance and Executive Approval stages.",
+          "Won value contribution is highest from healthcare service proposals.",
+          "Pending review volume may delay near-term submission readiness."
+        ],
+        reportUrl: "/api/reports/501/view",
+        pdfUrl: "/api/reports/501/pdf",
+        excelUrl: "/api/reports/501/excel"
+      },
+      {
+        id: 502,
+        name: "Contract Analysis Summary",
+        category: "CONTRACT",
+        status: "READY",
+        period: "THIS_QUARTER",
+        ownerName: "Ankit Manchanda",
+        lastRunAt: "2026-08-18T08:20:00",
+        description: "Tracks contracts uploaded, analyzed, rejected, approved for bid, and AI findings by category.",
+        sourceModules: ["Contracts", "AI Analysis", "Lots"],
+        metrics: ["Uploaded Contracts", "Rejected Contracts", "AI Findings", "Qualified Lots"],
+        insights: [
+          "Contract rejection reasons are primarily compliance and eligibility related.",
+          "Most AI findings are related to payment, penalty, and termination clauses."
+        ],
+        reportUrl: "/api/reports/502/view",
+        pdfUrl: "/api/reports/502/pdf",
+        excelUrl: "/api/reports/502/excel"
+      },
+      {
+        id: 503,
+        name: "Proposal Performance Report",
+        category: "PROPOSAL",
+        status: "READY",
+        period: "THIS_MONTH",
+        ownerName: "Maher Alsafadi",
+        lastRunAt: "2026-08-17T18:05:00",
+        description: "Measures proposal creation, stage movement, proposal value, submission status, and won/lost outcome.",
+        sourceModules: ["Proposals", "Contracts", "Approvals"],
+        metrics: ["Draft Proposals", "Submitted Proposals", "Won Value", "Lost Value", "Average Margin"],
+        insights: [
+          "Draft proposals have increased due to new hospital procurement opportunities.",
+          "Submitted proposal value remains concentrated in medicine and clinical support categories."
+        ],
+        reportUrl: "/api/reports/503/view",
+        pdfUrl: "/api/reports/503/pdf",
+        excelUrl: "/api/reports/503/excel"
+      },
+      {
+        id: 504,
+        name: "Review SLA And Queue Report",
+        category: "REVIEW",
+        status: "SCHEDULED",
+        period: "THIS_MONTH",
+        ownerName: "Deepika Sharma",
+        lastRunAt: "2026-08-17T14:45:00",
+        description: "Shows review task load, pending review volume, changes requested, rejected items, and SLA risks.",
+        sourceModules: ["Reviews", "Contracts", "Proposals"],
+        metrics: ["Pending Reviews", "Approved Reviews", "Rejected Reviews", "SLA Breaches"],
+        insights: [
+          "High priority review tasks are concentrated around AI risk highlights.",
+          "Changes requested often relate to delivery capacity and qualification justification."
+        ],
+        reportUrl: "/api/reports/504/view",
+        pdfUrl: "/api/reports/504/pdf",
+        excelUrl: "/api/reports/504/excel"
+      },
+      {
+        id: 505,
+        name: "Approval Bottleneck Report",
+        category: "APPROVAL",
+        status: "READY",
+        period: "THIS_MONTH",
+        ownerName: "Jörg Heinicke",
+        lastRunAt: "2026-08-16T17:15:00",
+        description: "Highlights pending approvals, delegated approvals, rejected approvals, and approval chain cycle time.",
+        sourceModules: ["Approvals", "Proposals", "Audit Trail"],
+        metrics: ["Pending Approvals", "Delegated Approvals", "Rejected Approvals", "Approved Value"],
+        insights: [
+          "Executive approvals have the highest pending value.",
+          "Delegated approvals usually require additional delivery validation."
+        ],
+        reportUrl: "/api/reports/505/view",
+        pdfUrl: "/api/reports/505/pdf",
+        excelUrl: "/api/reports/505/excel"
+      },
+      {
+        id: 506,
+        name: "AI Findings Trend Report",
+        category: "AI",
+        status: "DRAFT",
+        period: "THIS_QUARTER",
+        ownerName: "Ankit Manchanda",
+        lastRunAt: "2026-08-15T12:10:00",
+        description: "Aggregates AI-discovered risks, compliance issues, financial clauses, and legal findings across contracts.",
+        sourceModules: ["AI Analysis", "Contract Highlights", "Lots"],
+        metrics: ["AI Findings", "High Risk Clauses", "Compliance Issues", "Manual Overrides"],
+        insights: [
+          "Penalty and termination clauses are recurring findings across hospital contract documents.",
+          "Manual overrides should be monitored for audit trace consistency."
+        ],
+        reportUrl: "/api/reports/506/view",
+        pdfUrl: "/api/reports/506/pdf",
+        excelUrl: "/api/reports/506/excel"
+      }
+    ];
+
+    const pipelineData = [
+      { label: "Draft", value: 4200000, percent: 42 },
+      { label: "Under Review", value: 3600000, percent: 36 },
+      { label: "Under Approval", value: 5100000, percent: 51 },
+      { label: "Submitted", value: 2800000, percent: 28 },
+      { label: "Won", value: 4300000, percent: 43 },
+      { label: "Lost", value: 1600000, percent: 16 }
+    ];
+
+    const outcomeData = [
+      { label: "Active Pipeline", value: "€12.4M" },
+      { label: "Won", value: "€4.3M" },
+      { label: "Lost", value: "€1.6M" },
+      { label: "Withdrawn", value: "€0.5M" }
+    ];
+
+    const mockActivities = [
+      {
+        title: "Executive Report Generated",
+        description: "Executive Bid Portfolio Report was generated for this month.",
+        meta: "Today"
+      },
+      {
+        title: "Approval Report Exported",
+        description: "Approval Bottleneck Report exported as Excel.",
+        meta: "Yesterday"
+      },
+      {
+        title: "Review SLA Report Scheduled",
+        description: "Review SLA And Queue Report scheduled for recurring generation.",
+        meta: "2 days ago"
+      },
+      {
+        title: "AI Findings Draft Updated",
+        description: "AI Findings Trend Report draft was updated with new risk categories.",
+        meta: "Last week"
+      }
+    ];
+
+    document.addEventListener("DOMContentLoaded", function () {
+      bindEvents();
+      loadReports();
+      renderDashboardSummary();
+      renderCharts();
+      renderActivities();
+    });
+
+    function bindEvents() {
+      document.getElementById("reportSearchInput").addEventListener("input", applyFilters);
+      document.getElementById("globalSearchInput").addEventListener("input", syncGlobalSearch);
+      document.getElementById("categoryFilter").addEventListener("change", applyFilters);
+      document.getElementById("statusFilter").addEventListener("change", applyFilters);
+      document.getElementById("periodFilter").addEventListener("change", applyFilters);
+
+      document.getElementById("openReportButton").addEventListener("click", function () {
+        if (!selectedReport) {
+          return;
+        }
+        openUrl(selectedReport.reportUrl, "Opening report viewer.");
+      });
+
+      document.getElementById("exportPdfButton").addEventListener("click", function () {
+        if (!selectedReport) {
+          return;
+        }
+        openUrl(selectedReport.pdfUrl, "Exporting report as PDF.");
+      });
+
+      document.getElementById("exportExcelButton").addEventListener("click", function () {
+        if (!selectedReport) {
+          return;
+        }
+        openUrl(selectedReport.excelUrl, "Exporting report as Excel.");
+      });
+
+      document.getElementById("scheduleButton").addEventListener("click", function () {
+        if (!selectedReport) {
+          return;
+        }
+        showToast("Schedule configuration can be connected to backend later.");
+      });
+    }
+
+    function goToPage(url) {
+      window.location.href = url;
+    }
+
+    function syncGlobalSearch(event) {
+      document.getElementById("reportSearchInput").value = event.target.value;
+      applyFilters();
+    }
+
+    async function loadReports() {
+      showLoading(true);
+
+      try {
+        const token = getAccessToken();
+        const response = await fetch(REPORTS_API_URL, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": token ? "Bearer " + token : ""
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error("API returned status " + response.status);
+        }
+
+        const data = await response.json();
+        reports = Array.isArray(data) ? data : [];
+        showToast("Reports loaded from API");
+      } catch (error) {
+        console.warn("Using mock reports because API was not available:", error);
+        reports = mockReports;
+        showToast("Using mock reports. Connect API when backend is ready.");
+      } finally {
+        reports = sortLatestToOld(reports);
+        filteredReports = [...reports];
+        renderReports();
+        showLoading(false);
+      }
+    }
+
+    function refreshReports() {
+      selectedReport = null;
+      resetReportPanel();
+      loadReports();
+    }
+
+    function sortLatestToOld(items) {
+      return [...items].sort(function (a, b) {
+        return new Date(b.lastRunAt).getTime() - new Date(a.lastRunAt).getTime();
+      });
+    }
+
+    function applyFilters() {
+      const searchValue = document.getElementById("reportSearchInput").value.trim().toLowerCase();
+      const categoryValue = document.getElementById("categoryFilter").value;
+      const statusValue = document.getElementById("statusFilter").value;
+      const periodValue = document.getElementById("periodFilter").value;
+
+      filteredReports = reports.filter(function (report) {
+        const searchableText = [
+          report.name,
+          report.category,
+          report.status,
+          report.period,
+          report.ownerName,
+          report.description,
+          Array.isArray(report.sourceModules) ? report.sourceModules.join(" ") : ""
+        ].join(" ").toLowerCase();
+
+        const matchesSearch = !searchValue || searchableText.includes(searchValue);
+        const matchesCategory = categoryValue === "ALL" || report.category === categoryValue;
+        const matchesStatus = statusValue === "ALL" || report.status === statusValue;
+        const matchesPeriod = periodValue === "ALL" || report.period === periodValue;
+
+        return matchesSearch && matchesCategory && matchesStatus && matchesPeriod;
+      });
+
+      renderReports();
+    }
+
+    function renderReports() {
+      const tbody = document.getElementById("reportsTableBody");
+      const emptyState = document.getElementById("emptyState");
+
+      tbody.innerHTML = "";
+
+      if (filteredReports.length === 0) {
+        emptyState.style.display = "block";
+        return;
+      }
+
+      emptyState.style.display = "none";
+
+      filteredReports.forEach(function (report) {
+        const tr = document.createElement("tr");
+        tr.dataset.reportId = report.id;
+
+        if (selectedReport && selectedReport.id === report.id) {
+          tr.classList.add("selected");
+        }
+
+        tr.innerHTML = `
+          <td>
+            <div class="report-title">${escapeHtml(report.name)}</div>
+            <div class="report-meta">${escapeHtml(report.description)}</div>
+          </td>
+          <td>
+            <span class="pill ${getCategoryClass(report.category)}">
+              ${getCategoryIcon(report.category)} ${formatEnum(report.category)}
+            </span>
+          </td>
+          <td>
+            <span class="pill ${getStatusClass(report.status)}">
+              ${getStatusIcon(report.status)} ${formatEnum(report.status)}
+            </span>
+          </td>
+          <td>
+            <div class="report-title">${formatEnum(report.period)}</div>
+          </td>
+          <td>
+            <div class="report-title">${escapeHtml(report.ownerName)}</div>
+          </td>
+          <td>
+            <div class="report-title">${formatDateTime(report.lastRunAt)}</div>
+          </td>
+        `;
+
+        tr.addEventListener("click", function () {
+          handleReportClick(report);
+        });
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    function handleReportClick(report) {
+      selectedReport = report;
+      renderReports();
+      loadReportPanel(report);
+      showToast("Report selected.");
+    }
+
+    function loadReportPanel(report) {
+      document.getElementById("reportPlaceholder").style.display = "none";
+      document.getElementById("reportContent").style.display = "block";
+
+      document.getElementById("summaryTitle").textContent = report.name;
+      document.getElementById("summarySubtitle").textContent = report.description;
+      document.getElementById("detailCategory").textContent = formatEnum(report.category);
+      document.getElementById("detailStatus").textContent = formatEnum(report.status);
+      document.getElementById("detailPeriod").textContent = formatEnum(report.period);
+      document.getElementById("detailOwner").textContent = report.ownerName;
+      document.getElementById("detailSources").textContent = Array.isArray(report.sourceModules) ? report.sourceModules.join(", ") : "-";
+      document.getElementById("detailLastRun").textContent = formatDateTime(report.lastRunAt);
+
+      renderMetrics(report);
+      renderInsights(report);
+    }
+
+    function resetReportPanel() {
+      document.getElementById("reportPlaceholder").style.display = "flex";
+      document.getElementById("reportContent").style.display = "none";
+    }
+
+    function renderMetrics(report) {
+      const list = document.getElementById("metricsList");
+      list.innerHTML = "";
+      const metrics = Array.isArray(report.metrics) ? report.metrics : [];
+
+      if (metrics.length === 0) {
+        list.appendChild(createInsightItem("No metrics", "No metrics configured for this report."));
+        return;
+      }
+
+      metrics.forEach(function (metric) {
+        list.appendChild(createInsightItem(metric, "Included in this report output."));
+      });
+    }
+
+    function renderInsights(report) {
+      const list = document.getElementById("insightsList");
+      list.innerHTML = "";
+      const insights = Array.isArray(report.insights) ? report.insights : [];
+
+      if (insights.length === 0) {
+        list.appendChild(createInsightItem("No insights", "No generated insights are available for this report."));
+        return;
+      }
+
+      insights.forEach(function (insight) {
+        list.appendChild(createInsightItem("Insight", insight));
+      });
+    }
+
+    function createInsightItem(title, description) {
+      const item = document.createElement("div");
+      item.className = "insight-item";
+      item.innerHTML = `
+        <div>
+          <div class="insight-title">${escapeHtml(title)}</div>
+          <div class="insight-desc">${escapeHtml(description)}</div>
+        </div>
+      `;
+      return item;
+    }
+
+    function renderDashboardSummary() {
+      document.getElementById("pipelineValueStat").textContent = formatCompactMoney(dashboardSummary.pipelineValue, "EUR");
+      document.getElementById("winRateStat").textContent = dashboardSummary.winRate + "%";
+      document.getElementById("openRisksStat").textContent = dashboardSummary.openRisks;
+      document.getElementById("contractsCount").textContent = dashboardSummary.contracts;
+      document.getElementById("proposalsCount").textContent = dashboardSummary.proposals;
+      document.getElementById("pendingReviewsCount").textContent = dashboardSummary.pendingReviews;
+      document.getElementById("approvalBottlenecksCount").textContent = dashboardSummary.approvalBottlenecks;
+      document.getElementById("donutValue").textContent = formatCompactMoney(dashboardSummary.totalValue, "EUR");
+    }
+
+    function renderCharts() {
+      const pipelineBars = document.getElementById("pipelineBars");
+      pipelineBars.innerHTML = "";
+
+      pipelineData.forEach(function (item) {
+        const row = document.createElement("div");
+        row.className = "bar-row";
+        row.innerHTML = `
+          <div>${escapeHtml(item.label)}</div>
+          <div class="bar-bg"><div class="bar-fill" style="width:${item.percent}%;"></div></div>
+          <div>${formatCompactMoney(item.value, "EUR")}</div>
+        `;
+        pipelineBars.appendChild(row);
+      });
+
+      const outcomeLegend = document.getElementById("outcomeLegend");
+      outcomeLegend.innerHTML = "";
+      outcomeData.forEach(function (item) {
+        outcomeLegend.appendChild(createInsightItem(item.label, item.value));
+      });
+    }
+
+    function renderActivities() {
+      const activityList = document.getElementById("activityList");
+      activityList.innerHTML = "";
+
+      mockActivities.forEach(function (activity) {
+        const item = document.createElement("div");
+        item.className = "activity-item";
+        item.innerHTML = `
+          <div>
+            <div class="activity-title">${escapeHtml(activity.title)}</div>
+            <div class="activity-desc">${escapeHtml(activity.description)}</div>
+          </div>
+          <div class="activity-meta">${escapeHtml(activity.meta)}</div>
+        `;
+        activityList.appendChild(item);
+      });
+    }
+
+    function openUrl(url, message) {
+      if (!url) {
+        showToast("Report link is not available.");
+        return;
+      }
+
+      showToast(message);
+
+      if (url.startsWith("http")) {
+        window.open(url, "_blank", "noopener,noreferrer");
+        return;
+      }
+
+      window.open(API_BASE_URL + url, "_blank", "noopener,noreferrer");
+    }
+
+    function getAccessToken() {
+      if (window.keycloak && window.keycloak.token) {
+        return window.keycloak.token;
+      }
+
+      return localStorage.getItem("access_token") || sessionStorage.getItem("access_token");
+    }
+
+    function getCategoryClass(category) {
+      switch (category) {
+        case "CONTRACT": return "contract";
+        case "PROPOSAL": return "proposal";
+        case "REVIEW": return "review";
+        case "APPROVAL": return "approval";
+        case "EXECUTIVE": return "executive";
+        case "AI": return "ai";
+        default: return "ai";
+      }
+    }
+
+    function getCategoryIcon(category) {
+      switch (category) {
+        case "CONTRACT": return "📂";
+        case "PROPOSAL": return "📝";
+        case "REVIEW": return "✅";
+        case "APPROVAL": return "✔";
+        case "EXECUTIVE": return "🏛️";
+        case "AI": return "🤖";
+        default: return "📊";
+      }
+    }
+
+    function getStatusClass(status) {
+      switch (status) {
+        case "READY": return "ready";
+        case "SCHEDULED": return "scheduled";
+        case "DRAFT": return "draft";
+        case "FAILED": return "failed";
+        default: return "draft";
+      }
+    }
+
+    function getStatusIcon(status) {
+      switch (status) {
+        case "READY": return "✅";
+        case "SCHEDULED": return "🕘";
+        case "DRAFT": return "📝";
+        case "FAILED": return "❌";
+        default: return "📊";
+      }
+    }
+
+    function formatEnum(value) {
+      if (!value) {
+        return "-";
+      }
+
+      return String(value)
+        .replaceAll("_", " ")
+        .toLowerCase()
+        .replace(/\b\w/g, function (char) {
+          return char.toUpperCase();
+        });
+    }
+
+    function formatDateTime(value) {
+      if (!value) {
+        return "-";
+      }
+
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) {
+        return value;
+      }
+
+      return new Intl.DateTimeFormat("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      }).format(date);
+    }
+
+    function formatCompactMoney(value, currency) {
+      const numericValue = Number(value) || 0;
+
+      return new Intl.NumberFormat("en-DE", {
+        style: "currency",
+        currency: currency || "EUR",
+        notation: "compact",
+        maximumFractionDigits: 1
+      }).format(numericValue);
+    }
+
+    function escapeHtml(value) {
+      if (value === null || value === undefined) {
+        return "";
+      }
+
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function showLoading(isLoading) {
+      document.getElementById("loadingIndicator").style.display = isLoading ? "flex" : "none";
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.style.display = "block";
+
+      window.clearTimeout(showToast.timeoutId);
+      showToast.timeoutId = window.setTimeout(function () {
+        toast.style.display = "none";
+      }, 2600);
+    }
+  </script>
+</body>
+</html>
