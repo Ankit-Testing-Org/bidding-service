@@ -5,9 +5,14 @@ import com.evatech.bidplatform.contract.entity.ContractDocument;
 import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
 import com.evatech.bidplatform.contract.service.ContractLotService;
 import com.evatech.bidplatform.dashboard.dto.ProposalRequest;
+import com.evatech.bidplatform.dashboard.dto.ProposalResponse;
+import com.evatech.bidplatform.dashboard.dto.proposal.request.ProposalSearchRequest;
+import com.evatech.bidplatform.dashboard.dto.proposal.response.PageResponse;
+import com.evatech.bidplatform.dashboard.dto.proposal.response.ProposalDashboardResponse;
 import com.evatech.bidplatform.dashboard.entity.Proposal;
 import com.evatech.bidplatform.dashboard.entity.ProposalHistory;
 import com.evatech.bidplatform.dashboard.entity.ProposalStatus;
+import com.evatech.bidplatform.dashboard.mapper.proposal.ProposalMapper;
 import com.evatech.bidplatform.dashboard.repository.ProposalHistoryRepository;
 import com.evatech.bidplatform.dashboard.repository.ProposalRepository;
 import com.evatech.bidplatform.dashboard.service.ProposalService;
@@ -15,6 +20,10 @@ import com.evatech.bidplatform.user.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -31,6 +40,7 @@ public class ProposalServiceImpl implements ProposalService {
     private final ProposalRepository proposalRepository;
     private final ProposalHistoryRepository proposalHistoryRepository;
     private final ContractLotService contractLotService;
+    private final ProposalMapper proposalMapper;
 
     @AuditAction(action = "CREATE_PROPOSAL", entity = "Proposal")
     @Override
@@ -157,8 +167,60 @@ public class ProposalServiceImpl implements ProposalService {
             return proposalRepository.getByIdAndContractDocument(proposalId, contract);
         else if(proposalId == null && contract != null)
             return proposalRepository.getByContractDocument(contract);
-
+        else if(proposalId != null && contract == null)
+            return proposalRepository.getById(proposalId);
         throw new RuntimeException("Proposal Id or Contract document either of field is mandatory");
+    }
+
+    @Override
+    public ProposalDashboardResponse getProposalDashboard() {
+
+        return new ProposalDashboardResponse(
+                proposalRepository.count(),
+                proposalRepository.countByStatus(ProposalStatus.DRAFT),
+                proposalRepository.countByStatus(ProposalStatus.ACTIVE),
+                proposalRepository.countByStatus(ProposalStatus.IN_REVIEW),
+                proposalRepository.countByStatus(ProposalStatus.SUBMITTED),
+                proposalRepository.countByStatus(ProposalStatus.WON),
+                proposalRepository.countByStatus(ProposalStatus.LOST),
+                proposalRepository.countByStatus(ProposalStatus.WITHDRAWN),
+                proposalRepository.countByStatus(ProposalStatus.NOT_BIDDED),
+                proposalRepository.sumActiveProposalValue(),
+                proposalRepository.sumSubmittedProposalValue(),
+                proposalRepository.sumWonProposalValue()
+        );
+    }
+
+    @Override
+    @Transactional
+    public PageResponse<ProposalResponse> searchProposals(
+            ProposalSearchRequest request
+    ) {
+
+        Pageable pageable = PageRequest.of(
+                request.page(),
+                request.size(),
+                Sort.by(
+                        Sort.Direction.fromString(request.sortDirection()),
+                        request.sortBy()
+                )
+        );
+
+        Page<Proposal> page =
+                proposalRepository.searchProposals(request.searchText(), request.status(),
+                        pageable);
+
+        Page<ProposalResponse> responsePage = page.map(proposalMapper::toResponse);
+
+        return new PageResponse<>(
+                responsePage.getContent(),
+                responsePage.getNumber(),
+                responsePage.getSize(),
+                responsePage.getTotalElements(),
+                responsePage.getTotalPages(),
+                responsePage.isFirst(),
+                responsePage.isLast()
+        );
     }
 
 

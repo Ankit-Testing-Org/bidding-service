@@ -2,6 +2,10 @@ package com.evatech.bidplatform.dashboard.service;
 
 import com.evatech.bidplatform.contract.entity.ContractDocument;
 import com.evatech.bidplatform.dashboard.dto.ProposalRequest;
+import com.evatech.bidplatform.dashboard.dto.ProposalResponse;
+import com.evatech.bidplatform.dashboard.dto.proposal.request.ProposalSearchRequest;
+import com.evatech.bidplatform.dashboard.dto.proposal.response.PageResponse;
+import com.evatech.bidplatform.dashboard.dto.proposal.response.ProposalDashboardResponse;
 import com.evatech.bidplatform.dashboard.entity.Proposal;
 import com.evatech.bidplatform.user.entity.User;
 
@@ -26,4 +30,7 @@ public interface ProposalService {
 
     Proposal withdrawProposal(Proposal proposal, User user);
 
+    ProposalDashboardResponse getProposalDashboard();
+
+    PageResponse<ProposalResponse> searchProposals(ProposalSearchRequest request);
 }

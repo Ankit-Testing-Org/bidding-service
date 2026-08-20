@@ -5,8 +5,13 @@ import com.evatech.bidplatform.contract.entity.ContractDocument;
 import com.evatech.bidplatform.contract.service.ContractService;
 import com.evatech.bidplatform.dashboard.dto.ProposalRequest;
 import com.evatech.bidplatform.dashboard.dto.ProposalResponse;
+import com.evatech.bidplatform.dashboard.dto.proposal.request.ProposalSearchRequest;
+import com.evatech.bidplatform.dashboard.dto.proposal.response.PageResponse;
+import com.evatech.bidplatform.dashboard.dto.proposal.response.ProposalDashboardResponse;
+import com.evatech.bidplatform.dashboard.dto.proposal.response.ProposalDetailResponse;
 import com.evatech.bidplatform.dashboard.entity.Proposal;
-import com.evatech.bidplatform.dashboard.mapper.ProposalMapper;
+import com.evatech.bidplatform.dashboard.mapper.proposal.ProposalDetailMapper;
+import com.evatech.bidplatform.dashboard.mapper.proposal.ProposalMapper;
 import com.evatech.bidplatform.dashboard.service.ProposalService;
 import com.evatech.bidplatform.user.entity.User;
 import com.evatech.bidplatform.user.repository.UserRepository;
@@ -18,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/proposal")
+@RequestMapping("/api/proposals")
 @RequiredArgsConstructor
 public class ProposalController extends AbstractController {
 
@@ -26,6 +31,7 @@ public class ProposalController extends AbstractController {
     private final UserRepository userRepository;
     private final ProposalService proposalService;
     private final ProposalMapper proposalMapper;
+    private final ProposalDetailMapper proposalDetailMapper;
 
     @PostMapping("/create")
     public ApiResponse<ProposalResponse> createProposal(Authentication authentication,
@@ -121,5 +127,58 @@ public class ProposalController extends AbstractController {
         proposal = proposalService.withdrawProposal(proposal, user);
         return ApiResponse.success("Proposal is withdrawn",
                 proposalMapper.toResponse(proposal));
+    }
+
+    @GetMapping("/dashboard")
+    public ApiResponse<ProposalDashboardResponse> fetchProposal(Authentication authentication) {
+        authenticateAndFetchUser(userRepository, authentication);
+
+        ProposalDashboardResponse dashboardResponse = proposalService.getProposalDashboard();
+        if(dashboardResponse == null) {
+            return ApiResponse.failure("Didnt found any proposal");
+        }
+        return ApiResponse.success("Proposal is found",
+                dashboardResponse);
+    }
+
+    @PostMapping("/search")
+    public ApiResponse<PageResponse<ProposalResponse>> searchProposals(
+            Authentication authentication,
+            @RequestBody ProposalSearchRequest request
+    ) {
+        authenticateAndFetchUser(userRepository, authentication);
+
+        PageResponse<ProposalResponse> response = proposalService.searchProposals(request);
+        if(response == null) {
+            return ApiResponse.failure("Didnt found any proposal");
+        }
+        return ApiResponse.success(
+                "Proposals loaded successfully", response);
+    }
+
+    @GetMapping("/{proposalId}")
+    public ApiResponse<ProposalResponse> fetchProposalById(Authentication authentication,
+                                                                    @PathVariable Long proposalId) {
+        authenticateAndFetchUser(userRepository, authentication);
+
+        Proposal proposal = proposalService.getProposal(proposalId, null);
+        if(proposal == null) {
+            return ApiResponse.failure("Didnt found any proposal");
+        }
+        return ApiResponse.success("Proposal fetched ",
+                proposalMapper.toResponse(proposal));
+    }
+
+    @GetMapping("/api/proposals/{proposalId}/history")
+    public ApiResponse<ProposalDetailResponse> fetchProposalByIdWithHistory(Authentication authentication,
+                                                                            @PathVariable Long proposalId) {
+        authenticateAndFetchUser(userRepository, authentication);
+
+        Proposal proposal = proposalService.getProposal(proposalId, null);
+        if(proposal == null) {
+            return ApiResponse.failure("Didnt found any proposal");
+        }
+        return ApiResponse.success("Proposal fetched ",
+                proposalDetailMapper.toResponse(proposal, proposal.getHistory()));
     }
 }

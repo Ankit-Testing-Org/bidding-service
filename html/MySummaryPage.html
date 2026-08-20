@@ -585,9 +585,9 @@
       color: white;
       text-align: center;
       background:
-        radial-gradient(circle at top left, rgba(124, 58, 237, 0.38), transparent 34%),
-        radial-gradient(circle at bottom right, rgba(37, 99, 235, 0.38), transparent 36%),
-        #0f172a;
+              radial-gradient(circle at top left, rgba(124, 58, 237, 0.38), transparent 34%),
+              radial-gradient(circle at bottom right, rgba(37, 99, 235, 0.38), transparent 36%),
+              #0f172a;
     }
 
     .detail-placeholder-icon {
@@ -875,644 +875,677 @@
 </head>
 
 <body>
-  <div class="app">
+<div class="app">
 
-    <aside class="sidebar">
+  <aside class="sidebar">
+    <div>
+      <div class="brand">
+        <div class="brand-icon">👤</div>
+        <div>
+          <div class="brand-title">My Summary</div>
+          <div class="brand-subtitle">Contract bidding platform</div>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-item" onclick="goToPage('CompanyOverviewDashboard.html')">🏠 Overview</button>
+        <button class="nav-item" onclick="goToPage('Contracts.html')">📂 Contracts</button>
+        <button class="nav-item" onclick="goToPage('Proposals.html')">📝 Proposals</button>
+        <button class="nav-item" onclick="goToPage('Reviews.html')">✅ Reviews</button>
+        <button class="nav-item" onclick="goToPage('Approvals.html')">✔ Approvals</button>
+        <button class="nav-item" onclick="goToPage('Report.html')">📊 Reports</button>
+        <button class="nav-item active" onclick="goToPage('MySummary.html')">👤 My Summary</button>
+      </nav>
+    </div>
+
+    <div class="sidebar-card">
+      <small>Personal Workspace</small>
+      <h3>Focus on your bidding work</h3>
+      <p>
+        View your assigned proposals, reviews, approvals, risks, deadlines, and recent SmartBid AI activities.
+      </p>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
       <div>
-        <div class="brand">
-          <div class="brand-icon">👤</div>
-          <div>
-            <div class="brand-title">My Summary</div>
-            <div class="brand-subtitle">Contract bidding platform</div>
-          </div>
-        </div>
-
-        <nav class="nav">
-          <button class="nav-item" onclick="goToPage('CompanyOverviewDashboard.html')">🏠 Overview</button>
-          <button class="nav-item" onclick="goToPage('Contracts.html')">📂 Contracts</button>
-          <button class="nav-item" onclick="goToPage('Proposals.html')">📝 Proposals</button>
-          <button class="nav-item" onclick="goToPage('Reviews.html')">✅ Reviews</button>
-          <button class="nav-item" onclick="goToPage('Approvals.html')">✔ Approvals</button>
-          <button class="nav-item" onclick="goToPage('Report.html')">📊 Reports</button>
-          <button class="nav-item active" onclick="goToPage('MySummary.html')">👤 My Summary</button>
-        </nav>
+        <div class="page-label">Personal Dashboard</div>
+        <div class="page-title">My Summary</div>
       </div>
 
-      <div class="sidebar-card">
-        <small>Personal Workspace</small>
-        <h3>Focus on your bidding work</h3>
+      <div class="top-actions">
+        <div class="search-box">
+          🔍
+          <input id="globalSearchInput" type="text" placeholder="Search my tasks, proposals, approvals..." />
+        </div>
+        <button class="icon-btn" type="button" title="Notifications">🔔</button>
+        <div class="avatar">AM</div>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div>
+        <span class="hero-badge">My SmartBid AI Workspace</span>
+        <h2>Good overview of your contracts, proposals and pending actions</h2>
         <p>
-          View your assigned proposals, reviews, approvals, risks, deadlines, and recent SmartBid AI activities.
+          Track the work assigned to you across proposal creation, review decisions, approval gates, report follow-ups, and upcoming deadlines. This page is designed as your personal work queue and priority board.
         </p>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <span>My Open Tasks</span>
+            <strong id="openTasksStat">0</strong>
+          </div>
+          <div class="hero-stat">
+            <span>Due Soon</span>
+            <strong id="dueSoonStat">0</strong>
+          </div>
+          <div class="hero-stat">
+            <span>My Pipeline</span>
+            <strong id="myPipelineStat">€0</strong>
+          </div>
+        </div>
       </div>
-    </aside>
+    </section>
 
-    <main class="main">
-      <header class="topbar">
-        <div>
-          <div class="page-label">Personal Dashboard</div>
-          <div class="page-title">My Summary</div>
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <div class="kpi-title">Assigned Proposals</div>
+          <div class="kpi-icon purple">📝</div>
         </div>
+        <div class="kpi-count" id="proposalCount">0</div>
+        <div class="kpi-help">Proposals owned, authored, or being updated by you.</div>
+      </div>
 
-        <div class="top-actions">
-          <div class="search-box">
-            🔍
-            <input id="globalSearchInput" type="text" placeholder="Search my tasks, proposals, approvals..." />
-          </div>
-          <button class="icon-btn" type="button" title="Notifications">🔔</button>
-          <div class="avatar">AM</div>
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <div class="kpi-title">Review Actions</div>
+          <div class="kpi-icon orange">✅</div>
         </div>
-      </header>
+        <div class="kpi-count" id="reviewCount">0</div>
+        <div class="kpi-help">Review tasks waiting for your validation or comments.</div>
+      </div>
 
-      <section class="hero">
-        <div>
-          <span class="hero-badge">My SmartBid AI Workspace</span>
-          <h2>Good overview of your contracts, proposals and pending actions</h2>
-          <p>
-            Track the work assigned to you across proposal creation, review decisions, approval gates, report follow-ups, and upcoming deadlines. This page is designed as your personal work queue and priority board.
-          </p>
-          <div class="hero-stats">
-            <div class="hero-stat">
-              <span>My Open Tasks</span>
-              <strong id="openTasksStat">0</strong>
-            </div>
-            <div class="hero-stat">
-              <span>Due Soon</span>
-              <strong id="dueSoonStat">0</strong>
-            </div>
-            <div class="hero-stat">
-              <span>My Pipeline</span>
-              <strong id="myPipelineStat">€0</strong>
-            </div>
-          </div>
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <div class="kpi-title">Approval Actions</div>
+          <div class="kpi-icon green">✔</div>
         </div>
+        <div class="kpi-count" id="approvalCount">0</div>
+        <div class="kpi-help">Approval tasks assigned to you or delegated to you.</div>
+      </div>
 
-        <div class="hero-profile">
-          <div class="profile-circle">AM</div>
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <div class="kpi-title">High Priority</div>
+          <div class="kpi-icon red">🔥</div>
+        </div>
+        <div class="kpi-count" id="highPriorityCount">0</div>
+        <div class="kpi-help">Urgent tasks that need close attention.</div>
+      </div>
+    </section>
+
+    <section class="summary-layout">
+      <div class="card">
+        <div class="card-header">
           <div>
-            <div class="profile-name" id="profileName">Ankit Manchanda</div>
-            <div class="profile-meta" id="profileMeta">
-              Custom Software Engineering Specialist<br>
-              Frankfurt · Contract bidding platform
+            <div class="card-title">My Work Queue</div>
+            <div class="card-subtitle">
+              Latest assigned work first. Select an item to view details and navigate to the correct workspace.
             </div>
           </div>
+          <button class="btn purple-btn" type="button" onclick="refreshSummary()">Refresh</button>
         </div>
-      </section>
 
-      <section class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-header">
-            <div class="kpi-title">Assigned Proposals</div>
-            <div class="kpi-icon purple">📝</div>
+        <div class="loading" id="loadingIndicator">
+          <span class="spinner"></span>
+          <span>Loading my summary...</span>
+        </div>
+
+        <div class="filter-row">
+          <input id="taskSearchInput" class="filter-input" type="text" placeholder="Search my work..." />
+          <select id="typeFilter" class="filter-select">
+            <option value="ALL">All Types</option>
+            <option value="PROPOSAL">Proposal</option>
+            <option value="REVIEW">Review</option>
+            <option value="APPROVAL">Approval</option>
+            <option value="CONTRACT">Contract</option>
+            <option value="REPORT">Report</option>
+          </select>
+          <select id="statusFilter" class="filter-select">
+            <option value="ALL">All Status</option>
+            <option value="PENDING">Pending</option>
+            <option value="IN_PROGRESS">In Progress</option>
+            <option value="DRAFT">Draft</option>
+            <option value="APPROVED">Approved</option>
+            <option value="CHANGES_REQUESTED">Changes Requested</option>
+            <option value="SUBMITTED">Submitted</option>
+          </select>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+            <tr>
+              <th>Work Item</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Priority</th>
+              <th>Due</th>
+              <th>Value</th>
+            </tr>
+            </thead>
+            <tbody id="tasksTableBody"></tbody>
+          </table>
+          <div class="empty-state" id="emptyState">
+            <strong>No work items found</strong>
+            Change your search or filter criteria.
           </div>
-          <div class="kpi-count" id="proposalCount">0</div>
-          <div class="kpi-help">Proposals owned, authored, or being updated by you.</div>
         </div>
+      </div>
 
-        <div class="kpi-card">
-          <div class="kpi-header">
-            <div class="kpi-title">Review Actions</div>
-            <div class="kpi-icon orange">✅</div>
+      <div class="card detail-panel">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Selected Work Detail</div>
+            <div class="card-subtitle">Open the related workspace, view ownership, priority, due date, and context.</div>
           </div>
-          <div class="kpi-count" id="reviewCount">0</div>
-          <div class="kpi-help">Review tasks waiting for your validation or comments.</div>
         </div>
 
-        <div class="kpi-card">
-          <div class="kpi-header">
-            <div class="kpi-title">Approval Actions</div>
-            <div class="kpi-icon green">✔</div>
-          </div>
-          <div class="kpi-count" id="approvalCount">0</div>
-          <div class="kpi-help">Approval tasks assigned to you or delegated to you.</div>
-        </div>
-
-        <div class="kpi-card">
-          <div class="kpi-header">
-            <div class="kpi-title">High Priority</div>
-            <div class="kpi-icon red">🔥</div>
-          </div>
-          <div class="kpi-count" id="highPriorityCount">0</div>
-          <div class="kpi-help">Urgent tasks that need close attention.</div>
-        </div>
-      </section>
-
-      <section class="summary-layout">
-        <div class="card">
-          <div class="card-header">
+        <div class="detail-shell">
+          <div class="detail-placeholder" id="detailPlaceholder">
             <div>
-              <div class="card-title">My Work Queue</div>
-              <div class="card-subtitle">
-                Latest assigned work first. Select an item to view details and navigate to the correct workspace.
+              <div class="detail-placeholder-icon">👤</div>
+              <h3>Select a work item</h3>
+              <p>
+                Details, context, due date, owner, related object, and quick actions will appear here.
+              </p>
+            </div>
+          </div>
+
+          <div class="detail-content" id="detailContent">
+            <div class="summary-title" id="detailTitle">-</div>
+            <div class="summary-subtitle" id="detailSubtitle">-</div>
+
+            <div class="quick-actions">
+              <button class="btn purple-btn" id="openItemButton" type="button">Open Workspace</button>
+              <button class="btn secondary" id="auditTrailButton" type="button">Audit Trail</button>
+            </div>
+
+            <div class="detail-grid">
+              <div class="detail-box">
+                <span>Type</span>
+                <strong id="detailType">-</strong>
               </div>
-            </div>
-            <button class="btn purple-btn" type="button" onclick="refreshSummary()">Refresh</button>
-          </div>
-
-          <div class="loading" id="loadingIndicator">
-            <span class="spinner"></span>
-            <span>Loading my summary...</span>
-          </div>
-
-          <div class="filter-row">
-            <input id="taskSearchInput" class="filter-input" type="text" placeholder="Search my work..." />
-            <select id="typeFilter" class="filter-select">
-              <option value="ALL">All Types</option>
-              <option value="PROPOSAL">Proposal</option>
-              <option value="REVIEW">Review</option>
-              <option value="APPROVAL">Approval</option>
-              <option value="CONTRACT">Contract</option>
-              <option value="REPORT">Report</option>
-            </select>
-            <select id="statusFilter" class="filter-select">
-              <option value="ALL">All Status</option>
-              <option value="PENDING">Pending</option>
-              <option value="IN_PROGRESS">In Progress</option>
-              <option value="DRAFT">Draft</option>
-              <option value="APPROVED">Approved</option>
-              <option value="CHANGES_REQUESTED">Changes Requested</option>
-              <option value="SUBMITTED">Submitted</option>
-            </select>
-          </div>
-
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Work Item</th>
-                  <th>Type</th>
-                  <th>Status</th>
-                  <th>Priority</th>
-                  <th>Due</th>
-                  <th>Value</th>
-                </tr>
-              </thead>
-              <tbody id="tasksTableBody"></tbody>
-            </table>
-            <div class="empty-state" id="emptyState">
-              <strong>No work items found</strong>
-              Change your search or filter criteria.
-            </div>
-          </div>
-        </div>
-
-        <div class="card detail-panel">
-          <div class="card-header">
-            <div>
-              <div class="card-title">Selected Work Detail</div>
-              <div class="card-subtitle">Open the related workspace, view ownership, priority, due date, and context.</div>
-            </div>
-          </div>
-
-          <div class="detail-shell">
-            <div class="detail-placeholder" id="detailPlaceholder">
-              <div>
-                <div class="detail-placeholder-icon">👤</div>
-                <h3>Select a work item</h3>
-                <p>
-                  Details, context, due date, owner, related object, and quick actions will appear here.
-                </p>
+              <div class="detail-box">
+                <span>Status</span>
+                <strong id="detailStatus">-</strong>
+              </div>
+              <div class="detail-box">
+                <span>Priority</span>
+                <strong id="detailPriority">-</strong>
+              </div>
+              <div class="detail-box">
+                <span>Due Date</span>
+                <strong id="detailDueDate">-</strong>
+              </div>
+              <div class="detail-box">
+                <span>Related Object</span>
+                <strong id="detailObject">-</strong>
+              </div>
+              <div class="detail-box">
+                <span>Value</span>
+                <strong id="detailValue">-</strong>
               </div>
             </div>
 
-            <div class="detail-content" id="detailContent">
-              <div class="summary-title" id="detailTitle">-</div>
-              <div class="summary-subtitle" id="detailSubtitle">-</div>
+            <div class="summary-section">
+              <div class="section-title">Context</div>
+              <div class="summary-text-box" id="detailContext">-</div>
+            </div>
 
-              <div class="quick-actions">
-                <button class="btn purple-btn" id="openItemButton" type="button">Open Workspace</button>
-                <button class="btn secondary" id="auditTrailButton" type="button">Audit Trail</button>
-              </div>
-
-              <div class="detail-grid">
-                <div class="detail-box">
-                  <span>Type</span>
-                  <strong id="detailType">-</strong>
-                </div>
-                <div class="detail-box">
-                  <span>Status</span>
-                  <strong id="detailStatus">-</strong>
-                </div>
-                <div class="detail-box">
-                  <span>Priority</span>
-                  <strong id="detailPriority">-</strong>
-                </div>
-                <div class="detail-box">
-                  <span>Due Date</span>
-                  <strong id="detailDueDate">-</strong>
-                </div>
-                <div class="detail-box">
-                  <span>Related Object</span>
-                  <strong id="detailObject">-</strong>
-                </div>
-                <div class="detail-box">
-                  <span>Value</span>
-                  <strong id="detailValue">-</strong>
-                </div>
-              </div>
-
-              <div class="summary-section">
-                <div class="section-title">Context</div>
-                <div class="summary-text-box" id="detailContext">-</div>
-              </div>
-
-              <div class="summary-section">
-                <div class="section-title">Next Best Action</div>
-                <div class="summary-text-box" id="detailNextAction">-</div>
-              </div>
+            <div class="summary-section">
+              <div class="section-title">Next Best Action</div>
+              <div class="summary-text-box" id="detailNextAction">-</div>
             </div>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <section class="focus-grid">
-        <div class="focus-card">
-          <div class="card-title">Today's Focus</div>
-          <div class="card-subtitle">Recommended focus areas based on due date and priority.</div>
-          <div class="timeline-list" id="focusList"></div>
+    <section class="focus-grid">
+      <div class="focus-card">
+        <div class="card-title">Today's Focus</div>
+        <div class="card-subtitle">Recommended focus areas based on due date and priority.</div>
+        <div class="timeline-list" id="focusList"></div>
+      </div>
+
+      <div class="focus-card">
+        <div class="card-title">My Progress</div>
+        <div class="card-subtitle">Personal workload progress across active bid work.</div>
+        <div class="progress-row">
+          <div class="progress-track"><div class="progress-fill" id="reviewProgress" style="width:0%"></div></div>
+          <strong id="reviewProgressText">0%</strong>
         </div>
-
-        <div class="focus-card">
-          <div class="card-title">My Progress</div>
-          <div class="card-subtitle">Personal workload progress across active bid work.</div>
-          <div class="progress-row">
-            <div class="progress-track"><div class="progress-fill" id="reviewProgress" style="width:0%"></div></div>
-            <strong id="reviewProgressText">0%</strong>
-          </div>
-          <div class="task-meta" style="margin-top:8px;">Reviews completed</div>
-          <div class="progress-row">
-            <div class="progress-track"><div class="progress-fill" id="approvalProgress" style="width:0%"></div></div>
-            <strong id="approvalProgressText">0%</strong>
-          </div>
-          <div class="task-meta" style="margin-top:8px;">Approvals completed</div>
-          <div class="progress-row">
-            <div class="progress-track"><div class="progress-fill" id="proposalProgress" style="width:0%"></div></div>
-            <strong id="proposalProgressText">0%</strong>
-          </div>
-          <div class="task-meta" style="margin-top:8px;">Proposal work completed</div>
+        <div class="task-meta" style="margin-top:8px;">Reviews completed</div>
+        <div class="progress-row">
+          <div class="progress-track"><div class="progress-fill" id="approvalProgress" style="width:0%"></div></div>
+          <strong id="approvalProgressText">0%</strong>
         </div>
-
-        <div class="focus-card">
-          <div class="card-title">Upcoming Deadlines</div>
-          <div class="card-subtitle">Nearest deadlines from your assigned SmartBid AI work.</div>
-          <div class="timeline-list" id="deadlineList"></div>
+        <div class="task-meta" style="margin-top:8px;">Approvals completed</div>
+        <div class="progress-row">
+          <div class="progress-track"><div class="progress-fill" id="proposalProgress" style="width:0%"></div></div>
+          <strong id="proposalProgressText">0%</strong>
         </div>
-      </section>
+        <div class="task-meta" style="margin-top:8px;">Proposal work completed</div>
+      </div>
 
-      <section class="activity-grid">
-        <div class="card">
-          <div class="card-header">
-            <div>
-              <div class="card-title">Recent Activities</div>
-              <div class="card-subtitle">Latest activity across your proposals, reviews, approvals, and reports.</div>
-            </div>
+      <div class="focus-card">
+        <div class="card-title">Upcoming Deadlines</div>
+        <div class="card-subtitle">Nearest deadlines from your assigned SmartBid AI work.</div>
+        <div class="timeline-list" id="deadlineList"></div>
+      </div>
+    </section>
+
+    <section class="activity-grid">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Recent Activities</div>
+            <div class="card-subtitle">Latest activity across your proposals, reviews, approvals, and reports.</div>
           </div>
-          <div class="activity-list" id="activityList"></div>
         </div>
+        <div class="activity-list" id="activityList"></div>
+      </div>
 
-        <div class="card">
-          <div class="card-header">
-            <div>
-              <div class="card-title">Recent Audit Trail</div>
-              <div class="card-subtitle">Your recent status changes and workflow events.</div>
-            </div>
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Recent Audit Trail</div>
+            <div class="card-subtitle">Your recent status changes and workflow events.</div>
           </div>
-          <div class="timeline-list" id="auditList"></div>
         </div>
-      </section>
-    </main>
-  </div>
+        <div class="timeline-list" id="auditList"></div>
+      </div>
+    </section>
+  </main>
+</div>
 
-  <div class="toast" id="toast"></div>
+<div class="toast" id="toast"></div>
 
-  <script>
-    /*
-      SmartBid AI My Summary Page
+<script>
+  /*
+    SmartBid AI My Summary Page
 
-      Expected backend response:
+    Expected backend response:
 
-      GET /api/my-summary
+    GET /api/my-summary
 
-      {
-        "profile": {
-          "userId": "ankit",
-          "displayName": "Ankit Manchanda",
-          "role": "Custom Software Engineering Specialist",
-          "location": "Frankfurt"
-        },
-        "stats": {
-          "openTasks": 12,
-          "dueSoon": 4,
-          "pipelineValue": 5400000,
-          "assignedProposals": 5,
-          "reviewActions": 4,
-          "approvalActions": 3,
-          "highPriority": 2
-        },
-        "workItems": []
-      }
-    */
-
-    const API_BASE_URL = "http://localhost:8080";
-    const MY_SUMMARY_API_URL = API_BASE_URL + "/api/my-summary";
-    const AUDIT_TRAIL_URL = "AuditTrail.html";
-
-    let summary = null;
-    let workItems = [];
-    let filteredWorkItems = [];
-    let selectedItem = null;
-
-    const mockSummary = {
-      profile: {
-        userId: "ankit",
-        displayName: "Ankit Manchanda",
-        role: "Custom Software Engineering Specialist",
-        location: "Frankfurt"
+    {
+      "profile": {
+        "userId": "ankit",
+        "displayName": "Ankit Manchanda",
+        "role": "Custom Software Engineering Specialist",
+        "location": "Frankfurt"
       },
-      stats: {
-        openTasks: 12,
-        dueSoon: 4,
-        pipelineValue: 5400000,
-        assignedProposals: 5,
-        reviewActions: 4,
-        approvalActions: 3,
-        highPriority: 2,
-        reviewProgress: 68,
-        approvalProgress: 55,
-        proposalProgress: 72
+      "stats": {
+        "openTasks": 12,
+        "dueSoon": 4,
+        "pipelineValue": 5400000,
+        "assignedProposals": 5,
+        "reviewActions": 4,
+        "approvalActions": 3,
+        "highPriority": 2
       },
-      workItems: [
-        {
-          id: 901,
-          title: "Complete Hospital Medicines Bid Proposal",
-          type: "PROPOSAL",
-          status: "DRAFT",
-          priority: "HIGH",
-          dueDate: "2026-08-25",
-          relatedObject: "Hospital Medicine Supply Tender 2026",
-          value: 2450000,
-          currency: "EUR",
-          sourcePageUrl: "ProposalWorkspace.html?proposalId=205",
-          context: "Proposal is in authoring stage and includes three qualified medicine lots.",
-          nextAction: "Review generated proposal sections and complete pricing assumptions before moving to review."
-        },
-        {
-          id: 902,
-          title: "Review AI risk highlights",
-          type: "REVIEW",
-          status: "PENDING",
-          priority: "HIGH",
-          dueDate: "2026-08-20",
-          relatedObject: "Hospital Medicine Supply Tender 2026",
-          value: 0,
-          currency: "EUR",
-          sourcePageUrl: "Reviews.html?reviewId=305",
-          context: "AI detected payment terms, penalty clauses, compliance requirements, and termination clauses requiring manual confirmation.",
-          nextAction: "Open review workspace, validate risks, add comments, and approve or request changes."
-        },
-        {
-          id: 903,
-          title: "Finance Approval for Hospital Medicines Bid",
-          type: "APPROVAL",
-          status: "PENDING",
-          priority: "MEDIUM",
-          dueDate: "2026-08-25",
-          relatedObject: "PROP-2026-105",
-          value: 2450000,
-          currency: "EUR",
-          sourcePageUrl: "Approvals.html?approvalId=405",
-          context: "Finance approval required due to proposal value and lot pricing assumptions.",
-          nextAction: "Check margin, risk score, reviewer comments, and submit approval decision."
-        },
-        {
-          id: 904,
-          title: "Validate lot qualification decision",
-          type: "REVIEW",
-          status: "CHANGES_REQUESTED",
-          priority: "MEDIUM",
-          dueDate: "2026-08-19",
-          relatedObject: "Hospital Bed and Device Framework Agreement",
-          value: 950000,
-          currency: "EUR",
-          sourcePageUrl: "Reviews.html?reviewId=303",
-          context: "Lot qualification requires additional justification for delivery capacity.",
-          nextAction: "Add capacity explanation and update qualification decision history."
-        },
-        {
-          id: 905,
-          title: "Generate Proposal Performance Report",
-          type: "REPORT",
-          status: "IN_PROGRESS",
-          priority: "LOW",
-          dueDate: "2026-08-23",
-          relatedObject: "Proposal Performance Report",
-          value: 0,
-          currency: "EUR",
-          sourcePageUrl: "Report.html?reportId=503",
-          context: "Monthly proposal performance report is being prepared for proposal lifecycle and pipeline insights.",
-          nextAction: "Open Reports page and export report after data refresh."
-        },
-        {
-          id: 906,
-          title: "Review Radiology Proposal Pricing",
-          type: "REVIEW",
-          status: "PENDING",
-          priority: "MEDIUM",
-          dueDate: "2026-08-22",
-          relatedObject: "Radiology Equipment Procurement Proposal",
-          value: 1800000,
-          currency: "EUR",
-          sourcePageUrl: "Reviews.html?reviewId=304",
-          context: "Proposal contains radiology equipment pricing and delivery assumptions requiring validation.",
-          nextAction: "Open review and validate pricing assumptions before approval workflow."
-        }
-      ],
-      focusItems: [
-        { icon: "🔥", title: "Review AI risk highlights", text: "High priority task due soon for Hospital Medicine Supply Tender 2026." },
-        { icon: "📝", title: "Complete proposal draft", text: "Hospital Medicines Bid Proposal still needs pricing and final proposal sections." },
-        { icon: "✔", title: "Prepare approval context", text: "Finance approval will need clear margin, value, and risk summary." }
-      ],
-      deadlines: [
-        { icon: "⏰", title: "19 Aug 2026", text: "Lot qualification justification due." },
-        { icon: "⏰", title: "20 Aug 2026", text: "AI risk highlight review due." },
-        { icon: "⏰", title: "22 Aug 2026", text: "Radiology proposal pricing review due." },
-        { icon: "⏰", title: "25 Aug 2026", text: "Hospital Medicines proposal and finance approval due." }
-      ],
-      activities: [
-        { title: "Proposal Draft Updated", description: "Hospital Medicines Bid Proposal draft was updated with qualified lots.", meta: "Today" },
-        { title: "Review Assigned", description: "AI risk highlights assigned for manual validation.", meta: "Today" },
-        { title: "Changes Requested", description: "Lot qualification requires delivery capacity explanation.", meta: "Yesterday" },
-        { title: "Report Generated", description: "Proposal Performance Report refreshed with latest pipeline data.", meta: "2 days ago" }
-      ],
-      audits: [
-        { icon: "📝", title: "Proposal status changed", text: "PROP-2026-105 moved to Draft authoring." },
-        { icon: "✅", title: "Review task created", text: "AI risk highlights review assigned to Ankit Manchanda." },
-        { icon: "🔁", title: "Changes requested", text: "Lot qualification needs additional delivery capacity justification." },
-        { icon: "📊", title: "Report refreshed", text: "Proposal Performance Report generated for this month." }
-      ]
-    };
-
-    document.addEventListener("DOMContentLoaded", function () {
-      bindEvents();
-      loadMySummary();
-    });
-
-    function bindEvents() {
-      document.getElementById("taskSearchInput").addEventListener("input", applyFilters);
-      document.getElementById("globalSearchInput").addEventListener("input", syncGlobalSearch);
-      document.getElementById("typeFilter").addEventListener("change", applyFilters);
-      document.getElementById("statusFilter").addEventListener("change", applyFilters);
-
-      document.getElementById("openItemButton").addEventListener("click", function () {
-        if (!selectedItem) {
-          return;
-        }
-        window.location.href = selectedItem.sourcePageUrl;
-      });
-
-      document.getElementById("auditTrailButton").addEventListener("click", function () {
-        if (!selectedItem) {
-          return;
-        }
-        window.location.href = AUDIT_TRAIL_URL + "?itemId=" + encodeURIComponent(selectedItem.id) + "&type=" + encodeURIComponent(selectedItem.type);
-      });
+      "workItems": []
     }
+  */
 
-    function goToPage(url) {
-      window.location.href = url;
-    }
+  const API_BASE_URL = "http://localhost:8080";
+  const MY_SUMMARY_API_URL = API_BASE_URL + "/api/my-summary";
 
-    function syncGlobalSearch(event) {
-      document.getElementById("taskSearchInput").value = event.target.value;
-      applyFilters();
-    }
+  const DASHBOARD_URL =
+          MY_SUMMARY_API_URL + "/dashboard";
 
-    async function loadMySummary() {
-      showLoading(true);
+  const SEARCH_WORK_ITEMS_URL =
+          MY_SUMMARY_API_URL + "/work-items/search";
 
-      try {
-        const token = getAccessToken();
-        const response = await fetch(MY_SUMMARY_API_URL, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": token ? "Bearer " + token : ""
-          }
-        });
+  const FOCUS_URL =
+          MY_SUMMARY_API_URL + "/focus";
 
-        if (!response.ok) {
-          throw new Error("API returned status " + response.status);
-        }
+  const ACTIVITIES_URL =
+          MY_SUMMARY_API_URL + "/activities";
 
-        summary = await response.json();
-        showToast("My summary loaded from API");
-      } catch (error) {
-        console.warn("Using mock my summary because API was not available:", error);
-        summary = mockSummary;
-        showToast("Using mock summary. Connect API when backend is ready.");
-      } finally {
-        workItems = Array.isArray(summary.workItems) ? sortByDueDate(summary.workItems) : [];
-        filteredWorkItems = [...workItems];
-        renderProfile(summary.profile || {});
-        renderStats(summary.stats || {});
-        renderWorkItems();
-        renderFocus(summary.focusItems || []);
-        renderDeadlines(summary.deadlines || []);
-        renderActivities(summary.activities || []);
-        renderAudits(summary.audits || []);
-        showLoading(false);
-      }
-    }
+  const AUDITS_URL =
+          MY_SUMMARY_API_URL + "/audits";
+  ``
+  const AUDIT_TRAIL_URL = "AuditTrail.html";
 
-    function refreshSummary() {
-      selectedItem = null;
-      resetDetailPanel();
-      loadMySummary();
-    }
+  let summary = null;
+  let workItems = [];
+  let filteredWorkItems = [];
+  let selectedItem = null;
 
-    function sortByDueDate(items) {
-      return [...items].sort(function (a, b) {
-        return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
-      });
-    }
+  document.addEventListener("DOMContentLoaded", function () {
+    bindEvents();
+    loadMySummary();
+  });
 
-    function applyFilters() {
-      const searchValue = document.getElementById("taskSearchInput").value.trim().toLowerCase();
-      const typeValue = document.getElementById("typeFilter").value;
-      const statusValue = document.getElementById("statusFilter").value;
+  function bindEvents() {
+    document.getElementById("taskSearchInput").addEventListener("input", applyFilters);
+    document.getElementById("globalSearchInput").addEventListener("input", syncGlobalSearch);
+    document.getElementById("typeFilter").addEventListener("change", applyFilters);
+    document.getElementById("statusFilter").addEventListener("change", applyFilters);
 
-      filteredWorkItems = workItems.filter(function (item) {
-        const searchableText = [
-          item.title,
-          item.type,
-          item.status,
-          item.priority,
-          item.relatedObject,
-          item.context,
-          item.nextAction
-        ].join(" ").toLowerCase();
-
-        const matchesSearch = !searchValue || searchableText.includes(searchValue);
-        const matchesType = typeValue === "ALL" || item.type === typeValue;
-        const matchesStatus = statusValue === "ALL" || item.status === statusValue;
-
-        return matchesSearch && matchesType && matchesStatus;
-      });
-
-      renderWorkItems();
-    }
-
-    function renderProfile(profile) {
-      document.getElementById("profileName").textContent = profile.displayName || "Ankit Manchanda";
-      document.getElementById("profileMeta").innerHTML =
-        escapeHtml(profile.role || "Custom Software Engineering Specialist") + "<br>" +
-        escapeHtml(profile.location || "Frankfurt") + " · Contract bidding platform";
-    }
-
-    function renderStats(stats) {
-      document.getElementById("openTasksStat").textContent = stats.openTasks || 0;
-      document.getElementById("dueSoonStat").textContent = stats.dueSoon || 0;
-      document.getElementById("myPipelineStat").textContent = formatCompactMoney(stats.pipelineValue || 0, "EUR");
-      document.getElementById("proposalCount").textContent = stats.assignedProposals || 0;
-      document.getElementById("reviewCount").textContent = stats.reviewActions || 0;
-      document.getElementById("approvalCount").textContent = stats.approvalActions || 0;
-      document.getElementById("highPriorityCount").textContent = stats.highPriority || 0;
-
-      updateProgress("reviewProgress", "reviewProgressText", stats.reviewProgress || 0);
-      updateProgress("approvalProgress", "approvalProgressText", stats.approvalProgress || 0);
-      updateProgress("proposalProgress", "proposalProgressText", stats.proposalProgress || 0);
-    }
-
-    function updateProgress(barId, textId, value) {
-      const normalized = Math.max(0, Math.min(100, Number(value) || 0));
-      document.getElementById(barId).style.width = normalized + "%";
-      document.getElementById(textId).textContent = normalized + "%";
-    }
-
-    function renderWorkItems() {
-      const tbody = document.getElementById("tasksTableBody");
-      const emptyState = document.getElementById("emptyState");
-      tbody.innerHTML = "";
-
-      if (filteredWorkItems.length === 0) {
-        emptyState.style.display = "block";
+    document.getElementById("openItemButton").addEventListener("click", function () {
+      if (!selectedItem) {
         return;
       }
+      window.location.href = selectedItem.sourcePageUrl;
+    });
 
-      emptyState.style.display = "none";
+    document.getElementById("auditTrailButton").addEventListener("click", function () {
+      if (!selectedItem) {
+        return;
+      }
+      window.location.href = selectedItem.auditTrailUrl;});
+  }
 
-      filteredWorkItems.forEach(function (item) {
-        const tr = document.createElement("tr");
-        tr.dataset.itemId = item.id;
+  function goToPage(url) {
+    window.location.href = url;
+  }
 
-        if (selectedItem && selectedItem.id === item.id) {
-          tr.classList.add("selected");
-        }
+  function syncGlobalSearch(event) {
+    document.getElementById("taskSearchInput").value = event.target.value;
+    applyFilters();
+  }
 
-        tr.innerHTML = `
+  async function loadMySummary() {
+
+    showLoading(true);
+
+    try {
+
+      await Promise.all([
+        loadDashboard(),
+        loadWorkItems(),
+        loadFocus(),
+        loadActivities(),
+        loadAudits()
+      ]);
+
+    } catch (error) {
+
+      console.error(error);
+
+      showToast(
+              "Unable to load dashboard"
+      );
+
+    } finally {
+
+      showLoading(false);
+
+    }
+  }
+
+  async function loadAudits() {
+
+    const response =
+            await authorizedFetch(
+                    AUDITS_URL +
+                    "?limit=10"
+            );
+
+    const result =
+            await response.json();
+
+    renderAudits(
+            result.data || []
+    );
+  }
+
+  async function loadDashboard() {
+
+    const response =
+            await authorizedFetch(
+                    DASHBOARD_URL
+            );
+
+    const result =
+            await response.json();
+
+    const dashboard =
+            result.data;
+
+    renderProfile(
+            dashboard.profile
+    );
+
+    renderStats(
+            dashboard.stats
+    );
+  }
+
+  async function loadFocus() {
+
+    const response =
+            await authorizedFetch(
+                    FOCUS_URL
+            );
+
+    const result =
+            await response.json();
+
+    const focus =
+            result.data;
+
+    renderFocus(
+            focus.focusItems || []
+    );
+
+    renderDeadlines(
+            focus.deadlines || []
+    );
+
+    updateProgress(
+            "reviewProgress",
+            "reviewProgressText",
+            focus.progress.reviewProgressPercentage
+    );
+
+    updateProgress(
+            "approvalProgress",
+            "approvalProgressText",
+            focus.progress.approvalProgressPercentage
+    );
+
+    updateProgress(
+            "proposalProgress",
+            "proposalProgressText",
+            focus.progress.proposalProgressPercentage
+    );
+  }
+
+  function refreshSummary() {
+    selectedItem = null;
+    resetDetailPanel();
+    loadMySummary();
+  }
+
+  function sortByDueDate(items) {
+    return [...items].sort(function (a, b) {
+      return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+    });
+  }
+
+  function applyFilters() {
+
+    searchWorkItems();
+  }
+
+  function renderProfile(profile) {
+    document.getElementById("profileName").textContent = profile.displayName || "Ankit Manchanda";
+    document.getElementById("profileMeta").innerHTML =
+            escapeHtml(profile.role || "Custom Software Engineering Specialist") + "<br>" +
+            escapeHtml(profile.location || "Frankfurt") + " · Contract bidding platform";
+  }
+
+  function renderStats(
+          stats
+  ) {
+
+    document.getElementById(
+            "openTasksStat"
+    ).textContent =
+            stats.openTaskCount ?? 0;
+
+    document.getElementById(
+            "dueSoonStat"
+    ).textContent =
+            stats.dueSoonCount ?? 0;
+
+    document.getElementById(
+            "myPipelineStat"
+    ).textContent =
+            formatCompactMoney(
+                    stats.pipelineValue,
+                    "EUR"
+            );
+
+    document.getElementById(
+            "proposalCount"
+    ).textContent =
+            stats.assignedProposalCount ?? 0;
+
+    document.getElementById(
+            "reviewCount"
+    ).textContent =
+            stats.pendingReviewCount ?? 0;
+
+    document.getElementById(
+            "approvalCount"
+    ).textContent =
+            stats.pendingApprovalCount ?? 0;
+
+    document.getElementById(
+            "highPriorityCount"
+    ).textContent =
+            stats.highPriorityCount ?? 0;
+
+    updateProgress(
+            "reviewProgress",
+            "reviewProgressText",
+            stats.reviewProgressPercentage
+    );
+
+    updateProgress(
+            "approvalProgress",
+            "approvalProgressText",
+            stats.approvalProgressPercentage
+    );
+
+    updateProgress(
+            "proposalProgress",
+            "proposalProgressText",
+            stats.proposalProgressPercentage
+    );
+  }
+
+  async function loadWorkItems() {
+
+    await searchWorkItems();
+  }
+
+  async function searchWorkItems() {
+
+    const request = {
+
+      searchText:
+              document.getElementById(
+                      "taskSearchInput"
+              ).value || null,
+
+      type:
+              document.getElementById(
+                      "typeFilter"
+              ).value === "ALL"
+                      ? null
+                      : document.getElementById(
+                              "typeFilter"
+                      ).value,
+
+      status:
+              document.getElementById(
+                      "statusFilter"
+              ).value === "ALL"
+                      ? null
+                      : document.getElementById(
+                              "statusFilter"
+                      ).value,
+
+      page: 0,
+      size: 20,
+      sortBy: "dueDate",
+      sortDirection: "ASC"
+    };
+
+    const response =
+            await authorizedFetch(
+                    SEARCH_WORK_ITEMS_URL,
+                    {
+                      method: "POST",
+                      body:
+                              JSON.stringify(
+                                      request
+                              )
+                    }
+            );
+
+    const result =
+            await response.json();
+
+    workItems =
+            result.data.content || [];
+
+    filteredWorkItems = [
+      ...workItems
+    ];
+
+    renderWorkItems();
+  }
+
+  function updateProgress(barId, textId, value) {
+    const normalized = Math.max(0, Math.min(100, Number(value) || 0));
+    document.getElementById(barId).style.width = normalized + "%";
+    document.getElementById(textId).textContent = normalized + "%";
+  }
+
+  function renderWorkItems() {
+    const tbody = document.getElementById("tasksTableBody");
+    const emptyState = document.getElementById("emptyState");
+    tbody.innerHTML = "";
+
+    if (filteredWorkItems.length === 0) {
+      emptyState.style.display = "block";
+      return;
+    }
+
+    emptyState.style.display = "none";
+
+    filteredWorkItems.forEach(function (item) {
+      const tr = document.createElement("tr");
+      tr.dataset.itemId = item.id;
+
+      if (selectedItem && selectedItem.id === item.id) {
+        tr.classList.add("selected");
+      }
+
+      tr.innerHTML = `
           <td>
             <div class="task-title">${escapeHtml(item.title)}</div>
-            <div class="task-meta">${escapeHtml(item.relatedObject)} · ${escapeHtml(item.nextAction)}</div>
+            <div class="task-meta">${escapeHtml(item.relatedObjectName)} · ${escapeHtml(item.nextBestAction)}</div>
           </td>
           <td>
             <span class="pill ${getTypeClass(item.type)}">${getTypeIcon(item.type)} ${formatEnum(item.type)}</span>
@@ -1531,233 +1564,298 @@
           </td>
         `;
 
-        tr.addEventListener("click", function () {
-          handleItemClick(item);
-        });
-
-        tbody.appendChild(tr);
+      tr.addEventListener("click", function () {
+        handleItemClick(item);
       });
-    }
 
-    function handleItemClick(item) {
-      selectedItem = item;
-      renderWorkItems();
-      loadDetailPanel(item);
-      showToast("Work item selected.");
-    }
+      tbody.appendChild(tr);
+    });
+  }
 
-    function loadDetailPanel(item) {
-      document.getElementById("detailPlaceholder").style.display = "none";
-      document.getElementById("detailContent").style.display = "block";
-      document.getElementById("detailTitle").textContent = item.title;
-      document.getElementById("detailSubtitle").textContent = item.relatedObject;
-      document.getElementById("detailType").textContent = formatEnum(item.type);
-      document.getElementById("detailStatus").textContent = formatEnum(item.status);
-      document.getElementById("detailPriority").textContent = formatEnum(item.priority);
-      document.getElementById("detailDueDate").textContent = formatDate(item.dueDate);
-      document.getElementById("detailObject").textContent = item.relatedObject || "-";
-      document.getElementById("detailValue").textContent = formatMoney(item.value, item.currency);
-      document.getElementById("detailContext").textContent = item.context || "-";
-      document.getElementById("detailNextAction").textContent = item.nextAction || "-";
-    }
+  async function handleItemClick(
+          item
+  ) {
 
-    function resetDetailPanel() {
-      document.getElementById("detailPlaceholder").style.display = "flex";
-      document.getElementById("detailContent").style.display = "none";
-    }
+    const response =
+            await authorizedFetch(
+                    MY_SUMMARY_API_URL +
+                    "/work-items/" +
+                    item.id
+            );
 
-    function renderFocus(items) {
-      const list = document.getElementById("focusList");
-      list.innerHTML = "";
-      items.forEach(function (item) {
-        list.appendChild(createTimelineItem(item.icon, item.title, item.text));
-      });
-    }
+    const result =
+            await response.json();
 
-    function renderDeadlines(items) {
-      const list = document.getElementById("deadlineList");
-      list.innerHTML = "";
-      items.forEach(function (item) {
-        list.appendChild(createTimelineItem(item.icon, item.title, item.text));
-      });
-    }
+    selectedItem =
+            result.data;
 
-    function renderActivities(items) {
-      const list = document.getElementById("activityList");
-      list.innerHTML = "";
-      items.forEach(function (activity) {
-        const row = document.createElement("div");
-        row.className = "activity-item";
-        row.innerHTML = `
+    renderWorkItems();
+
+    loadDetailPanel(
+            selectedItem
+    );
+  }
+
+  async function loadActivities() {
+
+    const response =
+            await authorizedFetch(
+                    ACTIVITIES_URL +
+                    "?limit=10"
+            );
+
+    const result =
+            await response.json();
+
+    renderActivities(
+            result.data || []
+    );
+  }
+
+  function loadDetailPanel(item) {
+    document.getElementById("detailPlaceholder").style.display = "none";
+    document.getElementById("detailContent").style.display = "block";
+    document.getElementById("detailTitle").textContent = item.title;
+    document.getElementById("detailSubtitle").textContent = item.relatedObjectName;
+    document.getElementById("detailType").textContent = formatEnum(item.type);
+    document.getElementById("detailStatus").textContent = formatEnum(item.status);
+    document.getElementById("detailPriority").textContent = formatEnum(item.priority);
+    document.getElementById("detailDueDate").textContent = formatDate(item.dueDate);
+    document.getElementById("detailObject").textContent = item.relatedObjectName || "-";
+    document.getElementById("detailValue").textContent = formatMoney(item.value, item.currency);
+    document.getElementById("detailContext").textContent = item.context || "-";
+    document.getElementById("detailNextAction").textContent = item.nextBestAction || "-";
+  }
+
+  function resetDetailPanel() {
+    document.getElementById("detailPlaceholder").style.display = "flex";
+    document.getElementById("detailContent").style.display = "none";
+  }
+
+  function renderFocus(items) {
+    const list = document.getElementById("focusList");
+    list.innerHTML = "";
+    items.forEach(function (item) {
+      list.appendChild(createTimelineItem(item.icon, item.title, item.text));
+    });
+  }
+
+  function renderDeadlines(items) {
+    const list = document.getElementById("deadlineList");
+    list.innerHTML = "";
+    items.forEach(function (item) {
+      list.appendChild(createTimelineItem(item.icon, item.title, item.text));
+    });
+  }
+
+  function renderActivities(items) {
+    const list = document.getElementById("activityList");
+    list.innerHTML = "";
+    items.forEach(function (activity) {
+      const row = document.createElement("div");
+      row.className = "activity-item";
+      row.innerHTML = `
           <div>
             <div class="activity-title">${escapeHtml(activity.title)}</div>
             <div class="activity-desc">${escapeHtml(activity.description)}</div>
           </div>
           <div class="activity-meta">${escapeHtml(activity.meta)}</div>
         `;
-        list.appendChild(row);
-      });
-    }
+      list.appendChild(row);
+    });
+  }
 
-    function renderAudits(items) {
-      const list = document.getElementById("auditList");
-      list.innerHTML = "";
-      items.forEach(function (item) {
-        list.appendChild(createTimelineItem(item.icon, item.title, item.text));
-      });
-    }
+  function renderAudits(items) {
+    const list = document.getElementById("auditList");
+    list.innerHTML = "";
+    items.forEach(function (item) {
+      list.appendChild(
+              createTimelineItem(
+                      "📝",
+                      item.title,
+                      item.description
+              )
+      );
+    });
+  }
 
-    function createTimelineItem(icon, title, text) {
-      const row = document.createElement("div");
-      row.className = "timeline-item";
-      row.innerHTML = `
+  async function authorizedFetch(
+          url,
+          options = {}
+  ) {
+
+    const token =
+            getAccessToken();
+
+    return fetch(
+            url,
+            {
+              ...options,
+              headers: {
+                "Content-Type":
+                        "application/json",
+                "Authorization":
+                        token
+                                ? "Bearer " +
+                                token
+                                : "",
+                ...(options.headers || {})
+              }
+            }
+    );
+  }
+
+  function createTimelineItem(icon, title, text) {
+    const row = document.createElement("div");
+    row.className = "timeline-item";
+    row.innerHTML = `
         <div class="timeline-icon">${icon}</div>
         <div>
           <div class="timeline-title">${escapeHtml(title)}</div>
           <div class="timeline-text">${escapeHtml(text)}</div>
         </div>
       `;
-      return row;
-    }
+    return row;
+  }
 
-    function getAccessToken() {
-      if (window.keycloak && window.keycloak.token) {
-        return window.keycloak.token;
-      }
-      return localStorage.getItem("access_token") || sessionStorage.getItem("access_token");
+  function getAccessToken() {
+    if (window.keycloak && window.keycloak.token) {
+      return window.keycloak.token;
     }
+    return localStorage.getItem("access_token") || sessionStorage.getItem("access_token");
+  }
 
-    function getTypeClass(type) {
-      switch (type) {
-        case "CONTRACT": return "contract";
-        case "PROPOSAL": return "proposal";
-        case "REVIEW": return "review";
-        case "APPROVAL": return "approval";
-        case "REPORT": return "report";
-        default: return "report";
-      }
+  function getTypeClass(type) {
+    switch (type) {
+      case "CONTRACT": return "contract";
+      case "PROPOSAL": return "proposal";
+      case "REVIEW": return "review";
+      case "APPROVAL": return "approval";
+      case "REPORT": return "report";
+      default: return "report";
     }
+  }
 
-    function getTypeIcon(type) {
-      switch (type) {
-        case "CONTRACT": return "📂";
-        case "PROPOSAL": return "📝";
-        case "REVIEW": return "✅";
-        case "APPROVAL": return "✔";
-        case "REPORT": return "📊";
-        default: return "👤";
-      }
+  function getTypeIcon(type) {
+    switch (type) {
+      case "CONTRACT": return "📂";
+      case "PROPOSAL": return "📝";
+      case "REVIEW": return "✅";
+      case "APPROVAL": return "✔";
+      case "REPORT": return "📊";
+      default: return "👤";
     }
+  }
 
-    function getStatusClass(status) {
-      switch (status) {
-        case "PENDING": return "pending";
-        case "IN_PROGRESS": return "pending";
-        case "DRAFT": return "draft";
-        case "APPROVED": return "approved";
-        case "CHANGES_REQUESTED": return "changes";
-        case "REJECTED": return "rejected";
-        case "SUBMITTED": return "submitted";
-        default: return "draft";
-      }
+  function getStatusClass(status) {
+    switch (status) {
+      case "PENDING": return "pending";
+      case "IN_PROGRESS": return "pending";
+      case "DRAFT": return "draft";
+      case "APPROVED": return "approved";
+      case "CHANGES_REQUESTED": return "changes";
+      case "REJECTED": return "rejected";
+      case "SUBMITTED": return "submitted";
+      default: return "draft";
     }
+  }
 
-    function getStatusIcon(status) {
-      switch (status) {
-        case "PENDING": return "⏳";
-        case "IN_PROGRESS": return "🔄";
-        case "DRAFT": return "📝";
-        case "APPROVED": return "✅";
-        case "CHANGES_REQUESTED": return "🔁";
-        case "REJECTED": return "❌";
-        case "SUBMITTED": return "📤";
-        default: return "👤";
-      }
+  function getStatusIcon(status) {
+    switch (status) {
+      case "PENDING": return "⏳";
+      case "IN_PROGRESS": return "🔄";
+      case "DRAFT": return "📝";
+      case "APPROVED": return "✅";
+      case "CHANGES_REQUESTED": return "🔁";
+      case "REJECTED": return "❌";
+      case "SUBMITTED": return "📤";
+      default: return "👤";
     }
+  }
 
-    function getPriorityClass(priority) {
-      switch (priority) {
-        case "HIGH": return "high";
-        case "MEDIUM": return "medium";
-        case "LOW": return "low";
-        default: return "medium";
-      }
+  function getPriorityClass(priority) {
+    switch (priority) {
+      case "HIGH": return "high";
+      case "MEDIUM": return "medium";
+      case "LOW": return "low";
+      default: return "medium";
     }
+  }
 
-    function formatEnum(value) {
-      if (!value) {
-        return "-";
-      }
-      return String(value)
-        .replaceAll("_", " ")
-        .toLowerCase()
-        .replace(/\b\w/g, function (char) {
-          return char.toUpperCase();
-        });
+  function formatEnum(value) {
+    if (!value) {
+      return "-";
     }
+    return String(value)
+            .replaceAll("_", " ")
+            .toLowerCase()
+            .replace(/\b\w/g, function (char) {
+              return char.toUpperCase();
+            });
+  }
 
-    function formatDate(value) {
-      if (!value) {
-        return "-";
-      }
-      const date = new Date(value);
-      if (Number.isNaN(date.getTime())) {
-        return value;
-      }
-      return new Intl.DateTimeFormat("en-GB", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric"
-      }).format(date);
+  function formatDate(value) {
+    if (!value) {
+      return "-";
     }
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
+    return new Intl.DateTimeFormat("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric"
+    }).format(date);
+  }
 
-    function formatMoney(value, currency) {
-      const numericValue = Number(value) || 0;
-      if (numericValue === 0) {
-        return "-";
-      }
-      return new Intl.NumberFormat("en-DE", {
-        style: "currency",
-        currency: currency || "EUR",
-        maximumFractionDigits: 0
-      }).format(numericValue);
+  function formatMoney(value, currency) {
+    const numericValue = Number(value) || 0;
+    if (numericValue === 0) {
+      return "-";
     }
+    return new Intl.NumberFormat("en-DE", {
+      style: "currency",
+      currency: currency || "EUR",
+      maximumFractionDigits: 0
+    }).format(numericValue);
+  }
 
-    function formatCompactMoney(value, currency) {
-      const numericValue = Number(value) || 0;
-      return new Intl.NumberFormat("en-DE", {
-        style: "currency",
-        currency: currency || "EUR",
-        notation: "compact",
-        maximumFractionDigits: 1
-      }).format(numericValue);
-    }
+  function formatCompactMoney(value, currency) {
+    const numericValue = Number(value) || 0;
+    return new Intl.NumberFormat("en-DE", {
+      style: "currency",
+      currency: currency || "EUR",
+      notation: "compact",
+      maximumFractionDigits: 1
+    }).format(numericValue);
+  }
 
-    function escapeHtml(value) {
-      if (value === null || value === undefined) {
-        return "";
-      }
-      return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+  function escapeHtml(value) {
+    if (value === null || value === undefined) {
+      return "";
     }
+    return String(value)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+  }
 
-    function showLoading(isLoading) {
-      document.getElementById("loadingIndicator").style.display = isLoading ? "flex" : "none";
-    }
+  function showLoading(isLoading) {
+    document.getElementById("loadingIndicator").style.display = isLoading ? "flex" : "none";
+  }
 
-    function showToast(message) {
-      const toast = document.getElementById("toast");
-      toast.textContent = message;
-      toast.style.display = "block";
-      window.clearTimeout(showToast.timeoutId);
-      showToast.timeoutId = window.setTimeout(function () {
-        toast.style.display = "none";
-      }, 2600);
-    }
-  </script>
+  function showToast(message) {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.style.display = "block";
+    window.clearTimeout(showToast.timeoutId);
+    showToast.timeoutId = window.setTimeout(function () {
+      toast.style.display = "none";
+    }, 2600);
+  }
+</script>
 </body>
 </html>

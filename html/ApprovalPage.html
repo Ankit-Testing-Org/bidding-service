@@ -1,0 +1,2729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Approvals | SmartBid AI</title>
+
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e5e7eb;
+
+      --purple: #7c3aed;
+      --purple-light: #f3e8ff;
+
+      --blue: #0284c7;
+      --blue-light: #e0f2fe;
+
+      --green: #059669;
+      --green-light: #dcfce7;
+
+      --orange: #ea580c;
+      --orange-light: #ffedd5;
+
+      --red: #dc2626;
+      --red-light: #fee2e2;
+
+      --slate: #334155;
+      --slate-light: #f1f5f9;
+
+      --yellow: #ca8a04;
+      --yellow-light: #fef9c3;
+
+      --shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+      --radius-lg: 28px;
+      --radius-md: 20px;
+      --radius-sm: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Inter, Segoe UI, Arial, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+      padding: 24px;
+      gap: 24px;
+    }
+
+    .sidebar {
+      width: 280px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      border-radius: 32px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 34px;
+    }
+
+    .brand-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 12px 30px rgba(124, 58, 237, 0.35);
+      flex-shrink: 0;
+    }
+
+    .brand-title {
+      font-size: 20px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .brand-subtitle {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 3px;
+      white-space: nowrap;
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .nav-item {
+      text-decoration: none;
+      border: none;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 16px;
+      border-radius: 18px;
+      color: #475569;
+      font-size: 14px;
+      font-weight: 750;
+      cursor: pointer;
+      text-align: left;
+      transition: 0.2s ease;
+    }
+
+    .nav-item:hover {
+      background: #f1f5f9;
+      color: var(--text);
+    }
+
+    .nav-item.active {
+      background: #0f172a;
+      color: white;
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.25);
+    }
+
+    .sidebar-card {
+      margin-top: 40px;
+      padding: 22px;
+      border-radius: 26px;
+      background: linear-gradient(135deg, #7c3aed, #2563eb, #06b6d4);
+      color: white;
+      box-shadow: 0 18px 40px rgba(79, 70, 229, 0.3);
+    }
+
+    .sidebar-card small {
+      opacity: 0.8;
+      font-weight: 750;
+    }
+
+    .sidebar-card h3 {
+      margin-top: 10px;
+      font-size: 22px;
+      line-height: 1.2;
+    }
+
+    .sidebar-card p {
+      margin-top: 10px;
+      font-size: 13px;
+      opacity: 0.82;
+      line-height: 1.5;
+    }
+
+    .main {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .topbar {
+      background: rgba(255, 255, 255, 0.86);
+      border-radius: 32px;
+      padding: 18px 22px;
+      box-shadow: 0 14px 38px rgba(15, 23, 42, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .page-label {
+      font-size: 12px;
+      color: var(--purple);
+      font-weight: 850;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .page-title {
+      font-size: 26px;
+      font-weight: 900;
+      margin-top: 3px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .search-box {
+      width: 360px;
+      background: #f1f5f9;
+      border-radius: 18px;
+      padding: 11px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .search-box input {
+      border: none;
+      outline: none;
+      background: transparent;
+      width: 100%;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 16px;
+      border: none;
+      background: #f1f5f9;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #ede9fe;
+      color: var(--purple);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 900;
+      border: 4px solid white;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.12);
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #0f172a, #3b0764, #312e81);
+      color: white;
+      border-radius: 36px;
+      padding: 30px 32px;
+      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.22);
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.12);
+      padding: 8px 13px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 850;
+      margin-bottom: 16px;
+    }
+
+    .hero h2 {
+      font-size: 34px;
+      line-height: 1.15;
+      margin-bottom: 10px;
+    }
+
+    .hero p {
+      color: rgba(255, 255, 255, 0.72);
+      max-width: 720px;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .hero-stat {
+      background: rgba(255, 255, 255, 0.12);
+      padding: 18px;
+      border-radius: 24px;
+      backdrop-filter: blur(12px);
+    }
+
+    .hero-stat span {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.65);
+    }
+
+    .hero-stat strong {
+      display: block;
+      font-size: 24px;
+      margin-top: 6px;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    .kpi-card {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow);
+      min-height: 145px;
+      transition: 0.2s ease;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.13);
+    }
+
+    .kpi-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .kpi-title {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .kpi-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 22px;
+    }
+
+    .purple { background: linear-gradient(135deg, #8b5cf6, #4f46e5); }
+    .blue { background: linear-gradient(135deg, #06b6d4, #2563eb); }
+    .green { background: linear-gradient(135deg, #10b981, #059669); }
+    .orange { background: linear-gradient(135deg, #f97316, #ea580c); }
+    .slate { background: linear-gradient(135deg, #64748b, #0f172a); }
+    .red { background: linear-gradient(135deg, #ef4444, #dc2626); }
+
+    .kpi-count {
+      font-size: 32px;
+      font-weight: 950;
+      margin-top: 14px;
+    }
+
+    .kpi-help {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 8px;
+      line-height: 1.45;
+    }
+
+    .approvals-layout {
+      display: grid;
+      grid-template-columns: minmax(650px, 1fr) minmax(470px, 0.82fr);
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 32px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      min-width: 0;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .card-subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 5px;
+      line-height: 1.45;
+    }
+
+    .btn {
+      border: none;
+      background: #0f172a;
+      color: white;
+      border-radius: 16px;
+      padding: 11px 16px;
+      font-size: 13px;
+      font-weight: 850;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn.secondary { background: #f1f5f9; color: var(--text); }
+    .btn.purple-btn { background: linear-gradient(135deg, #7c3aed, #2563eb); color: white; }
+    .btn.green-btn { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+    .btn.orange-btn { background: linear-gradient(135deg, #f97316, #ea580c); color: white; }
+    .btn.red-btn { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
+
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .filter-row {
+      display: grid;
+      grid-template-columns: 1fr 170px 190px;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .filter-input,
+    .filter-select {
+      width: 100%;
+      border: 1px solid var(--border);
+      outline: none;
+      background: #f8fafc;
+      color: var(--text);
+      border-radius: 16px;
+      padding: 12px 14px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .table-wrap {
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: #f8fafc;
+    }
+
+    th {
+      text-align: left;
+      padding: 15px 16px;
+      color: #475569;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-weight: 900;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      font-size: 13px;
+    }
+
+    tbody tr {
+      cursor: pointer;
+      transition: 0.16s ease;
+    }
+
+    tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    tbody tr.selected {
+      background: #f3e8ff;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .approval-title {
+      font-weight: 900;
+      color: #0f172a;
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+
+    .approval-meta {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .pill.pending { background: var(--orange-light); color: var(--orange); }
+    .pill.approved { background: var(--green-light); color: var(--green); }
+    .pill.rejected { background: var(--red-light); color: var(--red); }
+    .pill.delegated { background: var(--blue-light); color: var(--blue); }
+    .pill.clarification { background: var(--yellow-light); color: var(--yellow); }
+    .pill.finance { background: var(--green-light); color: var(--green); }
+    .pill.legal { background: var(--purple-light); color: var(--purple); }
+    .pill.commercial { background: var(--blue-light); color: var(--blue); }
+    .pill.executive { background: var(--slate-light); color: var(--slate); }
+    .pill.delivery { background: var(--yellow-light); color: var(--yellow); }
+
+    .priority {
+      font-weight: 950;
+      white-space: nowrap;
+    }
+
+    .priority.high { color: var(--red); }
+    .priority.medium { color: var(--orange); }
+    .priority.low { color: var(--green); }
+
+    .valuation {
+      font-weight: 950;
+      color: #0f172a;
+      white-space: nowrap;
+    }
+
+    .empty-state {
+      padding: 34px;
+      text-align: center;
+      color: var(--muted);
+      display: none;
+    }
+
+    .empty-state strong {
+      color: var(--text);
+      display: block;
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+
+    .approval-panel {
+      min-height: 760px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .approval-shell {
+      flex: 1;
+      border: 1px solid var(--border);
+      border-radius: 26px;
+      overflow: hidden;
+      background: #0f172a;
+      position: relative;
+    }
+
+    .approval-placeholder {
+      min-height: 450px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 34px;
+      color: white;
+      text-align: center;
+      background:
+        radial-gradient(circle at top left, rgba(124, 58, 237, 0.38), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(37, 99, 235, 0.38), transparent 36%),
+        #0f172a;
+    }
+
+    .approval-placeholder-icon {
+      width: 74px;
+      height: 74px;
+      border-radius: 26px;
+      background: rgba(255, 255, 255, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 34px;
+      margin: 0 auto 18px;
+    }
+
+    .approval-placeholder h3 {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    .approval-placeholder p {
+      color: rgba(255, 255, 255, 0.72);
+      line-height: 1.6;
+      max-width: 420px;
+      font-size: 14px;
+    }
+
+    .approval-content {
+      display: none;
+      background: white;
+      min-height: 450px;
+      padding: 22px;
+    }
+
+    .summary-title {
+      font-size: 22px;
+      font-weight: 950;
+      line-height: 1.25;
+      margin-bottom: 8px;
+    }
+
+    .summary-subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      margin-bottom: 18px;
+    }
+
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .risk-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .detail-box,
+    .risk-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px;
+    }
+
+    .risk-box {
+      text-align: center;
+    }
+
+    .detail-box span,
+    .risk-box span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
+
+    .detail-box strong,
+    .risk-box strong {
+      font-size: 14px;
+      font-weight: 950;
+      color: #0f172a;
+      line-height: 1.35;
+    }
+
+    .risk-box strong {
+      font-size: 20px;
+    }
+
+    .approval-section {
+      margin-top: 18px;
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 950;
+      margin-bottom: 10px;
+    }
+
+    .approval-text-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 16px;
+      color: #334155;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .approval-comment {
+      width: 100%;
+      min-height: 120px;
+      resize: vertical;
+      border: 1px solid var(--border);
+      outline: none;
+      border-radius: 20px;
+      padding: 14px;
+      font-size: 13px;
+      color: var(--text);
+      background: #f8fafc;
+      line-height: 1.5;
+    }
+
+    .delegate-row {
+      display: none;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .delegate-row.show {
+      display: grid;
+    }
+
+    .decision-actions {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .timeline,
+    .comments-list,
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .timeline-item,
+    .comment-item,
+    .history-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 13px;
+      border-radius: 18px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+    }
+
+    .timeline-icon,
+    .comment-icon,
+    .history-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 14px;
+      background: #ede9fe;
+      color: var(--purple);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .timeline-title,
+    .comment-title,
+    .history-title {
+      font-size: 13px;
+      font-weight: 900;
+      margin-bottom: 4px;
+    }
+
+    .timeline-text,
+    .comment-text,
+    .history-text {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .activity-card {
+      margin-top: 0;
+    }
+
+    .activity-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .activity-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 15px;
+      border-radius: 20px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+    }
+
+    .activity-title {
+      font-weight: 900;
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+
+    .activity-desc {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .activity-meta {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+      font-weight: 750;
+    }
+
+    .toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      background: #0f172a;
+      color: white;
+      padding: 14px 18px;
+      border-radius: 18px;
+      box-shadow: 0 18px 48px rgba(15, 23, 42, 0.28);
+      font-size: 13px;
+      font-weight: 850;
+      display: none;
+      z-index: 100;
+    }
+
+    .loading {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 850;
+      margin-bottom: 14px;
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 3px solid #e5e7eb;
+      border-top-color: var(--purple);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 1400px) {
+      .quick-actions,
+      .decision-actions,
+      .risk-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 1280px) {
+      .approvals-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 980px) {
+      .app { padding: 14px; }
+      .sidebar { display: none; }
+      .topbar { flex-direction: column; align-items: flex-start; }
+      .top-actions { width: 100%; }
+      .search-box { width: 100%; }
+      .filter-row { grid-template-columns: 1fr; }
+      .hero-stats { grid-template-columns: 1fr; }
+      .table-wrap { overflow-x: auto; }
+      table { min-width: 1080px; }
+      .detail-grid,
+      .quick-actions,
+      .decision-actions,
+      .risk-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 680px) {
+      .kpi-grid { grid-template-columns: 1fr; }
+      .hero h2 { font-size: 28px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <aside class="sidebar">
+      <div>
+        <div class="brand">
+          <div class="brand-icon">✔</div>
+          <div>
+            <div class="brand-title">Approval</div>
+            <div class="brand-subtitle">Contract bidding platform</div>
+          </div>
+        </div>
+
+        <nav class="nav">
+          <button class="nav-item" onclick="goToPage('CompanyOverviewDashboard.html')">🏠 Overview</button>
+          <button class="nav-item" onclick="goToPage('Contracts.html')">📂 Contracts</button>
+          <button class="nav-item" onclick="goToPage('Proposals.html')">📝 Proposals</button>
+          <button class="nav-item" onclick="goToPage('Reviews.html')">✅ Reviews</button>
+          <button class="nav-item active" onclick="goToPage('Approvals.html')">✔ Approvals</button>
+          <button class="nav-item" onclick="goToPage('Reports.html')">📊 Reports</button>
+          <button class="nav-item" onclick="goToPage('MySummary.html')">👤 My Summary</button>
+        </nav>
+      </div>
+
+      <div class="sidebar-card">
+        <small>Approval Focus</small>
+        <h3>Authorize bid submission</h3>
+        <p>
+          Make final business decisions using proposal value, margin, risk, review comments, and approval chain.
+        </p>
+      </div>
+    </aside>
+
+    <main class="main">
+
+      <header class="topbar">
+        <div>
+          <div class="page-label">Approval Management</div>
+          <div class="page-title">Approval Queue</div>
+        </div>
+
+        <div class="top-actions">
+          <div class="search-box">
+            🔍
+            <input id="globalSearchInput" type="text" placeholder="Search approval, proposal, approver, stage..." />
+          </div>
+
+          <button class="icon-btn" type="button" title="Notifications">🔔</button>
+          <div class="avatar">AM</div>
+        </div>
+      </header>
+
+      <section class="hero">
+        <div>
+          <span class="hero-badge">Approval Workflow</span>
+          <h2>Approve proposals before customer submission</h2>
+          <p>
+            Central approval workspace for Finance, Legal, Commercial, Delivery, and Executive decision makers. Select an approval task, review business context, then approve, reject, delegate, or request clarification.
+          </p>
+        </div>
+
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <span>Total Approvals</span>
+            <strong id="totalApprovalsStat">0</strong>
+          </div>
+          <div class="hero-stat">
+            <span>Pending</span>
+            <strong id="pendingApprovalsStat">0</strong>
+          </div>
+          <div class="hero-stat">
+            <span>Approved Value</span>
+            <strong id="approvedValueStat">€0</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-title">Pending Approval</div>
+            <div class="kpi-icon orange">⏳</div>
+          </div>
+          <div class="kpi-count" id="pendingCount">0</div>
+          <div class="kpi-help">Approval tasks waiting for approver decision.</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-title">Approved</div>
+            <div class="kpi-icon green">✅</div>
+          </div>
+          <div class="kpi-count" id="approvedCount">0</div>
+          <div class="kpi-help">Approval tasks authorized for next workflow stage.</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-title">Rejected</div>
+            <div class="kpi-icon red">❌</div>
+          </div>
+          <div class="kpi-count" id="rejectedCount">0</div>
+          <div class="kpi-help">Approval tasks rejected by assigned approver.</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-title">Delegated</div>
+            <div class="kpi-icon blue">🔄</div>
+          </div>
+          <div class="kpi-count" id="delegatedCount">0</div>
+          <div class="kpi-help">Tasks delegated to another approver or specialist.</div>
+        </div>
+      </section>
+
+      <section class="approvals-layout">
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Approval Tasks</div>
+              <div class="card-subtitle">
+                Latest approval requests first. Click a task to inspect the proposal and submit your approval decision.
+              </div>
+            </div>
+
+            <button class="btn purple-btn" type="button" onclick="refreshApprovals()">
+              Refresh
+            </button>
+          </div>
+
+          <div class="loading" id="loadingIndicator">
+            <span class="spinner"></span>
+            <span>Loading approval tasks...</span>
+          </div>
+
+          <div class="filter-row">
+            <input id="approvalSearchInput" class="filter-input" type="text" placeholder="Search approval task..." />
+
+            <select id="statusFilter" class="filter-select">
+              <option value="ALL">All Status</option>
+              <option value="PENDING">Pending</option>
+              <option value="APPROVED">Approved</option>
+              <option value="REJECTED">Rejected</option>
+              <option value="DELEGATED">Delegated</option>
+              <option value="CLARIFICATION_REQUESTED">Clarification</option>
+            </select>
+
+            <select id="stageFilter" class="filter-select">
+              <option value="ALL">All Stages</option>
+              <option value="LEGAL_APPROVAL">Legal Approval</option>
+              <option value="FINANCE_APPROVAL">Finance Approval</option>
+              <option value="COMMERCIAL_APPROVAL">Commercial Approval</option>
+              <option value="DELIVERY_APPROVAL">Delivery Approval</option>
+              <option value="EXECUTIVE_APPROVAL">Executive Approval</option>
+            </select>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Approval</th>
+                  <th>Proposal</th>
+                  <th>Stage</th>
+                  <th>Status</th>
+                  <th>Approver</th>
+                  <th>Value</th>
+                  <th>Due</th>
+                </tr>
+              </thead>
+              <tbody id="approvalsTableBody"></tbody>
+            </table>
+
+            <div class="empty-state" id="emptyState">
+              <strong>No approval tasks found</strong>
+              Change your search or filter criteria.
+            </div>
+          </div>
+        </div>
+
+        <div class="card approval-panel">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Approval Details</div>
+              <div class="card-subtitle">
+                Review value, margin, risk, comments, and approval chain before making a decision.
+              </div>
+            </div>
+          </div>
+
+          <div class="approval-shell">
+            <div class="approval-placeholder" id="approvalPlaceholder">
+              <div>
+                <div class="approval-placeholder-icon">✔</div>
+                <h3>Select an approval task</h3>
+                <p>
+                  Proposal details, financial summary, reviewer feedback, approval chain, and decision actions will appear here.
+                </p>
+              </div>
+            </div>
+
+            <div class="approval-content" id="approvalContent">
+              <div class="summary-title" id="detailTitle">-</div>
+              <div class="summary-subtitle" id="detailSubtitle">-</div>
+
+              <div class="quick-actions">
+                <button class="btn secondary" id="openProposalButton" type="button">Open Proposal</button>
+                <button class="btn secondary" id="openReviewButton" type="button">Open Review</button>
+                <button class="btn secondary" id="auditTrailButton" type="button">Audit Trail</button>
+                <button class="btn purple-btn" id="downloadButton" type="button">Download</button>
+              </div>
+
+              <div class="detail-grid">
+                <div class="detail-box">
+                  <span>Proposal Number</span>
+                  <strong id="detailProposalNumber">-</strong>
+                </div>
+
+                <div class="detail-box">
+                  <span>Contract</span>
+                  <strong id="detailContract">-</strong>
+                </div>
+
+                <div class="detail-box">
+                  <span>Approval Stage</span>
+                  <strong id="detailStage">-</strong>
+                </div>
+
+                <div class="detail-box">
+                  <span>Status</span>
+                  <strong id="detailStatus">-</strong>
+                </div>
+
+                <div class="detail-box">
+                  <span>Proposal Value</span>
+                  <strong id="detailValue">-</strong>
+                </div>
+
+                <div class="detail-box">
+                  <span>Expected Margin</span>
+                  <strong id="detailMargin">-</strong>
+                </div>
+
+                <div class="detail-box">
+                  <span>Qualified Lots</span>
+                  <strong id="detailLots">-</strong>
+                </div>
+
+                <div class="detail-box">
+                  <span>Submission Due</span>
+                  <strong id="detailDueDate">-</strong>
+                </div>
+              </div>
+
+              <div class="approval-section">
+                <div class="section-title">Risk Assessment</div>
+                <div class="risk-grid">
+                  <div class="risk-box">
+                    <span>AI Risk Score</span>
+                    <strong id="riskScore">-</strong>
+                  </div>
+                  <div class="risk-box">
+                    <span>Commercial</span>
+                    <strong id="commercialRisks">-</strong>
+                  </div>
+                  <div class="risk-box">
+                    <span>Legal</span>
+                    <strong id="legalRisks">-</strong>
+                  </div>
+                  <div class="risk-box">
+                    <span>Compliance</span>
+                    <strong id="complianceRisks">-</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div class="approval-section">
+                <div class="section-title">Approval Context</div>
+                <div class="approval-text-box" id="approvalContextText">-</div>
+              </div>
+
+              <div class="approval-section">
+                <div class="section-title">Approval Chain</div>
+                <div class="timeline" id="approvalChainList"></div>
+              </div>
+
+              <div class="approval-section">
+                <div class="section-title">Reviewer Comments</div>
+                <div class="comments-list" id="reviewerCommentsList"></div>
+              </div>
+
+              <div class="approval-section">
+                <div class="section-title">Approval Comment</div>
+                <textarea id="approvalComment" class="approval-comment" placeholder="Write approval comment here..."></textarea>
+
+                <div class="delegate-row" id="delegateRow">
+                  <select id="delegateUserId" class="filter-select">
+                    <option value="">Select delegate user</option>
+                  </select>
+                </div>
+
+                <div class="decision-actions">
+                  <button class="btn green-btn" type="button" onclick="submitDecision('APPROVED')">Approve</button>
+                  <button class="btn orange-btn" type="button" onclick="toggleDelegateRow()">Delegate</button>
+                  <button class="btn secondary" type="button" onclick="submitDecision('CLARIFICATION_REQUESTED')">Clarification</button>
+                  <button class="btn red-btn" type="button" onclick="submitDecision('REJECTED')">Reject</button>
+                </div>
+              </div>
+
+              <div class="approval-section">
+                <div class="section-title">Approval History</div>
+                <div class="history-list" id="historyList"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <section class="card activity-card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Recent Approval Activities</div>
+            <div class="card-subtitle">
+              Recent approval updates across finance, legal, commercial, delivery, and executive stages.
+            </div>
+          </div>
+
+          <button class="btn secondary" type="button" onclick="showToast('Approval activity log page can be connected later.')">
+            Open Activity Log
+          </button>
+        </div>
+
+        <div class="activity-list" id="activityList"></div>
+      </section>
+
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const API_BASE_URL = "http://localhost:8080";
+    const APPROVALS_API_URL = API_BASE_URL + "/api/approvals";
+
+    const DASHBOARD_URL = APPROVALS_API_URL + "/dashboard";
+    const SEARCH_URL = APPROVALS_API_URL + "/search";
+    const AUDIT_TRAIL_URL = "ApprovalAuditTrail.html";
+
+    const DEFAULT_PAGE = 0;
+    const DEFAULT_SIZE = 20;
+    const DEFAULT_SORT_BY = "createdAt";
+    const DEFAULT_SORT_DIRECTION = "DESC";
+
+    let approvals = [];
+    let selectedApproval = null;
+
+    let currentPage = DEFAULT_PAGE;
+    let totalPages = 0;
+    let totalElements = 0;
+
+    let searchTimerId = null;
+    let searchRequestSequence = 0;
+    let detailRequestSequence = 0;
+
+    document.addEventListener("DOMContentLoaded", function () {
+      bindEvents();
+      initializePage();
+    });
+
+    async function initializePage() {
+      resetApprovalPanel();
+      renderActivities([]);
+
+      await Promise.all([
+        loadDashboard(),
+        searchApprovals(DEFAULT_PAGE)
+      ]);
+    }
+
+    function bindEvents() {
+      const approvalSearchInput =
+              document.getElementById("approvalSearchInput");
+
+      const globalSearchInput =
+              document.getElementById("globalSearchInput");
+
+      approvalSearchInput.addEventListener("input", function () {
+        globalSearchInput.value = approvalSearchInput.value;
+        scheduleSearch();
+      });
+
+      globalSearchInput.addEventListener("input", function () {
+        approvalSearchInput.value = globalSearchInput.value;
+        scheduleSearch();
+      });
+
+      document
+              .getElementById("statusFilter")
+              .addEventListener("change", function () {
+                searchApprovals(DEFAULT_PAGE);
+              });
+
+      document
+              .getElementById("stageFilter")
+              .addEventListener("change", function () {
+                searchApprovals(DEFAULT_PAGE);
+              });
+
+      document
+              .getElementById("openProposalButton")
+              .addEventListener("click", openSelectedProposal);
+
+      document
+              .getElementById("openReviewButton")
+              .addEventListener("click", openSelectedReview);
+
+      document
+              .getElementById("auditTrailButton")
+              .addEventListener("click", openSelectedAuditTrail);
+
+      document
+              .getElementById("downloadButton")
+              .addEventListener("click", downloadSelectedProposal);
+    }
+
+    function scheduleSearch() {
+      window.clearTimeout(searchTimerId);
+
+      searchTimerId = window.setTimeout(function () {
+        searchApprovals(DEFAULT_PAGE);
+      }, 350);
+    }
+
+    function buildSearchRequest(page) {
+      const searchText =
+              document.getElementById("approvalSearchInput").value.trim();
+
+      const status =
+              document.getElementById("statusFilter").value;
+
+      const approvalStage =
+              document.getElementById("stageFilter").value;
+
+      return {
+        searchText: searchText || null,
+        status: status === "ALL" ? null : status,
+        approvalStage:
+                approvalStage === "ALL" ? null : approvalStage,
+        page: page,
+        size: DEFAULT_SIZE,
+        sortBy: DEFAULT_SORT_BY,
+        sortDirection: DEFAULT_SORT_DIRECTION
+      };
+    }
+
+    async function loadDashboard() {
+      try {
+        const responseBody = await apiRequest(
+                DASHBOARD_URL,
+                {
+                  method: "GET"
+                }
+        );
+
+        renderDashboard(responseBody.data);
+      } catch (error) {
+        console.error("Unable to load approval dashboard:", error);
+        resetDashboard();
+        showToast(error.message);
+      }
+    }
+
+    function renderDashboard(dashboard) {
+      dashboard = dashboard || {};
+
+      setText(
+              "totalApprovalsStat",
+              dashboard.totalApprovalCount ?? 0
+      );
+
+      setText(
+              "pendingApprovalsStat",
+              dashboard.pendingCount ?? 0
+      );
+
+      setText(
+              "approvedValueStat",
+              formatCompactMoney(
+                      dashboard.approvedValue,
+                      dashboard.currency || "EUR"
+              )
+      );
+
+      setText("pendingCount", dashboard.pendingCount ?? 0);
+      setText("approvedCount", dashboard.approvedCount ?? 0);
+      setText("rejectedCount", dashboard.rejectedCount ?? 0);
+      setText("delegatedCount", dashboard.delegatedCount ?? 0);
+    }
+
+    function resetDashboard() {
+      setText("totalApprovalsStat", 0);
+      setText("pendingApprovalsStat", 0);
+      setText("approvedValueStat", formatCompactMoney(0, "EUR"));
+      setText("pendingCount", 0);
+      setText("approvedCount", 0);
+      setText("rejectedCount", 0);
+      setText("delegatedCount", 0);
+    }
+
+    async function searchApprovals(page) {
+      const requestSequence = ++searchRequestSequence;
+
+      showLoading(true);
+
+      try {
+        const request = buildSearchRequest(page);
+
+        const responseBody = await apiRequest(
+                SEARCH_URL,
+                {
+                  method: "POST",
+                  body: JSON.stringify(request)
+                }
+        );
+
+        if (requestSequence !== searchRequestSequence) {
+          return;
+        }
+
+        const pageResponse = responseBody.data || {};
+
+        approvals = Array.isArray(pageResponse.content)
+                ? pageResponse.content
+                : [];
+
+        currentPage =
+                pageResponse.page ??
+                pageResponse.number ??
+                request.page;
+
+        totalPages = pageResponse.totalPages ?? 0;
+        totalElements = pageResponse.totalElements ?? 0;
+
+        if (
+                selectedApproval &&
+                !approvals.some(function (item) {
+                  return String(item.id) ===
+                          String(selectedApproval.id);
+                })
+        ) {
+          selectedApproval = null;
+          resetApprovalPanel();
+        }
+
+        renderApprovals();
+      } catch (error) {
+        if (requestSequence !== searchRequestSequence) {
+          return;
+        }
+
+        console.error("Unable to search approval tasks:", error);
+
+        approvals = [];
+        totalElements = 0;
+        totalPages = 0;
+
+        renderApprovals();
+        showToast(error.message);
+      } finally {
+        if (requestSequence === searchRequestSequence) {
+          showLoading(false);
+        }
+      }
+    }
+
+    async function refreshApprovals() {
+      selectedApproval = null;
+      resetApprovalPanel();
+
+      await Promise.all([
+        loadDashboard(),
+        searchApprovals(currentPage)
+      ]);
+    }
+
+    function renderApprovals() {
+      const tableBody =
+              document.getElementById("approvalsTableBody");
+
+      const emptyState =
+              document.getElementById("emptyState");
+
+      tableBody.innerHTML = "";
+
+      if (approvals.length === 0) {
+        emptyState.style.display = "block";
+        return;
+      }
+
+      emptyState.style.display = "none";
+
+      approvals.forEach(function (approval) {
+        const row = document.createElement("tr");
+
+        row.dataset.approvalId = approval.id;
+
+        if (
+                selectedApproval &&
+                String(selectedApproval.id) === String(approval.id)
+        ) {
+          row.classList.add("selected");
+        }
+
+        row.innerHTML = `
+        <td>
+          <div class="approval-title">
+            ${escapeHtml(approval.title || "-")}
+          </div>
+
+          <div class="approval-meta">
+            Created ${formatDateTime(approval.createdAt)}
+            · ${escapeHtml(formatEnum(approval.priority))} priority
+          </div>
+        </td>
+
+        <td>
+          <div class="approval-title">
+            ${escapeHtml(approval.proposalName || "-")}
+          </div>
+
+          <div class="approval-meta">
+            ${escapeHtml(approval.proposalNumber || "-")}
+          </div>
+        </td>
+
+        <td>
+          <span class="pill ${getStageClass(approval.approvalStage)}">
+            ${getStageIcon(approval.approvalStage)}
+            ${escapeHtml(formatEnum(approval.approvalStage))}
+          </span>
+        </td>
+
+        <td>
+          <span class="pill ${getStatusClass(approval.status)}">
+            ${getStatusIcon(approval.status)}
+            ${escapeHtml(formatEnum(approval.status))}
+          </span>
+        </td>
+
+        <td>
+          <div class="approval-title">
+            ${escapeHtml(approval.approverName || "Unassigned")}
+          </div>
+
+          <div class="approval-meta">
+            ${escapeHtml(approval.approverUserId || "")}
+          </div>
+        </td>
+
+        <td>
+          <span class="valuation">
+            ${formatMoney(
+                approval.proposalValue,
+                approval.currency || "EUR"
+        )}
+          </span>
+        </td>
+
+        <td>
+          <span class="priority ${getPriorityClass(approval.priority)}">
+            ${formatDate(approval.dueDate)}
+          </span>
+        </td>
+      `;
+
+        row.addEventListener("click", function () {
+          fetchApprovalDetail(approval.id);
+        });
+
+        tableBody.appendChild(row);
+      });
+    }
+
+    async function fetchApprovalDetail(approvalId) {
+      const requestSequence = ++detailRequestSequence;
+
+      setApprovalPanelLoading(true);
+
+      try {
+        const responseBody = await apiRequest(
+                APPROVALS_API_URL +
+                "/" +
+                encodeURIComponent(approvalId),
+                {
+                  method: "GET"
+                }
+        );
+
+        if (requestSequence !== detailRequestSequence) {
+          return;
+        }
+
+        selectedApproval = responseBody.data;
+
+        if (!selectedApproval) {
+          throw new Error(
+                  "Approval detail response does not contain data."
+          );
+        }
+
+        renderApprovals();
+        renderApprovalPanel(selectedApproval);
+
+        if (selectedApproval.canDelegate) {
+          await loadEligibleDelegates(selectedApproval.id);
+        } else {
+          renderDelegateOptions([]);
+        }
+      } catch (error) {
+        if (requestSequence !== detailRequestSequence) {
+          return;
+        }
+
+        console.error("Unable to load approval:", error);
+
+        selectedApproval = null;
+        resetApprovalPanel();
+        showToast(error.message);
+      } finally {
+        if (requestSequence === detailRequestSequence) {
+          setApprovalPanelLoading(false);
+        }
+      }
+    }
+
+    function renderApprovalPanel(approval) {
+      document.getElementById(
+              "approvalPlaceholder"
+      ).style.display = "none";
+
+      document.getElementById(
+              "approvalContent"
+      ).style.display = "block";
+
+      setText("detailTitle", approval.title || "-");
+
+      setText(
+              "detailSubtitle",
+              [
+                approval.proposalNumber,
+                approval.contractName
+              ].filter(Boolean).join(" · ") || "-"
+      );
+
+      setText(
+              "detailProposalNumber",
+              approval.proposalNumber || "-"
+      );
+
+      setText(
+              "detailContract",
+              approval.contractName || "-"
+      );
+
+      setText(
+              "detailStage",
+              formatEnum(approval.approvalStage)
+      );
+
+      setText(
+              "detailStatus",
+              formatEnum(approval.status)
+      );
+
+      setText(
+              "detailValue",
+              formatMoney(
+                      approval.proposalValue,
+                      approval.currency || "EUR"
+              )
+      );
+
+      setText(
+              "detailMargin",
+              approval.expectedMargin !== null &&
+              approval.expectedMargin !== undefined
+                      ? approval.expectedMargin + "%"
+                      : "-"
+      );
+
+      setText(
+              "detailLots",
+              approval.qualifiedLotCount !== null &&
+              approval.qualifiedLotCount !== undefined
+                      ? approval.qualifiedLotCount + " qualified lots"
+                      : "-"
+      );
+
+      setText(
+              "detailDueDate",
+              formatDate(approval.dueDate)
+      );
+
+      setText(
+              "riskScore",
+              approval.riskScore !== null &&
+              approval.riskScore !== undefined
+                      ? approval.riskScore + "/10"
+                      : "-"
+      );
+
+      setText(
+              "commercialRisks",
+              approval.commercialRisks ?? "-"
+      );
+
+      setText(
+              "legalRisks",
+              approval.legalRisks ?? "-"
+      );
+
+      setText(
+              "complianceRisks",
+              approval.complianceRisks ?? "-"
+      );
+
+      setText(
+              "approvalContextText",
+              approval.context || "-"
+      );
+
+      document.getElementById("approvalComment").value = "";
+      document.getElementById("delegateRow").classList.remove("show");
+
+      renderApprovalChain(approval.approvalChain);
+      renderReviewerComments(approval.reviewerComments);
+      renderHistory(approval.history);
+      configureApprovalActions(approval);
+    }
+
+    function configureApprovalActions(approval) {
+      const approveButton =
+              document.querySelector(
+                      ".decision-actions .green-btn"
+              );
+
+      const delegateButton =
+              document.querySelector(
+                      ".decision-actions .orange-btn"
+              );
+
+      const clarificationButton =
+              document.querySelector(
+                      ".decision-actions .secondary"
+              );
+
+      const rejectButton =
+              document.querySelector(
+                      ".decision-actions .red-btn"
+              );
+
+      approveButton.disabled =
+              approval.canApprove !== true;
+
+      delegateButton.disabled =
+              approval.canDelegate !== true;
+
+      clarificationButton.disabled =
+              approval.canRequestClarification !== true;
+
+      rejectButton.disabled =
+              approval.canReject !== true;
+
+      const canComment =
+              approval.canApprove === true ||
+              approval.canDelegate === true ||
+              approval.canRequestClarification === true ||
+              approval.canReject === true;
+
+      document.getElementById(
+              "approvalComment"
+      ).disabled = !canComment;
+    }
+
+    async function loadEligibleDelegates(approvalId) {
+      try {
+        const responseBody = await apiRequest(
+                APPROVALS_API_URL +
+                "/" +
+                encodeURIComponent(approvalId) +
+                "/delegates",
+                {
+                  method: "GET"
+                }
+        );
+
+        renderDelegateOptions(
+                Array.isArray(responseBody.data)
+                        ? responseBody.data
+                        : []
+        );
+      } catch (error) {
+        console.error("Unable to load delegates:", error);
+        renderDelegateOptions([]);
+        showToast(error.message);
+      }
+    }
+
+    function renderDelegateOptions(delegateUsers) {
+      const select =
+              document.getElementById("delegateUserId");
+
+      select.innerHTML =
+              '<option value="">Select delegate user</option>';
+
+      delegateUsers.forEach(function (delegateUser) {
+        const option =
+                document.createElement("option");
+
+        option.value = delegateUser.userId;
+
+        option.textContent =
+                delegateUser.role
+                        ? delegateUser.fullName +
+                        " · " +
+                        delegateUser.role
+                        : delegateUser.fullName;
+
+        select.appendChild(option);
+      });
+    }
+
+    function toggleDelegateRow() {
+      if (!selectedApproval) {
+        showToast("Select an approval task first.");
+        return;
+      }
+
+      if (selectedApproval.canDelegate !== true) {
+        showToast(
+                "You are not authorized to delegate this task."
+        );
+        return;
+      }
+
+      const delegateRow =
+              document.getElementById("delegateRow");
+
+      if (!delegateRow.classList.contains("show")) {
+        delegateRow.classList.add("show");
+        showToast(
+                "Select a delegate, add a comment, then click Delegate again."
+        );
+        return;
+      }
+
+      submitDecision("DELEGATE");
+    }
+
+    async function submitDecision(decision) {
+      if (!selectedApproval) {
+        showToast("Select an approval task first.");
+        return;
+      }
+
+      const comment =
+              document.getElementById("approvalComment").value.trim();
+
+      const delegateUserValue =
+              document.getElementById("delegateUserId").value;
+
+      if (
+              (
+                      decision === "REJECT" ||
+                      decision === "REQUEST_CLARIFICATION"
+              ) &&
+              !comment
+      ) {
+        showToast(
+                "A comment is required for rejection or clarification."
+        );
+        return;
+      }
+
+      if (
+              decision === "DELEGATE" &&
+              !delegateUserValue
+      ) {
+        document.getElementById(
+                "delegateRow"
+        ).classList.add("show");
+
+        showToast("Select a delegate user.");
+        return;
+      }
+
+      const delegateUserId =
+              delegateUserValue
+                      ? Number(delegateUserValue)
+                      : null;
+
+      setDecisionButtonsDisabled(true);
+
+      try {
+        const responseBody = await apiRequest(
+                APPROVALS_API_URL +
+                "/" +
+                encodeURIComponent(selectedApproval.id) +
+                "/decision",
+                {
+                  method: "POST",
+                  body: JSON.stringify({
+                    decision: decision,
+                    comment: comment || null,
+                    delegateUserId: delegateUserId
+                  })
+                }
+        );
+
+        showToast(
+                responseBody.message ||
+                "Approval decision submitted successfully."
+        );
+
+        const approvalId = selectedApproval.id;
+
+        await Promise.all([
+          loadDashboard(),
+          searchApprovals(currentPage)
+        ]);
+
+        await fetchApprovalDetail(approvalId);
+      } catch (error) {
+        console.error(
+                "Unable to submit approval decision:",
+                error
+        );
+
+        showToast(error.message);
+      } finally {
+        setDecisionButtonsDisabled(false);
+      }
+    }
+
+    function resetApprovalPanel() {
+      document.getElementById(
+              "approvalPlaceholder"
+      ).style.display = "flex";
+
+      document.getElementById(
+              "approvalContent"
+      ).style.display = "none";
+
+      document.getElementById(
+              "approvalComment"
+      ).value = "";
+
+      document.getElementById(
+              "delegateRow"
+      ).classList.remove("show");
+
+      renderDelegateOptions([]);
+    }
+
+    function setApprovalPanelLoading(isLoading) {
+      const placeholder =
+              document.getElementById("approvalPlaceholder");
+
+      const content =
+              document.getElementById("approvalContent");
+
+      if (isLoading) {
+        placeholder.style.display = "flex";
+        content.style.display = "none";
+
+        placeholder.innerHTML = `
+        <div>
+          <div class="approval-placeholder-icon">
+            <span class="spinner"></span>
+          </div>
+          <h3>Loading approval</h3>
+          <p>
+            Retrieving proposal, risk, review,
+            and approval workflow information.
+          </p>
+        </div>
+      `;
+
+        return;
+      }
+
+      restoreApprovalPlaceholder();
+    }
+
+    function restoreApprovalPlaceholder() {
+      document.getElementById(
+              "approvalPlaceholder"
+      ).innerHTML = `
+      <div>
+        <div class="approval-placeholder-icon">✔</div>
+        <h3>Select an approval task</h3>
+        <p>
+          Proposal details, financial summary, reviewer
+          feedback, approval chain, and decision actions
+          will appear here.
+        </p>
+      </div>
+    `;
+    }
+
+    function renderApprovalChain(chain) {
+      const list =
+              document.getElementById("approvalChainList");
+
+      list.innerHTML = "";
+
+      const items =
+              Array.isArray(chain) ? chain : [];
+
+      if (items.length === 0) {
+        renderEmptyListItem(
+                list,
+                "timeline-item",
+                "timeline-icon",
+                "timeline-title",
+                "timeline-text",
+                "No approval chain",
+                "No approval chain is available."
+        );
+
+        return;
+      }
+
+      items.forEach(function (item) {
+        const row = document.createElement("div");
+        row.className = "timeline-item";
+
+        const title =
+                item.stageName ||
+                item.title ||
+                "Approval stage";
+
+        const textParts = [
+          item.approverName,
+          item.comment,
+          item.actionDate
+                  ? formatDateTime(item.actionDate)
+                  : null
+        ].filter(Boolean);
+
+        row.innerHTML = `
+        <div class="timeline-icon">
+          ${getChainIcon(item.status)}
+        </div>
+        <div>
+          <div class="timeline-title">
+            ${escapeHtml(title)}
+          </div>
+          <div class="timeline-text">
+            ${escapeHtml(textParts.join(" · ") || "-")}
+          </div>
+        </div>
+      `;
+
+        list.appendChild(row);
+      });
+    }
+
+    function renderReviewerComments(comments) {
+      const list =
+              document.getElementById("reviewerCommentsList");
+
+      list.innerHTML = "";
+
+      const items =
+              Array.isArray(comments) ? comments : [];
+
+      if (items.length === 0) {
+        renderEmptyListItem(
+                list,
+                "comment-item",
+                "comment-icon",
+                "comment-title",
+                "comment-text",
+                "No reviewer comments",
+                "No reviewer comments are available."
+        );
+
+        return;
+      }
+
+      items.forEach(function (item) {
+        const row = document.createElement("div");
+        row.className = "comment-item";
+
+        const title =
+                item.reviewerName ||
+                item.title ||
+                "Reviewer";
+
+        const text =
+                item.comment ||
+                item.text ||
+                "-";
+
+        row.innerHTML = `
+        <div class="comment-icon">📝</div>
+        <div>
+          <div class="comment-title">
+            ${escapeHtml(title)}
+          </div>
+          <div class="comment-text">
+            ${escapeHtml(text)}
+            ${
+                item.createdAt
+                        ? " · " +
+                        escapeHtml(formatDateTime(item.createdAt))
+                        : ""
+        }
+          </div>
+        </div>
+      `;
+
+        list.appendChild(row);
+      });
+    }
+
+    function renderHistory(history) {
+      const list =
+              document.getElementById("historyList");
+
+      list.innerHTML = "";
+
+      const items =
+              Array.isArray(history) ? history : [];
+
+      if (items.length === 0) {
+        renderEmptyListItem(
+                list,
+                "history-item",
+                "history-icon",
+                "history-title",
+                "history-text",
+                "No history",
+                "No approval history is available."
+        );
+
+        return;
+      }
+
+      items.forEach(function (item) {
+        const row = document.createElement("div");
+        row.className = "history-item";
+
+        const title =
+                item.action ||
+                item.title ||
+                "Approval activity";
+
+        const textParts = [
+          item.comment || item.text,
+          item.performedBy
+                  ? "By " + item.performedBy
+                  : null,
+          item.createdAt
+                  ? formatDateTime(item.createdAt)
+                  : null
+        ].filter(Boolean);
+
+        row.innerHTML = `
+        <div class="history-icon">🕘</div>
+        <div>
+          <div class="history-title">
+            ${escapeHtml(formatEnum(title))}
+          </div>
+          <div class="history-text">
+            ${escapeHtml(textParts.join(" · ") || "-")}
+          </div>
+        </div>
+      `;
+
+        list.appendChild(row);
+      });
+    }
+
+    function renderActivities(activities) {
+      const list =
+              document.getElementById("activityList");
+
+      list.innerHTML = "";
+
+      const items =
+              Array.isArray(activities) ? activities : [];
+
+      if (items.length === 0) {
+        const item = document.createElement("div");
+        item.className = "activity-item";
+
+        item.innerHTML = `
+        <div>
+          <div class="activity-title">
+            No recent activity loaded
+          </div>
+          <div class="activity-desc">
+            Add an approval activity endpoint if this
+            section should contain tenant-wide activity.
+          </div>
+        </div>
+        <div class="activity-meta">-</div>
+      `;
+
+        list.appendChild(item);
+        return;
+      }
+
+      items.forEach(function (activity) {
+        const item = document.createElement("div");
+        item.className = "activity-item";
+
+        item.innerHTML = `
+        <div>
+          <div class="activity-title">
+            ${escapeHtml(activity.title || "-")}
+          </div>
+          <div class="activity-desc">
+            ${escapeHtml(activity.description || "-")}
+          </div>
+        </div>
+        <div class="activity-meta">
+          ${escapeHtml(activity.meta || "-")}
+        </div>
+      `;
+
+        list.appendChild(item);
+      });
+    }
+
+    function renderEmptyListItem(
+            container,
+            rowClass,
+            iconClass,
+            titleClass,
+            textClass,
+            title,
+            text
+    ) {
+      const row = document.createElement("div");
+      row.className = rowClass;
+
+      row.innerHTML = `
+      <div class="${iconClass}">ℹ</div>
+      <div>
+        <div class="${titleClass}">
+          ${escapeHtml(title)}
+        </div>
+        <div class="${textClass}">
+          ${escapeHtml(text)}
+        </div>
+      </div>
+    `;
+
+      container.appendChild(row);
+    }
+
+    function openSelectedProposal() {
+      if (!selectedApproval) {
+        showToast("Select an approval task first.");
+        return;
+      }
+
+      const url =
+              selectedApproval.proposalPageUrl ||
+              (
+                      selectedApproval.proposalId
+                              ? "ProposalWorkspace.html?proposalId=" +
+                              encodeURIComponent(selectedApproval.proposalId)
+                              : null
+              );
+
+      navigateIfAvailable(
+              url,
+              "Proposal page is not available."
+      );
+    }
+
+    function openSelectedReview() {
+      if (!selectedApproval) {
+        showToast("Select an approval task first.");
+        return;
+      }
+
+      const url =
+              selectedApproval.reviewPageUrl ||
+              (
+                      selectedApproval.proposalId
+                              ? "ProposalReview.html?proposalId=" +
+                              encodeURIComponent(selectedApproval.proposalId)
+                              : null
+              );
+
+      navigateIfAvailable(
+              url,
+              "Review page is not available."
+      );
+    }
+
+    function openSelectedAuditTrail() {
+      if (!selectedApproval) {
+        showToast("Select an approval task first.");
+        return;
+      }
+
+      window.location.href =
+              AUDIT_TRAIL_URL +
+              "?approvalId=" +
+              encodeURIComponent(selectedApproval.id);
+    }
+
+    async function downloadSelectedProposal() {
+      if (!selectedApproval) {
+        showToast("Select an approval task first.");
+        return;
+      }
+
+      const downloadUrl =
+              selectedApproval.documentDownloadUrl;
+
+      if (!downloadUrl) {
+        showToast("Proposal document is not available.");
+        return;
+      }
+
+      try {
+        const token = getAccessToken();
+
+        const absoluteUrl =
+                downloadUrl.startsWith("http")
+                        ? downloadUrl
+                        : API_BASE_URL + downloadUrl;
+
+        const response = await fetch(
+                absoluteUrl,
+                {
+                  method: "GET",
+                  headers: token
+                          ? {
+                            "Authorization": "Bearer " + token
+                          }
+                          : {}
+                }
+        );
+
+        if (!response.ok) {
+          throw new Error(
+                  "Download failed with status " +
+                  response.status
+          );
+        }
+
+        const blob = await response.blob();
+
+        const temporaryUrl =
+                window.URL.createObjectURL(blob);
+
+        const link =
+                document.createElement("a");
+
+        link.href = temporaryUrl;
+        link.download =
+                (selectedApproval.proposalNumber || "proposal") +
+                ".pdf";
+
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        window.URL.revokeObjectURL(temporaryUrl);
+      } catch (error) {
+        console.error("Unable to download proposal:", error);
+        showToast(error.message);
+      }
+    }
+
+    function navigateIfAvailable(url, unavailableMessage) {
+      if (!url) {
+        showToast(unavailableMessage);
+        return;
+      }
+
+      window.location.href = url;
+    }
+
+    function goToPage(url) {
+      window.location.href = url;
+    }
+
+    async function apiRequest(url, options) {
+      const token = getAccessToken();
+
+      const requestOptions = {
+        method: options?.method || "GET",
+        headers: {
+          "Accept": "application/json"
+        }
+      };
+
+      if (token) {
+        requestOptions.headers.Authorization =
+                "Bearer " + token;
+      }
+
+      if (options?.body !== undefined) {
+        requestOptions.headers["Content-Type"] =
+                "application/json";
+
+        requestOptions.body = options.body;
+      }
+
+      const response =
+              await fetch(url, requestOptions);
+
+      const contentType =
+              response.headers.get("content-type") || "";
+
+      let responseBody;
+
+      if (contentType.includes("application/json")) {
+        responseBody = await response.json();
+      } else {
+        responseBody = {
+          success: response.ok,
+          message: await response.text(),
+          data: null
+        };
+      }
+
+      if (!response.ok) {
+        throw new Error(
+                responseBody?.message ||
+                "Request failed with status " + response.status
+        );
+      }
+
+      if (!responseBody) {
+        throw new Error("Backend returned an empty response.");
+      }
+
+      if (responseBody.success === false) {
+        throw new Error(
+                responseBody.message ||
+                "Backend request failed."
+        );
+      }
+
+      return responseBody;
+    }
+
+    function getAccessToken() {
+      if (window.keycloak?.token) {
+        return window.keycloak.token;
+      }
+
+      return (
+              localStorage.getItem("access_token") ||
+              sessionStorage.getItem("access_token") ||
+              ""
+      );
+    }
+
+    function setDecisionButtonsDisabled(disabled) {
+      document
+              .querySelectorAll(".decision-actions button")
+              .forEach(function (button) {
+                button.disabled = disabled;
+              });
+    }
+
+    function getStageClass(stage) {
+      switch (stage) {
+        case "FINANCE_APPROVAL":
+          return "finance";
+        case "LEGAL_APPROVAL":
+          return "legal";
+        case "COMMERCIAL_APPROVAL":
+          return "commercial";
+        case "EXECUTIVE_APPROVAL":
+          return "executive";
+        case "DELIVERY_APPROVAL":
+          return "delivery";
+        default:
+          return "executive";
+      }
+    }
+
+    function getStageIcon(stage) {
+      switch (stage) {
+        case "FINANCE_APPROVAL":
+          return "💰";
+        case "LEGAL_APPROVAL":
+          return "⚖️";
+        case "COMMERCIAL_APPROVAL":
+          return "📈";
+        case "EXECUTIVE_APPROVAL":
+          return "🏛️";
+        case "DELIVERY_APPROVAL":
+          return "🚚";
+        default:
+          return "✔";
+      }
+    }
+
+    function getStatusClass(status) {
+      switch (status) {
+        case "PENDING":
+          return "pending";
+        case "APPROVED":
+          return "approved";
+        case "REJECTED":
+          return "rejected";
+        case "DELEGATED":
+          return "delegated";
+        case "CLARIFICATION_REQUESTED":
+          return "clarification";
+        default:
+          return "pending";
+      }
+    }
+
+    function getStatusIcon(status) {
+      switch (status) {
+        case "PENDING":
+          return "⏳";
+        case "APPROVED":
+          return "✅";
+        case "REJECTED":
+          return "❌";
+        case "DELEGATED":
+          return "🔄";
+        case "CLARIFICATION_REQUESTED":
+          return "❓";
+        default:
+          return "⏳";
+      }
+    }
+
+    function getPriorityClass(priority) {
+      switch (priority) {
+        case "HIGH":
+          return "high";
+        case "LOW":
+          return "low";
+        default:
+          return "medium";
+      }
+    }
+
+    function getChainIcon(status) {
+      switch (status) {
+        case "APPROVED":
+          return "✅";
+        case "PENDING":
+          return "⏳";
+        case "REJECTED":
+          return "❌";
+        case "DELEGATED":
+          return "🔄";
+        case "CLARIFICATION_REQUESTED":
+          return "❓";
+        case "WAITING":
+          return "○";
+        default:
+          return "✔";
+      }
+    }
+
+    function formatEnum(value) {
+      if (!value) {
+        return "-";
+      }
+
+      return String(value)
+              .replaceAll("_", " ")
+              .toLowerCase()
+              .replace(/\b\w/g, function (character) {
+                return character.toUpperCase();
+              });
+    }
+
+    function formatDate(value) {
+      if (!value) {
+        return "-";
+      }
+
+      const date = new Date(value);
+
+      if (Number.isNaN(date.getTime())) {
+        return String(value);
+      }
+
+      return new Intl.DateTimeFormat(
+              "en-GB",
+              {
+                day: "2-digit",
+                month: "short",
+                year: "numeric"
+              }
+      ).format(date);
+    }
+
+    function formatDateTime(value) {
+      if (!value) {
+        return "-";
+      }
+
+      const date = new Date(value);
+
+      if (Number.isNaN(date.getTime())) {
+        return String(value);
+      }
+
+      return new Intl.DateTimeFormat(
+              "en-GB",
+              {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit"
+              }
+      ).format(date);
+    }
+
+    function formatMoney(value, currency) {
+      return new Intl.NumberFormat(
+              "en-DE",
+              {
+                style: "currency",
+                currency: currency || "EUR",
+                maximumFractionDigits: 0
+              }
+      ).format(Number(value) || 0);
+    }
+
+    function formatCompactMoney(value, currency) {
+      return new Intl.NumberFormat(
+              "en-DE",
+              {
+                style: "currency",
+                currency: currency || "EUR",
+                notation: "compact",
+                maximumFractionDigits: 1
+              }
+      ).format(Number(value) || 0);
+    }
+
+    function escapeHtml(value) {
+      if (value === null || value === undefined) {
+        return "";
+      }
+
+      return String(value)
+              .replaceAll("&", "&amp;")
+              .replaceAll("<", "&lt;")
+              .replaceAll(">", "&gt;")
+              .replaceAll('"', "&quot;")
+              .replaceAll("'", "&#039;");
+    }
+
+    function setText(elementId, value) {
+      const element =
+              document.getElementById(elementId);
+
+      if (element) {
+        element.textContent =
+                value === null || value === undefined
+                        ? "-"
+                        : String(value);
+      }
+    }
+
+    function showLoading(isLoading) {
+      document.getElementById(
+              "loadingIndicator"
+      ).style.display =
+              isLoading ? "flex" : "none";
+    }
+
+    function showToast(message) {
+      const toast =
+              document.getElementById("toast");
+
+      toast.textContent =
+              message || "Operation completed.";
+
+      toast.style.display = "block";
+
+      window.clearTimeout(showToast.timeoutId);
+
+      showToast.timeoutId =
+              window.setTimeout(function () {
+                toast.style.display = "none";
+              }, 3000);
+    }
+  </script>
+</body>
+</html>
