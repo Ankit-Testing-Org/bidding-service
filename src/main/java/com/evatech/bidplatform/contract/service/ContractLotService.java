@@ -1,6 +1,7 @@
 package com.evatech.bidplatform.contract.service;
 
 import com.evatech.bidplatform.contract.dto.response.ContractLotAnalysisResultResponse;
+import com.evatech.bidplatform.contract.dto.response.ProposalReadinessResponse;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
 import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
 import com.evatech.bidplatform.user.entity.User;
@@ -11,13 +12,13 @@ public interface ContractLotService {
 
     ContractLot qualifyLot(
             Long contractId,
-            String lotNumber,
+            Long lotId,
             User user,
             List<String> roles);
 
     ContractLot unqualifyLot(
             Long contractId,
-            String lotNumber,
+            Long lotId,
             User user,
             List<String> roles);
 
@@ -41,7 +42,7 @@ public interface ContractLotService {
     List<ContractLot> extractLots(
             Long contractDocument,
             User user,
-            String lotNumber
+            Long lotId
     );
 
     ContractLotAnalysisResultResponse analyseContractLot(
@@ -64,4 +65,12 @@ public interface ContractLotService {
             Long lotId,
             String comment,
             User user);
+
+    ContractLot extractLot(Long contractId, User user, Long lotId);
+
+    ProposalReadinessResponse fetchProposalReadiness(
+            Long contractId,
+            User user,
+            List<String> roles
+    );
 }

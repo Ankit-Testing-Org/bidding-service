@@ -7,6 +7,7 @@ let generatedDocumentName = "";
 let generatedDocumentId = null;
 let uploadedDocumentUrl = "";
 let selectedBidFile = null;
+let uploadedDocumentId = null;
 
 let bidState = {
     searched: false,
@@ -61,7 +62,6 @@ function getContractId() {
 
 function getGenerationPayload() {
     return {
-        contractId: Number(getContractId()),
         outputFormat: document.getElementById("outputFormat").value,
         generationNotes: document.getElementById("generationNotes").value.trim(),
         includeQualifiedLotsOnly: true,
@@ -85,31 +85,35 @@ async function searchBidDocument() {
 
     try {
         const response = await fetch(
-            API_BASE_URL + "/contracts/" + contractId + "/bid-documents/latest",
+            API_BASE_URL +
+            "/bid/contracts/" +
+            contractId +
+            "/documents/latest",
             {
                 method: "GET",
                 headers: buildAuthHeaders()
             }
         );
 
-        if (response.status === 404) {
-            applyDocumentNotFound();
-            return;
-        }
+        const result = await readApiResponse(response);
+        const data = result.data;
 
-        if (!response.ok) {
-            throw new Error("Search bid document API failed with status " + response.status);
-        }
+        if (data.documentExists && data.document) {
+            const document = data.document;
 
-        const result = await response.json();
+            generatedDocumentId = document.documentId;
+            generatedDocumentName = document.fileName;
+            generatedDocumentUrl = toAbsoluteApiUrl(document.documentUrl);
+            generatedPreviewUrl = toAbsoluteApiUrl(
+                document.previewUrl || document.documentUrl
+            );
 
-        if (result && result.documentUrl) {
-            generatedDocumentId = result.documentId || null;
-            generatedDocumentName = result.fileName || "Generated Bid Document.docx";
-            generatedDocumentUrl = result.documentUrl;
-            generatedPreviewUrl = result.previewUrl || result.documentUrl;
+            applyExistingDocument(
+                generatedDocumentName,
+                generatedDocumentUrl,
+                generatedPreviewUrl
+            );
 
-            applyExistingDocument(generatedDocumentName, generatedDocumentUrl, generatedPreviewUrl);
             return;
         }
 
@@ -117,19 +121,31 @@ async function searchBidDocument() {
 
     } catch (error) {
         console.error(error);
-
-        if (contractId === "84") {
-            generatedDocumentId = 501;
-            generatedDocumentName = "CGH-84-Bid-Document.docx";
-            generatedDocumentUrl = "sample-generated-bid-document.pdf";
-            generatedPreviewUrl = "sample-generated-bid-document.pdf";
-            applyExistingDocument(generatedDocumentName, generatedDocumentUrl, generatedPreviewUrl);
-        } else {
-            applyDocumentNotFound();
-        }
+        showToast(error.message);
+        applySearchError();
     } finally {
         setSearchLoading(false);
     }
+}
+
+function applySearchError() {
+    bidState.searched = false;
+    bidState.generated = false;
+    bidState.existingDocumentFound = false;
+
+    updateSearchTile("Search Failed", "badge badge-red");
+
+    updateDocumentTile(
+        "Not Checked",
+        "badge badge-gray",
+        "Unable to check document",
+        "The search request failed. Retry before generating a document."
+    );
+
+    enableGenerateActions(false);
+    enableDocumentActions(false);
+    clearPreview();
+    updateBidProgress();
 }
 
 function applyExistingDocument(fileName, documentUrl, previewUrl) {
@@ -196,54 +212,48 @@ async function generateBidDocument() {
     }
 
     if (bidState.existingDocumentFound) {
-        showToast("Bid document already exists. Download existing document.");
+        showToast(
+            "Bid document already exists. Download the existing document."
+        );
         return;
     }
 
     setGenerateLoading(true);
 
-    const payload = getGenerationPayload();
-
     try {
         const response = await fetch(
-            API_BASE_URL + "/contracts/" + contractId + "/bid-documents/generate",
+            API_BASE_URL +
+            "/bid/contracts/" +
+            contractId +
+            "/documents/generate",
             {
                 method: "POST",
                 headers: buildAuthHeaders({
                     "Content-Type": "application/json"
                 }),
-                body: JSON.stringify(payload)
+                body: JSON.stringify(getGenerationPayload())
             }
         );
 
-        if (!response.ok) {
-            throw new Error("Generate document API failed with status " + response.status);
-        }
+        const result = await readApiResponse(response);
+        const document = result.data.document;
 
-        const result = await response.json();
+        generatedDocumentId = document.documentId;
+        generatedDocumentName = document.fileName;
+        generatedDocumentUrl = toAbsoluteApiUrl(document.documentUrl);
+        generatedPreviewUrl = toAbsoluteApiUrl(
+            document.previewUrl || document.documentUrl
+        );
 
-        generatedDocumentId = result.documentId || null;
-        generatedDocumentName = result.fileName || "Generated Bid Document.docx";
-        generatedDocumentUrl = result.documentUrl || result.previewUrl || "";
-        generatedPreviewUrl = result.previewUrl || generatedDocumentUrl;
-
-        if (!generatedDocumentUrl) {
-            generatedDocumentUrl = API_BASE_URL + "/contracts/" + contractId + "/bid-documents/latest/download";
-            generatedPreviewUrl = generatedDocumentUrl;
-        }
-
-        applyGeneratedDocument(generatedDocumentName, generatedDocumentUrl, generatedPreviewUrl);
+        applyGeneratedDocument(
+            generatedDocumentName,
+            generatedDocumentUrl,
+            generatedPreviewUrl
+        );
 
     } catch (error) {
         console.error(error);
-
-        generatedDocumentId = 501;
-        generatedDocumentName = "CGH-" + contractId + "-Bid-Document.docx";
-        generatedDocumentUrl = "sample-generated-bid-document.pdf";
-        generatedPreviewUrl = "sample-generated-bid-document.pdf";
-
-        applyGeneratedDocument(generatedDocumentName, generatedDocumentUrl, generatedPreviewUrl);
-        addAiMessage(buildAiAnswer("Backend generate API was not reachable, so I enabled sample generated document for UI testing."));
+        showToast(error.message);
     } finally {
         setGenerateLoading(false);
     }
@@ -398,6 +408,7 @@ function resetSearch() {
     generatedDocumentId = null;
     uploadedDocumentUrl = "";
     selectedBidFile = null;
+    uploadedDocumentId = null;
 
     bidState = {
         searched: false,
@@ -514,16 +525,30 @@ async function uploadPreparedBidDocument() {
 
     const formData = new FormData();
     formData.append("file", selectedBidFile);
-    formData.append("contractId", contractId);
-    formData.append("sourceGeneratedDocumentId", generatedDocumentId || "");
     formData.append("documentType", "PREPARED_BID_DOCUMENT");
 
-    document.getElementById("uploadBtn").disabled = true;
-    document.getElementById("uploadBtn").innerHTML = '<span class="loading"><span class="spinner"></span>Uploading</span>';
+    if (generatedDocumentId !== null) {
+        formData.append(
+            "sourceGeneratedDocumentId",
+            String(generatedDocumentId)
+        );
+    }
+
+    const uploadButton = document.getElementById("uploadBtn");
+
+    uploadButton.disabled = true;
+    uploadButton.innerHTML =
+        '<span class="loading">' +
+        '<span class="spinner"></span>' +
+        'Uploading' +
+        '</span>';
 
     try {
         const response = await fetch(
-            API_BASE_URL + "/contracts/" + contractId + "/bid-documents/upload",
+            API_BASE_URL +
+            "/bid/contracts/" +
+            contractId +
+            "/documents/upload-completed",
             {
                 method: "POST",
                 headers: buildAuthHeaders(),
@@ -531,23 +556,23 @@ async function uploadPreparedBidDocument() {
             }
         );
 
-        if (!response.ok) {
-            throw new Error("Upload document API failed with status " + response.status);
-        }
+        const result = await readApiResponse(response);
+        const data = result.data;
+        const uploadedDocument = data.uploadedDocument;
 
-        const result = await response.json();
+        uploadedDocumentId = uploadedDocument.documentId;
+        uploadedDocumentUrl = toAbsoluteApiUrl(
+            uploadedDocument.documentUrl
+        );
 
-        uploadedDocumentUrl = result.documentUrl || "";
-        applyUploadedDocument(result.fileName || selectedBidFile.name);
+        applyUploadedDocument(uploadedDocument.fileName);
 
     } catch (error) {
         console.error(error);
-        uploadedDocumentUrl = "";
-        applyUploadedDocument(selectedBidFile.name);
-        addAiMessage(buildAiAnswer("Backend upload API was not reachable, so I marked the file as uploaded for UI testing."));
+        showToast(error.message);
     } finally {
-        document.getElementById("uploadBtn").innerText = "Upload";
-        document.getElementById("uploadBtn").disabled = false;
+        uploadButton.innerText = "Upload";
+        uploadButton.disabled = selectedBidFile === null;
     }
 }
 
@@ -565,48 +590,66 @@ function applyUploadedDocument(fileName) {
 
 async function sendForApproval() {
     if (!bidState.approvalReady) {
-        showToast("Complete search, document availability, download and upload before approval");
+        showToast(
+            "Complete document generation, download and upload before approval"
+        );
+        return;
+    }
+
+    if (!uploadedDocumentId) {
+        showToast("Uploaded document ID is not available");
         return;
     }
 
     const contractId = getContractId();
 
+    const request = {
+        uploadedDocumentId: uploadedDocumentId,
+        sourceGeneratedDocumentId: generatedDocumentId,
+        comment: "Submitted from Bid Preparation Workspace"
+    };
+
     try {
         const response = await fetch(
-            API_BASE_URL + "/contracts/" + contractId + "/bid-documents/submit-for-approval",
+            API_BASE_URL +
+            "/bid/contracts/" +
+            contractId +
+            "/submit-for-approval",
             {
                 method: "POST",
                 headers: buildAuthHeaders({
                     "Content-Type": "application/json"
                 }),
-                body: JSON.stringify({
-                    contractId: Number(contractId),
-                    generatedDocumentId: generatedDocumentId,
-                    documentUploaded: true,
-                    status: "SUBMITTED_FOR_APPROVAL"
-                })
+                body: JSON.stringify(request)
             }
         );
 
-        if (!response.ok) {
-            throw new Error("Submit approval API failed with status " + response.status);
-        }
+        const result = await readApiResponse(response);
+        const data = result.data;
 
-        document.getElementById("readinessBadge").innerText = "Submitted";
-        document.getElementById("readinessBadge").className = "badge badge-purple";
-        document.getElementById("approvalReadinessText").innerText = "Submitted";
+        document.getElementById("readinessBadge").innerText =
+            data.workflowStatus || "Submitted";
+
+        document.getElementById("readinessBadge").className =
+            "badge badge-purple";
+
+        document.getElementById("approvalReadinessText").innerText =
+            "Submitted";
+
+        document.getElementById("sendApprovalBtn").disabled = true;
+        document.getElementById("previewApprovalBtn").disabled = true;
 
         showToast("Bid sent for approval");
-        addAiMessage(buildAiAnswer("Bid has been sent for approval workflow."));
+
+        addAiMessage(
+            buildAiAnswer(
+                "Bid has been submitted to the approval workflow."
+            )
+        );
 
     } catch (error) {
         console.error(error);
-        document.getElementById("readinessBadge").innerText = "Submitted";
-        document.getElementById("readinessBadge").className = "badge badge-purple";
-        document.getElementById("approvalReadinessText").innerText = "Submitted";
-
-        showToast("Approval workflow simulated for UI testing");
-        addAiMessage(buildAiAnswer("Approval API was not reachable, so I simulated submission."));
+        showToast(error.message);
     }
 }
 
@@ -966,3 +1009,56 @@ uploadZone.addEventListener("drop", function (event) {
 });
 
 updateBidProgress();
+
+async function readApiResponse(response) {
+    const contentType = response.headers.get("content-type") || "";
+
+    let result = null;
+
+    if (contentType.includes("application/json")) {
+        result = await response.json();
+    }
+
+    if (!response.ok) {
+        const message =
+            result && result.message
+                ? result.message
+                : "Request failed with HTTP status " + response.status;
+
+        throw new Error(message);
+    }
+
+    if (!result) {
+        throw new Error("Backend returned an empty response");
+    }
+
+    if (result.success === false) {
+        throw new Error(result.message || "Request was not successful");
+    }
+
+    return result;
+}
+
+function toAbsoluteApiUrl(url) {
+    if (!url) {
+        return "";
+    }
+
+    if (
+        url.startsWith("http://") ||
+        url.startsWith("https://") ||
+        url.startsWith("blob:")
+    ) {
+        return url;
+    }
+
+    if (url.startsWith("/api/")) {
+        return window.location.origin + url;
+    }
+
+    if (url.startsWith("/")) {
+        return window.location.origin + url;
+    }
+
+    return API_BASE_URL + "/" + url;
+}

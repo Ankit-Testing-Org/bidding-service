@@ -60,7 +60,8 @@ public interface ContractService {
     List<ContractLot>  getContractLots(
             Long contractId,
             User user,
-            String lotNumber, List<String> roles);
+            Long lotId,
+            List<String> roles);
 
     void markAnalysisFailed(Long contractId,
                             String failureReason,

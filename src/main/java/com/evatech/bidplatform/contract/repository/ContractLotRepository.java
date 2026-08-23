@@ -11,7 +11,7 @@ public interface ContractLotRepository extends JpaRepository<ContractLot, Long> 
 
     List<ContractLot> findByContractDocumentIdOrderByLotNumberAsc(Long contractId);
 
-    Optional<ContractLot> findByContractDocumentIdAndLotNumber(Long contractId, String lotNumber);
+    Optional<ContractLot> findByIdAndContractDocumentId(Long contractId, Long lotId);
 
     List<ContractLot> findByContractDocumentIdAndQualificationStatus(
             Long contractId,

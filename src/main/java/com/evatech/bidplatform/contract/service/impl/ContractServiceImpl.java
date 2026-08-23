@@ -111,8 +111,9 @@ public class ContractServiceImpl implements ContractService {
     public List<ContractLot> getContractLots(
             Long contractId,
             User user,
-            String lotNumber, List<String> roles) {
-        return contractLotService.extractLots(contractId, user, lotNumber);
+            Long lotId,
+            List<String> roles) {
+        return contractLotService.extractLots(contractId, user, lotId);
     }
 
     @AuditAction(action = "FETCH_CONTRACT_HIGHLIGHTS", entity = "ContractHighlight")
