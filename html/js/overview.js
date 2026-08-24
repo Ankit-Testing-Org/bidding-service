@@ -3,6 +3,7 @@
 const API_BASE_URL = "http://localhost:8080/api";
 
 let lastDashboardResponse = null;
+let selectedContractFile = null;
 
 document.addEventListener("DOMContentLoaded", function () {
     loadOverviewDashboard();
@@ -539,4 +540,295 @@ function escapeHtml(value) {
 
 function navigateTo(url) {
     window.location.href = url;
+}
+
+const dropZone =
+    document.getElementById("dropZone");
+
+const fileInput =
+    document.getElementById("contractFile");
+
+const selectedFileInfo =
+    document.getElementById("selectedFileInfo");
+
+function triggerFileUpload() {
+    document.getElementById("contractFile").click();
+}
+
+function uploadSelectedFile() {
+
+    const input = document.getElementById("contractFile");
+    if (!input.files.length) {
+        return;
+    }
+    selectedContractFile = input.files[0];
+    updateSelectedFile(selectedContractFile);
+    uploadContract(selectedContractFile);
+}
+
+fileInput.addEventListener(
+    "change",
+    function () {
+
+        if (this.files.length > 0) {
+
+            updateSelectedFile(
+                this.files[0]
+            );
+        }
+    }
+);
+
+dropZone.addEventListener(
+    "drop",
+    async event => {
+
+        event.preventDefault();
+
+        dropZone.classList.remove(
+            "dragover"
+        );
+
+        const file =
+            event.dataTransfer.files[0];
+
+        if (!file) {
+            return;
+        }
+
+        selectedContractFile = file;
+
+        updateSelectedFile(file);
+
+        await uploadContract(file);
+    }
+);
+
+function updateSelectedFile(file) {
+
+    document.getElementById(
+        "selectedFileInfo"
+    ).innerHTML = `
+        <strong>${file.name}</strong>
+        <br>
+        ${(file.size / 1024 / 1024).toFixed(2)} MB
+    `;
+}
+
+async function uploadContract(file) {
+
+    showToast(
+        "Uploading contract..."
+    );
+
+    const formData = new FormData();
+
+    formData.append(
+        "file",
+        file
+    );
+
+    try {
+
+        const response = await fetch(
+            "/api/contracts/upload",
+            {
+                method: "POST",
+                body: formData
+            }
+        );
+
+        const result =
+            await response.json();
+
+        if (!result.success) {
+
+            showError(
+                result.message
+            );
+
+            return;
+        }
+
+        showToast(
+            "Contract uploaded successfully"
+        );
+
+        addProcessingQueueItem(
+            result.data
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+        showError(
+            "Failed to upload contract"
+        );
+    }
+}
+
+function addProcessingQueueItem(contract) {
+
+    const container =
+        document.getElementById(
+            "processingQueueContainer"
+        );
+
+    const empty =
+        container.querySelector(
+            ".empty-list"
+        );
+
+    if (empty) {
+        empty.remove();
+    }
+
+    const html = `
+        <div class="processing-item"
+             id="contract-${contract.id}">
+
+            <div class="processing-header">
+
+                <div class="processing-name">
+                    ${contract.originalFileName}
+                </div>
+
+                <span class="status-badge processing">
+                    Upload Complete
+                </span>
+
+            </div>
+
+            <div class="progress-bar">
+
+                <div
+                    class="progress-fill"
+                    style="width:10%">
+                </div>
+
+            </div>
+
+            <div class="processing-footer">
+
+                <span>
+                    Contract ID:
+                    ${contract.id}
+                </span>
+
+                <span>
+                    Uploaded
+                </span>
+
+            </div>
+
+        </div>
+    `;
+
+    container.insertAdjacentHTML(
+        "afterbegin",
+        html
+    );
+
+    updateQueueCounter();
+}
+
+function updateQueueCounter() {
+
+    const total =
+        document.querySelectorAll(
+            ".processing-item"
+        ).length;
+
+    document.getElementById(
+        "processingCount"
+    ).innerText =
+        `${total} Active`;
+}
+
+async function loadProcessingQueue() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/contracts/processing-queue"
+            );
+
+        const result =
+            await response.json();
+
+        if (!result.success) {
+            return;
+        }
+
+        renderProcessingQueue(
+            result.data
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Failed to load processing queue",
+            error
+        );
+    }
+}
+let processingPollInterval = null;
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        loadProcessingQueue();
+
+        startProcessingQueuePolling();
+    }
+);
+
+function startProcessingQueuePolling() {
+
+    if (processingPollInterval) {
+
+        clearInterval(
+            processingPollInterval
+        );
+    }
+
+    processingPollInterval =
+        setInterval(
+            loadProcessingQueue,
+            5000
+        );
+}
+
+function renderProcessingQueue(
+    contracts
+) {
+
+    const container =
+        document.getElementById(
+            "processingQueueContainer"
+        );
+
+    document.getElementById(
+        "processingCount"
+    ).innerText =
+        `${contracts.length} Active`;
+
+    if (!contracts.length) {
+
+        container.innerHTML = `
+            <div class="empty-list">
+                No contracts currently being processed
+            </div>
+        `;
+
+        return;
+    }
+
+    container.innerHTML =
+        contracts.map(
+            createProcessingItem
+        ).join("");
 }

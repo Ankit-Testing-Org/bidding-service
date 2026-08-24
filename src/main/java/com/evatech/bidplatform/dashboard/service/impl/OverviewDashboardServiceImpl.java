@@ -3,9 +3,12 @@ package com.evatech.bidplatform.dashboard.service.impl;
 import com.evatech.bidplatform.audit.service.AuditAction;
 import com.evatech.bidplatform.dashboard.dto.OverviewDashboardResponse;
 import com.evatech.bidplatform.dashboard.service.*;
+import com.evatech.bidplatform.user.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -22,8 +25,7 @@ public class OverviewDashboardServiceImpl
 
     @AuditAction(action = "DASHBOARD_OVERVIEW", entity = "Proposal")
     @Override
-    public OverviewDashboardResponse getOverview() {
-
+    public OverviewDashboardResponse getOverview(User user, List<String> roles) {
         return OverviewDashboardResponse.builder()
                 .summary(dashboardSummaryService.getSummary())
                 .pipeline(dashboardPipelineService.getPipeline())

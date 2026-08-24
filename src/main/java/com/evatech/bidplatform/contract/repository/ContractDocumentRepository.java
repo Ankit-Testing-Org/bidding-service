@@ -2,6 +2,7 @@ package com.evatech.bidplatform.contract.repository;
 
 import com.evatech.bidplatform.contract.entity.ContractAssignmentStatus;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
+import com.evatech.bidplatform.contract.entity.ContractStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
@@ -22,4 +23,7 @@ public interface ContractDocumentRepository extends JpaRepository<ContractDocume
     );
 
     List<ContractDocument> findAllByOrderByUploadedAtDesc();
+
+    List<ContractDocument> findByUploadedByAndStatusInOrderByUploadedAtDesc(String uploadedBy,
+                                                                            List<ContractStatus> statuses);
 }

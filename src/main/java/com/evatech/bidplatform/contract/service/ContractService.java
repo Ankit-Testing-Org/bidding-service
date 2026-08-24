@@ -2,6 +2,7 @@ package com.evatech.bidplatform.contract.service;
 
 import com.evatech.bidplatform.contract.entity.*;
 import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
+import com.evatech.bidplatform.dashboard.dto.ProcessingQueueItemResponse;
 import com.evatech.bidplatform.dashboard.dto.contract.request.ContractSearchRequest;
 import com.evatech.bidplatform.user.dto.response.ContractHighlightResponse;
 import com.evatech.bidplatform.user.entity.User;
@@ -77,4 +78,6 @@ public interface ContractService {
     Resource retrieveContractPdf(Long contractId,
                                  User user,
                                  List<String> roles);
+
+    List<ProcessingQueueItemResponse> getProcessingQueue(User user, List<String> roles);
 }

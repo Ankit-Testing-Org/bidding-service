@@ -64,6 +64,84 @@
       </div>
     </header>
 
+    <section class="upload-section">
+      <div class="upload-container">
+        <div class="upload-info">
+            <span class="upload-badge">
+                AI Tender Analysis
+            </span>
+          <h2>
+            Upload Contract & Generate Bid Opportunities
+          </h2>
+          <p>
+            Upload tender documents. SmartBid AI will extract
+            lots, requirements, eligibility criteria, deadlines,
+            highlights and generate bid templates automatically.
+          </p>
+          <div class="upload-actions">
+            <button
+                    class="btn primary"
+                    onclick="triggerFileUpload()">
+              Upload Contract
+            </button>
+            <button
+                    class="btn secondary"
+                    onclick="navigateTo('/contracts')">
+              View Contracts
+            </button>
+          </div>
+        </div>
+        <div class="drop-zone"
+             id="dropZone">
+          <div class="drop-icon">
+            📄
+          </div>
+          <h3>
+            Drag & Drop Contract
+          </h3>
+          <p>
+            PDF, DOCX, XLSX up to 100 MB
+          </p>
+          <input
+                  type="file"
+                  id="contractFile"
+                  hidden
+                  accept=".pdf,.doc,.docx,.xls,.xlsx"
+                  onchange="uploadSelectedFile()">
+          <button
+                  class="upload-btn"
+                  onclick="triggerFileUpload()">
+            Select File
+          </button>
+          <div
+                  id="selectedFileInfo"
+                  class="selected-file">
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="card processing-card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">
+            AI Processing Queue
+          </div>
+          <div class="card-subtitle">
+            Contracts currently being analyzed by SmartBid AI
+          </div>
+        </div>
+        <span class="queue-count"
+              id="processingCount">
+            0 Active
+        </span>
+      </div>
+      <div id="processingQueueContainer">
+        <div class="empty-list">
+          No contracts currently being processed
+        </div>
+      </div>
+    </section>
+
     <div class="loading-banner" id="loadingBanner">Loading dashboard overview...</div>
     <div class="error-banner" id="errorBanner"></div>
 
@@ -300,7 +378,46 @@
     </section>
   </main>
 </div>
+<div class="processing-item">
 
+  <div class="processing-header">
+
+    <div class="processing-name">
+
+      Mercy Hospital Tender.pdf
+
+    </div>
+
+    <span class="status-badge processing">
+
+            Extracting Lots
+
+        </span>
+
+  </div>
+
+  <div class="progress-bar">
+
+    <div
+            class="progress-fill"
+            style="width:25%">
+    </div>
+
+  </div>
+
+  <div class="processing-footer">
+
+        <span>
+            Uploaded 5 minutes ago
+        </span>
+
+    <span>
+            25% Complete
+        </span>
+
+  </div>
+
+</div>
 <div class="toast" id="toast"></div>
 
 <script src="js/overview.js" defer></script>

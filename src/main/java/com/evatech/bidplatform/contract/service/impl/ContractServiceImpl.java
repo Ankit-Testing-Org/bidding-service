@@ -8,6 +8,7 @@ import com.evatech.bidplatform.contract.entity.analysis.ContractAnalysisSummary;
 import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
 import com.evatech.bidplatform.contract.repository.*;
 import com.evatech.bidplatform.contract.service.*;
+import com.evatech.bidplatform.dashboard.dto.ProcessingQueueItemResponse;
 import com.evatech.bidplatform.dashboard.dto.ProposalRequest;
 import com.evatech.bidplatform.dashboard.dto.contract.request.ContractSearchRequest;
 import com.evatech.bidplatform.dashboard.service.ProposalService;
@@ -269,6 +270,31 @@ public class ContractServiceImpl implements ContractService {
         return fileStorageService.loadContract(contractDocument.getStoragePath());
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProcessingQueueItemResponse> getProcessingQueue(
+            User user,
+            List<String> roles
+    ) {
+
+        List<ContractDocument> contracts =
+                contractDocumentRepository.findByUploadedByAndStatusInOrderByUploadedAtDesc(
+                        user.getEmail(),
+                        List.of(
+                                ContractStatus.UPLOADED,
+                                ContractStatus.TEXT_EXTRACTED,
+                                ContractStatus.ANALYSIS_IN_PROGRESS,
+                                ContractStatus.ANALYSED,
+                                ContractStatus.SUBMITTED_FOR_REVIEW,
+                                ContractStatus.FAILED
+                                )
+                        );
+
+        return contracts.stream()
+                .map(this::mapToProcessingItem)
+                .toList();
+    }
+
     private String resolveAssignmentRemarks(String oldAssignee, String newAssignee) {
 
         if (oldAssignee == null || oldAssignee.isBlank()) {
@@ -342,5 +368,62 @@ public class ContractServiceImpl implements ContractService {
         if (fileType == null || fileType.isBlank()) {
             throw new IllegalArgumentException("File type must not be empty");
         }
+    }
+
+    private ProcessingQueueItemResponse mapToProcessingItem(
+            ContractDocument contract
+    ) {
+
+        return new ProcessingQueueItemResponse(
+                contract.getId(),
+                contract.getOriginalFileName(),
+                contract.getStatus(),
+                calculateProgress(
+                        contract.getStatus()
+                ),
+                determineCurrentStep(
+                        contract.getStatus()
+                ),
+                contract.getUploadedAt()
+        );
+    }
+
+    private String determineCurrentStep(
+            ContractStatus status
+    ) {
+        return switch (status) {
+
+            case UPLOADED -> "Contract Uploaded";
+
+            case TEXT_EXTRACTED -> "Text Extraction Completed";
+
+            case ANALYSIS_IN_PROGRESS -> "AI Analysis Running";
+
+            case ANALYSED -> "Ready For Review";
+
+            case SUBMITTED_FOR_REVIEW -> "Pending Reviewer Decision";
+
+            case APPROVED -> "Approved";
+
+            case REJECTED -> "Rejected";
+
+            case FAILED -> "Processing Failed";
+        };
+    }
+
+    private Integer calculateProgress(
+            ContractStatus status
+    ) {
+        return switch (status) {
+
+            case UPLOADED -> 10;
+            case TEXT_EXTRACTED -> 30;
+            case ANALYSIS_IN_PROGRESS -> 60;
+            case ANALYSED -> 80;
+            case SUBMITTED_FOR_REVIEW -> 95;
+            case APPROVED -> 100;
+            case REJECTED,
+                 FAILED -> 100;
+        };
     }
 }
