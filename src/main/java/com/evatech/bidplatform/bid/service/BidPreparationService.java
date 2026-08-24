@@ -1,4 +1,4 @@
-package com.evatech.bidplatform.dashboard.service;
+package com.evatech.bidplatform.bid.service;
 
 import com.evatech.bidplatform.bid.dto.request.GenerateBidDocumentRequest;
 import com.evatech.bidplatform.bid.dto.request.SubmitBidForApprovalRequest;

@@ -16,11 +16,9 @@ import com.evatech.bidplatform.contract.entity.analysis.*;
 import com.evatech.bidplatform.contract.entity.ContractPageText;
 import com.evatech.bidplatform.contract.dto.ContractAnalysisResult;
 import com.evatech.bidplatform.user.dto.response.ContractAnalysisSectionType;
-import com.evatech.bidplatform.user.entity.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -74,18 +72,10 @@ public class AiServiceImpl implements AiService {
     }
 
     @Override
-    public AiBidTemplateResponse generateText(String prompt) {
-
-        //TODO : NEED TO FIND WAY
-
+    public AiBidTemplateResponse generateBidTemplate(String prompt) {
         return null;
     }
 
-    @Override
-    public void createContractCopyFromTemplate(ContractDocument contract, Resource uploadedTemplate, User user) {
-
-        //TODO : NEED TO FIND WAY
-    }
 
     private HighlightReanalysisResponse parseHighlightReanalysisResponse(String aiResponse) {
         try {

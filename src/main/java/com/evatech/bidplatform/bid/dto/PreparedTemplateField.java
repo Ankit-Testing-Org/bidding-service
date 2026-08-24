@@ -1,10 +1,15 @@
 package com.evatech.bidplatform.bid.dto;
 
 import java.util.List;
+import java.util.UUID;
 
-public record AiTemplateFieldDefinition(
+public record PreparedTemplateField(
 
-        String suggestedLogicalName,
+        UUID fieldUuid,
+
+        String logicalName,
+
+        String placeholder,
 
         String fieldLabel,
 

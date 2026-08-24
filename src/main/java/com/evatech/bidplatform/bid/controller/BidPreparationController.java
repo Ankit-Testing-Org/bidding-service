@@ -1,12 +1,12 @@
-package com.evatech.bidplatform.dashboard.controller;
+package com.evatech.bidplatform.bid.controller;
 
 
 import com.evatech.bidplatform.ApiResponse;
+import com.evatech.bidplatform.bid.dto.request.GenerateBidDocumentRequest;
+import com.evatech.bidplatform.bid.dto.request.SubmitBidForApprovalRequest;
+import com.evatech.bidplatform.bid.dto.response.*;
 import com.evatech.bidplatform.bid.entity.BidDocumentType;
 import com.evatech.bidplatform.contract.controller.AbstractController;
-import com.evatech.bidplatform.dashboard.dto.bid.request.GenerateBidDocumentRequest;
-import com.evatech.bidplatform.dashboard.dto.bid.request.SubmitBidForApprovalRequest;
-import com.evatech.bidplatform.dashboard.dto.bid.response.*;
 import com.evatech.bidplatform.dashboard.service.BidPreparationService;
 import com.evatech.bidplatform.user.entity.User;
 import com.evatech.bidplatform.user.repository.UserRepository;

@@ -1,105 +1,79 @@
 package com.evatech.bidplatform.bid.service.impl;
 
 import com.evatech.bidplatform.bid.dto.AiBidTemplateResponse;
-import com.evatech.bidplatform.bid.dto.AiTemplateFieldDefinition;
-import com.evatech.bidplatform.bid.entity.DocumentType;
+import com.evatech.bidplatform.bid.dto.PreparedTemplateField;
+import com.evatech.bidplatform.bid.entity.Bid;
+import com.evatech.bidplatform.bid.entity.BidDocumentType;
 import com.evatech.bidplatform.bid.exception.DocumentGenerationException;
-import com.evatech.bidplatform.bid.service.DocumentGenerator;
+import com.evatech.bidplatform.bid.service.BidDocumentGenerator;
+import com.evatech.bidplatform.bid.service.FileStorageService;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
 import com.evatech.bidplatform.bid.entity.GeneratedDocument;
 import com.evatech.bidplatform.user.entity.User;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.springframework.stereotype.Service;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.List;
 
+@Slf4j
 @Service
-public class DocxDocumentGenerator
-        implements DocumentGenerator {
+@RequiredArgsConstructor
+public class DocxDocumentGenerator implements BidDocumentGenerator {
+
+    private final FileStorageService fileStorageService;
 
     @Override
-    public GeneratedDocument generateDocx(
-            ContractDocument contract,
-            AiBidTemplateResponse aiBidTemplateResponse,
-            User user) {
+    public GeneratedDocument generateDocx(Bid bid, ContractDocument contract, AiBidTemplateResponse aiBidTemplateResponse, List<PreparedTemplateField> fields, User user) {
 
         try (XWPFDocument document = new XWPFDocument()) {
 
-            XWPFParagraph contentParagraph =
-                    document.createParagraph();
+            XWPFParagraph contentParagraph = document.createParagraph();
 
-            XWPFRun contentRun =
-                    contentParagraph.createRun();
+            XWPFRun contentRun = contentParagraph.createRun();
 
-            contentRun.setText(
-                    aiBidTemplateResponse.documentContent());
+            contentRun.setText(aiBidTemplateResponse.introductoryContent());
 
-            for (AiTemplateFieldDefinition field : aiBidTemplateResponse.fields()) {
+            for (PreparedTemplateField field : fields) {
                 XWPFParagraph fieldParagraph = document.createParagraph();
-
                 XWPFRun fieldLabelRun = fieldParagraph.createRun();
-
                 fieldLabelRun.setBold(true);
                 fieldLabelRun.setText(field.fieldLabel());
-
+                XWPFRun instructionRun = fieldParagraph.createRun();
+                instructionRun.addBreak();
+                instructionRun.setItalic(true);
+                instructionRun.setText(field.fieldDescription());
+                XWPFRun metadataRun = fieldParagraph.createRun();
+                metadataRun.addBreak();
+                metadataRun.setText("Field: " + field.logicalName());
                 XWPFRun placeholderRun = fieldParagraph.createRun();
-
                 placeholderRun.addBreak();
-                placeholderRun.setText(
-                        "[[FIELD_" + field.placeholder() + "]]");
+                placeholderRun.setText(field.placeholder());
                 placeholderRun.addBreak();
+                for (int i = 0; i < field.entryLineCount(); i++) {
+                    XWPFRun emptyLine = fieldParagraph.createRun();
+                    emptyLine.addBreak();
+                    emptyLine.setText("____________________________________________");
+                }
             }
             String fileName = contract.getOriginalFileName() + "-bid-template.docx";
-
-            String storagePath =
-                    saveDocument(
-                            document,
-                            fileName);
-
-            return GeneratedDocument.builder()
-                    .contract(contract)
-                    .fileName(fileName)
-                    .storagePath(storagePath)
-                    .documentType(DocumentType.BID_TEMPLATE)
-                    .generatedBy(
-                            user.getEmail())
-                    .generatedAt(
-                            LocalDateTime.now())
-                    .build();
-
+            String storagePath = fileStorageService.storeTemplate(fileName, document);
+            return GeneratedDocument.builder().
+                    fileName(fileName).
+                    storagePath(storagePath).
+                    documentType(BidDocumentType.GENERATED_TEMPLATE).
+                    generatedBy(user.getEmail()).
+                    generatedAt(LocalDateTime.now()).
+                    bid(bid).
+                    build();
         } catch (IOException ex) {
 
-            throw new DocumentGenerationException(
-                    "Failed to generate bid template",
-                    ex);
+            throw new DocumentGenerationException("Failed to generate bid template", ex);
         }
     }
-
-    private String saveDocument(
-                XWPFDocument document,
-                String fileName) throws IOException {
-
-            Path uploadPath =
-                    Paths.get("generated-documents");
-
-            Files.createDirectories(uploadPath);
-
-            Path filePath =
-                    uploadPath.resolve(fileName);
-
-            try (FileOutputStream out =
-                         new FileOutputStream(filePath.toFile())) {
-
-                document.write(out);
-            }
-
-            return filePath.toString();
-        }
 }

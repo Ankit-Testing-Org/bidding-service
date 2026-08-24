@@ -1,4 +1,4 @@
-package com.evatech.bidplatform.dashboard.dto.bid.response;
+package com.evatech.bidplatform.bid.dto.response;
 
 public record GeneratedBidDocumentResponse(
 

@@ -10,5 +10,6 @@ public interface AiTemplateGenerationService {
 
     AiBidTemplateResponse generateBidTemplate(
             ContractDocument contract,
-            List<ContractLot> qualifiedLots);
+            List<ContractLot> qualifiedLots
+    );
 }

@@ -2,9 +2,17 @@ package com.evatech.bidplatform.bid.entity;
 
 public enum BidDocumentType {
 
-    AI_TEMPLATE,
+    GENERATED_TEMPLATE,
+
     COMPLETED_BID,
-    TECHNICAL_PROPOSAL,
-    COMMERCIAL_PROPOSAL,
-    SUPPORTING_DOCUMENT
+
+    PRICE_SCHEDULE,
+
+    TECHNICAL_DOCUMENT,
+
+    COMMERCIAL_DOCUMENT,
+
+    SUPPORTING_DOCUMENT,
+
+    APPROVAL_COPY
 }

@@ -10,6 +10,7 @@ import com.evatech.bidplatform.approval.service.ApprovalService;
 import com.evatech.bidplatform.bid.entity.Bid;
 import com.evatech.bidplatform.bid.entity.BidStatus;
 import com.evatech.bidplatform.bid.repository.BidRepository;
+import com.evatech.bidplatform.user.dto.RoleType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,16 +30,12 @@ public class ApprovalServiceImpl implements ApprovalService {
     @Override
     @Transactional(readOnly = true)
     public List<ApprovalTask> getMyApprovalTasks(String approver) {
-        return approvalTaskRepository.findByAssignedToAndStatus(
-                approver,
-                ApprovalStatus.PENDING
-        );
+        return approvalTaskRepository.findByAssignedToAndStatus(approver, ApprovalStatus.PENDING);
     }
 
     @Override
     public ApprovalTask approve(Long taskId, String approver, String comment) {
-        ApprovalTask task = approvalTaskRepository.findById(taskId)
-                .orElseThrow(() -> new IllegalArgumentException("Approval task not found with id: " + taskId));
+        ApprovalTask task = approvalTaskRepository.findById(taskId).orElseThrow(() -> new IllegalArgumentException("Approval task not found with id: " + taskId));
 
         if (!task.isPending()) {
             throw new IllegalStateException("Only pending approval task can be approved");
@@ -60,8 +57,7 @@ public class ApprovalServiceImpl implements ApprovalService {
 
     @Override
     public ApprovalTask reject(Long taskId, String approver, String comment) {
-        ApprovalTask task = approvalTaskRepository.findById(taskId)
-                .orElseThrow(() -> new IllegalArgumentException("Approval task not found with id: " + taskId));
+        ApprovalTask task = approvalTaskRepository.findById(taskId).orElseThrow(() -> new IllegalArgumentException("Approval task not found with id: " + taskId));
 
         if (!task.isPending()) {
             throw new IllegalStateException("Only pending approval task can be rejected");
@@ -81,11 +77,7 @@ public class ApprovalServiceImpl implements ApprovalService {
 
     @Override
     @Transactional
-    public ApprovalTask requestChanges(
-            Long taskId,
-            String approver,
-            String comment
-    ) {
+    public ApprovalTask requestChanges(Long taskId, String approver, String comment) {
 
         ApprovalTask task = approvalTaskRepository.findById(taskId).orElseThrow();
 
@@ -103,26 +95,34 @@ public class ApprovalServiceImpl implements ApprovalService {
     }
 
     @Override
+    public void createApprovalTasks(
+            Bid bid,
+            List<RoleType> reviewers
+    ) {
+
+        List<ApprovalTask> tasks =
+                reviewers.stream()
+                        .map(role -> ApprovalTask.builder()
+                                .bid(bid)
+                                .stage(mapStage(role))
+                                .assignedRole(role)
+                                .assignedTo(role.name())
+                                .status(ApprovalStatus.PENDING)
+                                .build())
+                        .toList();
+
+        approvalTaskRepository.saveAll(tasks);
+    }
+
+
+    @Override
     @Transactional(readOnly = true)
     public List<ApprovalHistory> getApprovalHistory(Long bidId) {
         return approvalHistoryRepository.findByBidIdOrderByActionAtAsc(bidId);
     }
 
-    private void saveHistory(
-            Bid bid,
-            String actionBy,
-            String action,
-            ApprovalStage stage,
-            String comment
-    ) {
-        ApprovalHistory history = ApprovalHistory.builder()
-                .bid(bid)
-                .actionBy(actionBy)
-                .action(action)
-                .stage(stage)
-                .comment(comment)
-                .actionAt(LocalDateTime.now())
-                .build();
+    private void saveHistory(Bid bid, String actionBy, String action, ApprovalStage stage, String comment) {
+        ApprovalHistory history = ApprovalHistory.builder().bid(bid).actionBy(actionBy).action(action).stage(stage).comment(comment).actionAt(LocalDateTime.now()).build();
 
         approvalHistoryRepository.save(history);
     }
@@ -136,13 +136,7 @@ public class ApprovalServiceImpl implements ApprovalService {
             return;
         }
 
-        ApprovalTask nextTask = ApprovalTask.builder()
-                .bid(bid)
-                .stage(nextStage)
-                .assignedTo(resolveApprover(nextStage))
-                .status(ApprovalStatus.PENDING)
-                .createdAt(LocalDateTime.now())
-                .build();
+        ApprovalTask nextTask = ApprovalTask.builder().bid(bid).stage(nextStage).assignedTo(resolveApprover(nextStage)).status(ApprovalStatus.PENDING).createdAt(LocalDateTime.now()).build();
 
         approvalTaskRepository.save(nextTask);
     }
@@ -164,6 +158,18 @@ public class ApprovalServiceImpl implements ApprovalService {
             case LEGAL -> "legal";
             case COMMERCIAL -> "commercial";
             case FINAL -> "final-approver";
+        };
+    }
+
+    private ApprovalStage mapStage(
+            RoleType role
+    ) {
+        return switch (role) {
+            case LEGAL_REVIEWER -> ApprovalStage.LEGAL;
+            case FINANCE_REVIEWER -> ApprovalStage.FINANCE;
+            case COMMERCIAL_REVIEWER -> ApprovalStage.COMMERCIAL;
+            case MANAGER -> ApprovalStage.MANAGER;
+            default -> ApprovalStage.MANAGER;
         };
     }
 }

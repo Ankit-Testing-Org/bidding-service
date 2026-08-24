@@ -68,11 +68,6 @@ public interface ContractService {
                             User user,
                             List<String> roles);
 
-    ContractDocumentFieldValue fetchAndUpdateContractDocumentFieldValue(
-            Long templateFieldId,
-            String parsedValue,
-            User user);
-
     List<ContractDocument> getContractDashboard();
 
     Page<ContractDocument> searchContracts(User user,

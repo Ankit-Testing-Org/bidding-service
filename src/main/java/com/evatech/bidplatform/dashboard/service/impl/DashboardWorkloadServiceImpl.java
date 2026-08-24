@@ -22,23 +22,19 @@ public class DashboardWorkloadServiceImpl
 
         return ReviewWorkloadDto.builder()
                 .legalReviews(
-                        approvalTaskRepository
-                                .countByStatusAndAssignedRole(
+                        approvalTaskRepository.countByStatusAndAssignedRole(
                                         ApprovalStatus.PENDING,
                                         RoleType.LEGAL_REVIEWER))
                 .financeReviews(
-                        approvalTaskRepository
-                                .countByStatusAndAssignedRole(
+                        approvalTaskRepository.countByStatusAndAssignedRole(
                                         ApprovalStatus.PENDING,
                                         RoleType.FINANCE_REVIEWER))
                 .commercialReviews(
-                        approvalTaskRepository
-                                .countByStatusAndAssignedRole(
+                        approvalTaskRepository.countByStatusAndAssignedRole(
                                         ApprovalStatus.PENDING,
                                         RoleType.COMMERCIAL_REVIEWER))
                 .managerApprovals(
-                        approvalTaskRepository
-                                .countByStatusAndAssignedRole(
+                        approvalTaskRepository.countByStatusAndAssignedRole(
                                         ApprovalStatus.PENDING,
                                         RoleType.MANAGEMENT_REVIEWER))
                 .build();

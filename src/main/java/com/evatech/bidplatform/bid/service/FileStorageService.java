@@ -1,5 +1,6 @@
 package com.evatech.bidplatform.bid.service;
 
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,6 +17,7 @@ public interface FileStorageService {
     Path getTempDirectory();
 
     String storeTemplate(String fileName, MultipartFile file);
+    String storeTemplate(String fileName, XWPFDocument document);
 
     Resource loadTemplate(String fileName);
     void deleteTemplate(String fileName);

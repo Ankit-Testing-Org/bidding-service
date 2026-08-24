@@ -107,11 +107,16 @@ public class ContractDocument {
     @OneToOne(mappedBy = "contractDocument", cascade = CascadeType.ALL, orphanRemoval = true)
     private ContractAnalysisSummary analysisSummary;
 
-    @OneToMany(mappedBy = "contractDocument", fetch = FetchType.LAZY)
-    private List<Bid> bids = new ArrayList<>();
-
     @OneToOne(mappedBy = "contractDocument")
     private Proposal proposal;
+
+    @Builder.Default
+    @OneToMany(
+            mappedBy = "contractDocument",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Bid> bids = new ArrayList<>();
 
     @PrePersist
     public void prePersist() {
@@ -158,5 +163,21 @@ public class ContractDocument {
 
     public boolean isAssigned() {
         return this.assignmentStatus == ContractAssignmentStatus.ASSIGNED;
+    }
+
+    public void addBid(
+            Bid bid
+    ) {
+
+        bids.add(bid);
+        bid.setContractDocument(this);
+    }
+
+    public void removeBid(
+            Bid bid
+    ) {
+
+        bids.remove(bid);
+        bid.setContractDocument(null);
     }
 }

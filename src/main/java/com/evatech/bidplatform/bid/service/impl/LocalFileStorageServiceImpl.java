@@ -5,16 +5,19 @@ import com.evatech.bidplatform.bid.exception.FileStorageException;
 import com.evatech.bidplatform.bid.service.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 @Slf4j
@@ -104,13 +107,26 @@ public class LocalFileStorageServiceImpl implements FileStorageService {
     }
 
     @Override
-    public Resource loadTemplate(String fileName) {
+    public String storeTemplate(String fileName, XWPFDocument document) {
+        try {
+            Path uploadPath = Paths.get("generated-documents");
+            Files.createDirectories(uploadPath);
+            Path filePath = uploadPath.resolve(fileName);
+            try (FileOutputStream out = new FileOutputStream(filePath.toFile())) {
+                document.write(out);
+            }
+            return filePath.toString();
+        } catch (IOException ex) {
+            throw new FileStorageException("Failed to store file", ex);
+        }
+    }
 
+    @Override
+    public Resource loadTemplate(String fileName) {
         try {
             Path contractDirectory = getBasePath().resolve("templates");
             Path uploadDir = contractDirectory.resolve(fileName);
             Path target = uploadDir.resolve(fileName);
-
             return new UrlResource(target.toUri());
         } catch (MalformedURLException ex) {
 
@@ -120,7 +136,6 @@ public class LocalFileStorageServiceImpl implements FileStorageService {
 
     @Override
     public void deleteTemplate(String fileName) {
-
         try {
             Path contractDirectory = getBasePath().resolve("templates");
             Path uploadDir = contractDirectory.resolve(fileName);

@@ -1,19 +1,28 @@
 package com.evatech.bidplatform.bid.entity;
 
-
 public enum BidStatus {
 
-    ASSIGNED,
-    DOCUMENT_GENERATED,
     DRAFT,
-    UPLOADED,
-    AI_FILL_IN_PROGRESS,
-    AI_FORM_FILLED,
-    AI_FILL_FAILED,
-    USER_REVIEW_PENDING,
+
+    TEMPLATE_GENERATED,
+
+    IN_PROGRESS,
+
     USER_REVIEWED,
+
     USER_REFILL_REQUESTED,
-    SUBMITTED_FOR_APPROVAL,
+
+    SUBMITTED,
+
+    IN_APPROVAL,
+
     APPROVED,
-    REJECTED
+
+    REJECTED,
+
+    WON,
+
+    LOST,
+
+    WITHDRAWN
 }

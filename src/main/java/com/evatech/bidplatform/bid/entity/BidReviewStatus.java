@@ -2,11 +2,11 @@ package com.evatech.bidplatform.bid.entity;
 
 public enum BidReviewStatus {
 
-    PENDING_REVIEW,
+    PENDING,
 
     APPROVED,
 
-    REJECTED,
+    REANALYSIS_REQUESTED,
 
-    REANALYSIS_REQUESTED
+    REJECTED
 }

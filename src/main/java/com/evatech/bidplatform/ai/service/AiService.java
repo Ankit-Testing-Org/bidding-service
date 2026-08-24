@@ -8,8 +8,6 @@ import com.evatech.bidplatform.contract.entity.analysis.ContractHighlight;
 import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
 import com.evatech.bidplatform.contract.entity.ContractPageText;
 import com.evatech.bidplatform.contract.dto.ContractAnalysisResult;
-import com.evatech.bidplatform.user.entity.User;
-import org.springframework.core.io.Resource;
 
 import java.util.List;
 
@@ -28,7 +26,5 @@ public interface AiService {
                                                    ContractHighlight highlight,
                                                    String userComment);
 
-    AiBidTemplateResponse generateText(String prompt);
-
-    void createContractCopyFromTemplate(ContractDocument contract, Resource template, User user);
+    AiBidTemplateResponse generateBidTemplate(String prompt);
 }

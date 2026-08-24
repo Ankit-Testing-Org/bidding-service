@@ -19,15 +19,25 @@ public class BidDocument {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "bid_id")
+    @JoinColumn(
+            name = "bid_id",
+            nullable = false
+    )
     private Bid bid;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private BidDocumentType documentType;
+
+    @Column(nullable = false)
     private String fileName;
 
+    @Column(nullable = false)
     private String storagePath;
 
-    @Enumerated(EnumType.STRING)
-    private BidDocumentType documentType;
+    private String contentType;
+
+    private Long fileSize;
 
     private String uploadedBy;
 
@@ -35,6 +45,9 @@ public class BidDocument {
 
     @PrePersist
     public void prePersist() {
-        uploadedAt = LocalDateTime.now();
+
+        if (uploadedAt == null) {
+            uploadedAt = LocalDateTime.now();
+        }
     }
 }
