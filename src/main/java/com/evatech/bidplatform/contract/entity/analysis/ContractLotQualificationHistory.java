@@ -20,20 +20,19 @@ public class ContractLotQualificationHistory {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "contract_lot_id", nullable = false)
-    private ContractLot contractLot;
-
     @Enumerated(EnumType.STRING)
     private ContractLotQualificationStatus oldStatus;
 
     @Enumerated(EnumType.STRING)
     private ContractLotQualificationStatus newStatus;
 
-    @ManyToOne
     private String changedBy;
 
     private String comment;
 
     private LocalDateTime changedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "contract_lot_id", nullable = false)
+    private ContractLot contractLot;
 }

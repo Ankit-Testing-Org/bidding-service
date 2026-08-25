@@ -12,6 +12,7 @@ import com.evatech.bidplatform.bid.service.BidDocumentGenerator;
 import com.evatech.bidplatform.bid.service.BidTemplateService;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
 import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
+import com.evatech.bidplatform.contract.service.ContractAccessService;
 import com.evatech.bidplatform.contract.service.ContractService;
 import com.evatech.bidplatform.user.entity.User;
 import jakarta.transaction.Transactional;
@@ -45,7 +46,7 @@ public class BidTemplateServiceImpl implements BidTemplateService {
 
     private final BidTemplateFieldRepository fieldRepository;
 
-    private final ContractService contractService;
+    private final ContractAccessService contractAccessService;
 
     private final AiTemplateGenerationService aiTemplateGenerationService;
 
@@ -57,7 +58,7 @@ public class BidTemplateServiceImpl implements BidTemplateService {
     public GeneratedDocument generateBidTemplate(Long contractId, User user, List<String> roles) {
         log.info("Generating bid template for contract {}", contractId);
 
-        ContractDocument contract = contractService.getContract(contractId, user, roles);
+        ContractDocument contract = contractAccessService.getAccessibleContract(contractId, user, roles);
 
         List<ContractLot> qualifiedLots = contract.getLots().stream().filter(ContractLot::isQualified).toList();
 

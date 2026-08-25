@@ -3,7 +3,8 @@ package com.evatech.bidplatform.dashboard.controller;
 import com.evatech.bidplatform.ApiResponse;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
 import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
-import com.evatech.bidplatform.contract.service.ContractLotService;
+import com.evatech.bidplatform.contract.mapper.ContractLotMapper;
+import com.evatech.bidplatform.contract.service.ContractLotAccessService;
 import com.evatech.bidplatform.contract.service.ContractService;
 import com.evatech.bidplatform.dashboard.dto.contract.request.AssignContractRequest;
 import com.evatech.bidplatform.dashboard.dto.contract.request.ContractSearchRequest;
@@ -30,8 +31,7 @@ public class ContractDasboardController extends AbstractController {
 
     private final ContractService contractService;
     private final UserRepository userRepository;
-    private final ContractLotService contractLotService;
-
+    private final ContractLotAccessService contractLotAccessService;
     private final ContractDashboardMapper contractDashboardMapper;
     private final ContractDetailsMapper contractDetailsMapper;
     private final ContractLotMapper contractLotMapper;
@@ -82,8 +82,7 @@ public class ContractDasboardController extends AbstractController {
         User user = authenticateAndFetchUser(userRepository, authentication);
         List<String> roles = fetchRolesForUser(authentication);
 
-        List<ContractLot> contractLots = contractLotService.
-                getContractLots(contractId, user, roles);
+        List<ContractLot> contractLots = contractLotAccessService.getContractLots(contractId, user, roles);
 
         if(contractLots.isEmpty()) {
             return ApiResponse.failure("Contract Lots not found");

@@ -6,6 +6,8 @@ import com.evatech.bidplatform.approval.service.ApprovalWorkflowService;
 import com.evatech.bidplatform.approval.service.WorkflowNotificationService;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
 import com.evatech.bidplatform.contract.entity.ContractStatus;
+import com.evatech.bidplatform.contract.service.ContractAccessService;
+import com.evatech.bidplatform.contract.service.ContractLifecycleService;
 import com.evatech.bidplatform.contract.service.ContractService;
 import com.evatech.bidplatform.user.entity.User;
 import jakarta.transaction.Transactional;
@@ -28,7 +30,7 @@ public class ApprovalWorkflowServiceImpl implements ApprovalWorkflowService {
     private final WorkflowInstanceRepository workflowInstanceRepository;
     private final WorkflowTaskRepository workflowTaskRepository;
     private final WorkflowNotificationService workflowNotificationService;
-    private final ContractService contractService;
+    private final ContractLifecycleService contractLifecycleService;
 
     @Transactional
     @Override
@@ -36,10 +38,9 @@ public class ApprovalWorkflowServiceImpl implements ApprovalWorkflowService {
             Long contractId,
             String userId,
             User user, List<String> roles) {
-        ContractDocument contractDocument = contractService.getContract(contractId, user, roles);
         startWorkflow("CONTRACT_APPROVAL", "CONTRACT_DOCUMENT", contractId, userId);
-        contractDocument.setStatus(ContractStatus.SUBMITTED_FOR_REVIEW);
-        return contractService.saveContract(contractDocument);
+        return contractLifecycleService.updateContractDocumentStatus(contractId, null,
+                ContractStatus.SUBMITTED_FOR_REVIEW, user, roles);
     }
 
     @Override

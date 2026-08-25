@@ -3,8 +3,6 @@ package com.evatech.bidplatform.contract.service.impl;
 import com.evatech.bidplatform.audit.service.AuditAction;
 import com.evatech.bidplatform.bid.service.FileStorageService;
 import com.evatech.bidplatform.contract.entity.*;
-import com.evatech.bidplatform.contract.entity.analysis.AnalysisStatus;
-import com.evatech.bidplatform.contract.entity.analysis.ContractAnalysisSummary;
 import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
 import com.evatech.bidplatform.contract.repository.*;
 import com.evatech.bidplatform.contract.service.*;
@@ -12,7 +10,6 @@ import com.evatech.bidplatform.dashboard.dto.ProcessingQueueItemResponse;
 import com.evatech.bidplatform.dashboard.dto.ProposalRequest;
 import com.evatech.bidplatform.dashboard.dto.contract.request.ContractSearchRequest;
 import com.evatech.bidplatform.dashboard.service.ProposalService;
-import com.evatech.bidplatform.user.dto.RoleType;
 import com.evatech.bidplatform.user.dto.response.ContractHighlightResponse;
 import com.evatech.bidplatform.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +19,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,10 +37,12 @@ public class ContractServiceImpl implements ContractService {
     private final FileStorageService fileStorageService;
     private final ContractLotService contractLotService;
     private final ContractTextExtractionService contractTextExtractionService;
-    private final ContractAnalysisSummaryRepository contractAnalysisSummaryRepository;
     private final ContractHighlightService contractHighlightService;
     private final ContractAnalysisOrchestrator contractAnalysisOrchestrator;
     private final ProposalService proposalService;
+    private final ContractAccessService contractAccessService;
+    private final ContractLotAccessService contractLotAccessService;
+
 
     @AuditAction(action = "UPLOAD_CONTRACT", entity = "ContractDocument")
     @Override
@@ -65,9 +63,12 @@ public class ContractServiceImpl implements ContractService {
     @AuditAction(action = "FETCH_CONTRACT", entity = "ContractDocument")
     @Override
     @Transactional(readOnly = true)
-    public ContractDocument getContract(Long contractId, User user, List<String> roles) {
-        validateUser(user);
-        return getContractOrThrow(contractId, user, roles);
+    public ContractDocument getContract(
+            Long contractId,
+            User user,
+            List<String> roles
+    ) {
+        return contractAccessService.getAccessibleContract(contractId, user, roles);
     }
 
     @AuditAction(action = "SAVE_CONTRACT", entity = "ContractDocument")
@@ -93,7 +94,7 @@ public class ContractServiceImpl implements ContractService {
     @Override
     @Transactional(readOnly = true)
     public List<ContractLot> getContractLots(Long contractId, User user, Long lotId, List<String> roles) {
-        return contractLotService.extractLots(contractId, user, lotId);
+        return contractLotService.extractLots(contractId, user, lotId, roles);
     }
 
     @AuditAction(action = "FETCH_CONTRACT_HIGHLIGHTS", entity = "ContractHighlight")
@@ -101,31 +102,9 @@ public class ContractServiceImpl implements ContractService {
     @Transactional(readOnly = true)
     public List<ContractHighlightResponse> getHighlights(Long contractId, User user, List<String> roles) {
         validateUser(user);
-        validateContractId(contractId);
         return contractHighlightService.getHighlights(contractId);
     }
 
-    @AuditAction(action = "MARK_ANALYSIS_IN_PROGRESS", entity = "ContractDocument")
-    @Override
-    public ContractDocument markAnalysisInProgress(Long contractId, User user, List<String> roles) {
-        ContractDocument contractDocument = getContractOrThrow(contractId, user, roles);
-        if (!ContractStatus.TEXT_EXTRACTED.equals(contractDocument.getStatus()) && !ContractStatus.ANALYSED.equals(contractDocument.getStatus())) {
-            throw new IllegalStateException("Contract text must be extracted before analysis can start");
-        }
-        contractDocument.setStatus(ContractStatus.ANALYSIS_IN_PROGRESS);
-        return contractDocumentRepository.save(contractDocument);
-    }
-
-    @AuditAction(action = "MARK_ANALYSED", entity = "ContractDocument")
-    @Override
-    public ContractDocument markAnalysed(Long contractId, User user, List<String> roles) {
-        ContractDocument contractDocument = getContractOrThrow(contractId, user, roles);
-        if (!ContractStatus.ANALYSIS_IN_PROGRESS.equals(contractDocument.getStatus())) {
-            throw new IllegalStateException("Contract must be in analysis progress before marking as analysed");
-        }
-        contractDocument.setStatus(ContractStatus.ANALYSED);
-        return contractDocumentRepository.save(contractDocument);
-    }
 
     @AuditAction(action = "FETCH_UNASSIGNED_CONTRACTS", entity = "ContractDocument")
     @Override
@@ -159,7 +138,7 @@ public class ContractServiceImpl implements ContractService {
         createAssignmentHistory(contractDocument, oldAssignee, assignedTo, assignedBy, remarks);
         contractDocument = contractDocumentRepository.save(contractDocument);
 
-        List<ContractLot> contractLots = contractLotService.getContractLots(contractId, user, roles);
+        List<ContractLot> contractLots = contractLotAccessService.getContractLots(contractId, user, roles);
         List<Long> contractLotIds = contractLots.stream().map(ContractLot::getId).toList();
 
         ProposalRequest proposalRequest = new ProposalRequest(contractDocument.getOriginalFileName(), LocalDate.now(), contractDocument.getId(), contractLotIds, null);
@@ -206,8 +185,6 @@ public class ContractServiceImpl implements ContractService {
     @Transactional(readOnly = true)
     public List<ContractAssignmentHistory> getAssignmentHistory(Long contractId, User user) {
         validateUser(user);
-        validateContractId(contractId);
-
         return contractAssignmentHistoryRepository.findByContractDocumentIdOrderByAssignedAtDesc(contractId);
     }
 
@@ -217,24 +194,6 @@ public class ContractServiceImpl implements ContractService {
 
         contractAssignmentHistoryRepository.save(history);
     }
-
-    @Override
-    @Transactional
-    public void markAnalysisFailed(Long contractId, String failureReason, User user, List<String> roles) {
-
-        ContractDocument contractDocument = getContract(contractId, user, roles);
-        ContractAnalysisSummary summary = contractAnalysisSummaryRepository.findByContractDocumentId(contractId).orElseGet(() -> ContractAnalysisSummary.builder().contractDocument(contractDocument).build());
-
-        summary.setStatus(AnalysisStatus.FAILED);
-        summary.setFailureReason(failureReason);
-        summary.setAnalyzedAt(LocalDateTime.now());
-
-        contractAnalysisSummaryRepository.save(summary);
-
-        contractDocument.setStatus(ContractStatus.FAILED);
-        contractDocumentRepository.save(contractDocument);
-    }
-
 
     @Override
     @Transactional(readOnly = true)
@@ -308,30 +267,9 @@ public class ContractServiceImpl implements ContractService {
         return "Contract reassigned";
     }
 
-    private ContractDocument getContractOrThrow(Long contractId, User user, List<String> roles) {
-        validateContractId(contractId);
-
-        ContractDocument contractDocument = contractDocumentRepository.findById(contractId).orElseThrow(() -> new IllegalArgumentException("Contract not found with id: " + contractId));
-        if (!canAccess(contractDocument, user, roles)) {
-            throw new AccessDeniedException("You are not allowed to access this contract");
-        }
-        return contractDocument;
-    }
-
-
-    //TODO : NEED TO ADD CONDITION WHERE SELF OR REVIEWERS CAN SEE CONTRACT.
-    private boolean canAccess(ContractDocument contractDocument, User user, List<String> roles) {
-        boolean admin = roles.stream().anyMatch(a -> a.equals(RoleType.ADMIN.name()));
-        if (admin) {
-            return true;
-        }
-        return contractDocument.getStatus().equals(ContractStatus.UPLOADED) && contractDocument.getAssignmentStatus().equals(ContractAssignmentStatus.UNASSIGNED) || contractDocument.getAssignedTo().equalsIgnoreCase(user.getEmail());
-    }
-
-    private void validateContractId(Long contractId) {
-        if (contractId == null) {
-            throw new IllegalArgumentException("Contract id must not be null");
-        }
+    private ContractDocument getContractOrThrow(Long contractId, User user,
+                                                List<String> roles) {
+        return contractAccessService.getAccessibleContract(contractId, user, roles);
     }
 
     private String validateUser(User user) {

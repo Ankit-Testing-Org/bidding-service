@@ -6,6 +6,7 @@ import com.evatech.bidplatform.contract.entity.ContractPageText;
 import com.evatech.bidplatform.contract.entity.ContractStatus;
 import com.evatech.bidplatform.contract.repository.ContractDocumentRepository;
 import com.evatech.bidplatform.contract.repository.ContractPageTextRepository;
+import com.evatech.bidplatform.contract.service.ContractAccessService;
 import com.evatech.bidplatform.contract.service.ContractService;
 import com.evatech.bidplatform.contract.service.ContractTextExtractionService;
 import com.evatech.bidplatform.user.entity.User;
@@ -27,7 +28,7 @@ public class ContractTextExtractionServiceImpl
 
     private final ContractDocumentRepository contractDocumentRepository;
     private final ContractPageTextRepository contractPageTextRepository;
-    private final ContractService contractService;
+    private final ContractAccessService contractAccessService;
 
     @AuditAction(action = "EXTRACT_TEXT", entity = "ContractPageText")
     @Override
@@ -35,7 +36,7 @@ public class ContractTextExtractionServiceImpl
             Long contractId,
             User user, List<String> roles) {
 
-        ContractDocument contractDocument = contractService.getContract(contractId, user, roles);
+        ContractDocument contractDocument = contractAccessService.getAccessibleContract(contractId, user, roles);
 
         // TODO : NEED TO HAVE LOGIC OF REEXTRACT.
         contractPageTextRepository.deleteByContractDocumentId(contractId);

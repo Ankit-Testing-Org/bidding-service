@@ -22,10 +22,6 @@ public interface ContractLotService {
             User user,
             List<String> roles);
 
-    List<ContractLot> getContractLots(
-            Long contractId,
-            User user, List<String> roles);
-
     List<ContractLot> getQualifiedLots(
             Long contractId,
             User user);
@@ -42,7 +38,8 @@ public interface ContractLotService {
     List<ContractLot> extractLots(
             Long contractDocument,
             User user,
-            Long lotId
+            Long lotId,
+            List<String> roles
     );
 
     ContractLotAnalysisResultResponse analyseContractLot(

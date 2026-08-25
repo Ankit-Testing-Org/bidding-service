@@ -6,13 +6,12 @@ import com.evatech.bidplatform.contract.dto.request.ApproveAnalysisRequest;
 import com.evatech.bidplatform.contract.dto.request.ReanalyseLotRequest;
 import com.evatech.bidplatform.contract.dto.response.AnalysisReviewResponse;
 import com.evatech.bidplatform.contract.dto.response.ContractLotAnalysisResultResponse;
-import com.evatech.bidplatform.contract.dto.response.ContractLotResponse;
 import com.evatech.bidplatform.contract.dto.request.RejectAnalysisRequest;
 import com.evatech.bidplatform.contract.dto.response.ProposalReadinessResponse;
 import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
 import com.evatech.bidplatform.contract.mapper.ContractLotMapper;
 import com.evatech.bidplatform.contract.service.ContractLotService;
-import com.evatech.bidplatform.contract.service.ContractService;
+import com.evatech.bidplatform.dashboard.dto.contract.response.ContractLotResponse;
 import com.evatech.bidplatform.user.entity.User;
 import com.evatech.bidplatform.user.repository.UserRepository;
 import jakarta.validation.Valid;
@@ -33,21 +32,6 @@ public class ContractLotController extends AbstractController {
     private final ContractLotService contractLotService;
     private final ContractLotMapper contractLotMapper;
     private final UserRepository userRepository;
-    private final ContractService contractService;
-
-    @GetMapping("/{contractId}/lots")
-    public ApiResponse<List<ContractLotResponse>> getContractLots(
-            Authentication authentication,
-            @PathVariable("contractId")
-            @Positive(message = "Contract ID must be positive")
-            Long contractId,
-            @RequestParam(name = "lotId", required = false) Long lotId
-    ) {
-        User user = authenticateAndFetchUser(userRepository,authentication);
-        List<String> roles = fetchRolesForUser(authentication);
-        List<ContractLot> pages = contractService.getContractLots(contractId, user, lotId, roles);
-        return ApiResponse.success("Contract pages fetched successfully", contractLotMapper.toResponses(pages));
-    }
 
     /**
      * Loads one lot when the UI needs an authoritative refresh.
@@ -158,7 +142,7 @@ public class ContractLotController extends AbstractController {
 
         User user = authenticateAndFetchUser(userRepository, authentication);
         List<ContractLot> contractLots = contractLotService.getQualifiedLots(contractId, user);
-        return ApiResponse.success("Qualified lots fetched successfully", contractLotMapper.toResponses(contractLots));
+        return ApiResponse.success("Qualified lots fetched successfully", contractLotMapper.toResponseList(contractLots));
     }
 
     @GetMapping("/{contractId}/lots/unqualified")
@@ -169,7 +153,7 @@ public class ContractLotController extends AbstractController {
 
         User user = authenticateAndFetchUser(userRepository, authentication);
         List<ContractLot> contractLots = contractLotService.getUnqualifiedLots(contractId, user);
-        return ApiResponse.success("UnQualified lots fetched successfully", contractLotMapper.toResponses(contractLots));
+        return ApiResponse.success("UnQualified lots fetched successfully", contractLotMapper.toResponseList(contractLots));
     }
 
     /**

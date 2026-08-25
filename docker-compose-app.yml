@@ -19,7 +19,7 @@ services:
       FILE_STORAGE_BASE_PATH: /app/storage
       KEYCLOAK_CLIENT_ID: evatech
       KEYCLOAK_CLIENT_SECRET: TEST
-      keycloak.url: https://cedar-viewers-parliament-evaluated.trycloudflare.com
+      keycloak.url: https://agreements-lakes-common-yours.trycloudflare.com
       GITHUB_TOKEN: TEST
     volumes:
       - ./logs:/app/logs

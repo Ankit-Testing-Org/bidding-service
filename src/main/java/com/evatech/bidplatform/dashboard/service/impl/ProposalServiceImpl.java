@@ -3,6 +3,7 @@ package com.evatech.bidplatform.dashboard.service.impl;
 import com.evatech.bidplatform.audit.service.AuditAction;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
 import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
+import com.evatech.bidplatform.contract.service.ContractLotAccessService;
 import com.evatech.bidplatform.contract.service.ContractLotService;
 import com.evatech.bidplatform.dashboard.dto.ProposalRequest;
 import com.evatech.bidplatform.dashboard.dto.ProposalResponse;
@@ -39,7 +40,7 @@ public class ProposalServiceImpl implements ProposalService {
 
     private final ProposalRepository proposalRepository;
     private final ProposalHistoryRepository proposalHistoryRepository;
-    private final ContractLotService contractLotService;
+    private final ContractLotAccessService contractLotAccessService;
     private final ProposalMapper proposalMapper;
 
     @AuditAction(action = "CREATE_PROPOSAL", entity = "Proposal")
@@ -81,7 +82,7 @@ public class ProposalServiceImpl implements ProposalService {
             proposal.getHistory().add(proposalHistory);
 
         }
-        List<ContractLot> contractLots = contractLotService.getContractLots(proposal.getContractDocument().getId(), user, roles);
+        List<ContractLot> contractLots = contractLotAccessService.getContractLots(proposal.getContractDocument().getId(), user, roles);
         proposal.setProposalValue(calculateProposalValue(contractLots));
         proposal.setUpdatedAt(LocalDateTime.now());
         proposal = proposalRepository.save(proposal);

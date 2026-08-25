@@ -9,7 +9,7 @@ services:
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-      KC_HOSTNAME: https://cedar-viewers-parliament-evaluated.trycloudflare.com
+      KC_HOSTNAME: https://agreements-lakes-common-yours.trycloudflare.com
       KC_PROXY: edge
       KC_HOSTNAME_STRICT: false
       KC_HTTP_ENABLED: true

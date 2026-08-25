@@ -24,10 +24,6 @@ public interface ContractService {
 
     List<ContractHighlightResponse> getHighlights(Long contractId, User user, List<String> roles);
 
-    ContractDocument markAnalysisInProgress(Long contractId, User user, List<String> roles);
-
-    ContractDocument markAnalysed(Long contractId, User user, List<String> roles);
-
     List<ContractDocument> getUnassignedContracts(User user, List<String> roles);
 
     List<ContractDocument> getAssignedContracts(String assignedTo, User user, List<String> roles);
@@ -63,11 +59,6 @@ public interface ContractService {
             User user,
             Long lotId,
             List<String> roles);
-
-    void markAnalysisFailed(Long contractId,
-                            String failureReason,
-                            User user,
-                            List<String> roles);
 
     List<ContractDocument> getContractDashboard();
 

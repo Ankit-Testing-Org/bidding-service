@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,11 +18,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@Service
+@Component
 @RequiredArgsConstructor
 public class ContractAnalysisOrchestrator {
 
-    private final ContractService contractService;
+    private final ContractLifecycleService contractLifecycleService;
     private final ContractTextExtractionService contractTextExtractionService;
     private final ContractHighlightService contractHighlightService;
     private final EmailService emailService;
@@ -33,24 +34,24 @@ public class ContractAnalysisOrchestrator {
                               User user,
                               List<String> roles) {
         try {
-            contract.setStatus(ContractStatus.ANALYSIS_IN_PROGRESS);
             contract.setProcessingStartedAt(LocalDateTime.now());
-            contractService.saveContract(contract);
+            contractLifecycleService.updateContractDocumentStatus(contract.getId(), contract,
+                    ContractStatus.ANALYSIS_IN_PROGRESS, user, roles);
 
             processContract(contract, user, roles);
 
-            contract.setStatus(ContractStatus.ANALYSED);
             contract.setProcessingCompletedAt(LocalDateTime.now());
-            contractService.saveContract(contract);
+            contractLifecycleService.updateContractDocumentStatus(contract.getId(), contract,
+                    ContractStatus.ANALYSED, user, roles);
 
             sendSuccessEmail(contract);
 
         } catch (Exception ex) {
             log.error("Contract analysis failed for {}", contract.getId(), ex);
-            contract.setStatus(ContractStatus.FAILED);
             contract.setProcessingError(ExceptionUtils.getRootCauseMessage(ex));
             contract.setProcessingCompletedAt(LocalDateTime.now());
-            contractService.saveContract(contract);
+            contractLifecycleService.updateContractDocumentStatus(contract.getId(), contract,
+                    ContractStatus.FAILED, user, roles);
 
             sendFailureEmail(contract, ex);
         }

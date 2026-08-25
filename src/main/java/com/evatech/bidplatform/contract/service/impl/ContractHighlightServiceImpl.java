@@ -11,6 +11,7 @@ import com.evatech.bidplatform.contract.entity.*;
 import com.evatech.bidplatform.contract.entity.analysis.*;
 import com.evatech.bidplatform.contract.repository.*;
 import com.evatech.bidplatform.contract.service.ContractHighlightService;
+import com.evatech.bidplatform.contract.service.ContractLifecycleService;
 import com.evatech.bidplatform.contract.service.ContractService;
 import com.evatech.bidplatform.user.dto.response.ContractAnalysisPageResponse;
 import com.evatech.bidplatform.user.dto.response.ContractAnalysisSectionType;
@@ -34,7 +35,7 @@ public class ContractHighlightServiceImpl implements ContractHighlightService {
     private final ContractDocumentRepository contractDocumentRepository;
     private final ContractPageTextRepository contractPageTextRepository;
     private final ContractHighlightRepository contractHighlightRepository;
-    private final ContractService contractService;
+    private final ContractLifecycleService contractLifecycleService;
     private final AiService aiService;
     private final AiRequestLoggerService aiRequestLoggerService;
     private final ContractAnalysisSummaryRepository contractAnalysisSummaryRepository;
@@ -63,7 +64,7 @@ public class ContractHighlightServiceImpl implements ContractHighlightService {
             throw new IllegalStateException("Contract text must be extracted before analysis");
         }
 
-        contractService.markAnalysisInProgress(contractDocumentId, user, roles);
+        contractLifecycleService.markAnalysisInProgress(contractDocumentId, user, roles);
 
         try {
             ContractAnalysisResult analysisResult = aiService.analyseContract(contractDocument, pages);
@@ -76,11 +77,11 @@ public class ContractHighlightServiceImpl implements ContractHighlightService {
             }
             ContractAnalysisSummary savedSummary = saveAnalysisSummary(contractDocument, analysisResult.getSummary());
             List<ContractHighlight> savedHighlights = saveHighlights(contractDocument, analysisResult.getSections());
-            contractService.markAnalysed(contractDocumentId, user, roles);
+            contractLifecycleService.markAnalysed(contractDocumentId, user, roles);
             return contractAnalysisMapper.toPageResponse(contractDocument.getId(), savedSummary, savedHighlights);
 
         } catch (RuntimeException ex) {
-            contractService.markAnalysisFailed(contractDocumentId, ex.getMessage(), user, roles);
+            contractLifecycleService.markAnalysisFailed(contractDocumentId, ex.getMessage(), user, roles);
 
             throw ex;
         }

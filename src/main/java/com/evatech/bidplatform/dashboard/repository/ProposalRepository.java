@@ -161,7 +161,7 @@ public interface ProposalRepository extends JpaRepository<Proposal, Long> {
             or trim(:searchText) = ''
             or lower(p.title) like lower(concat('%', :searchText, '%'))
             or lower(p.proposalNumber) like lower(concat('%', :searchText, '%'))
-            or lower(cd.name) like lower(concat('%', :searchText, '%'))
+            or lower(cd.originalFileName) like lower(concat('%', :searchText, '%'))
             or lower(p.createdBy) like lower(concat('%', :searchText, '%'))
         )
 """)
