@@ -1,0 +1,229 @@
+body {
+    margin: 0;
+    font-family: Inter, sans-serif;
+    background: #0f172a;
+    min-height: 100vh;
+}
+
+.auth-container {
+    display: grid;
+    grid-template-columns: 1fr 500px;
+    min-height: 100vh;
+}
+
+.auth-left {
+    padding: 60px;
+    color: white;
+    background:
+            linear-gradient(
+                    135deg,
+                    #0f172a,
+                    #1e293b
+            );
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.brand-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 14px;
+    background: #4f46e5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+}
+
+.hero-content {
+    margin-top: 80px;
+}
+
+.hero-content h2 {
+    font-size: 48px;
+    margin: 20px 0;
+}
+
+.hero-content p {
+    color: #cbd5e1;
+    line-height: 1.7;
+}
+
+.hero-badge {
+    background: rgba(79,70,229,.20);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 999px;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 16px;
+    margin-top: 40px;
+}
+
+.feature-card {
+    background: rgba(255,255,255,.08);
+    padding: 18px;
+    border-radius: 12px;
+}
+
+.auth-right {
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 420px;
+}
+
+.auth-card h2 {
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: #64748b;
+    margin-bottom: 30px;
+}
+
+.login-users {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.role-btn {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border: 1px solid #e2e8f0;
+    background: white;
+    padding: 18px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all .2s ease;
+    text-align: left;
+}
+
+.role-btn:hover {
+    border-color: #4f46e5;
+    transform: translateY(-2px);
+}
+
+.role-btn.admin {
+    border-color: #4f46e5;
+    background: #eef2ff;
+}
+
+.role-icon {
+    font-size: 24px;
+}
+
+.role-btn strong {
+    display: block;
+}
+
+.role-btn small {
+    color: #64748b;
+}
+
+.divider {
+    text-align: center;
+    margin: 24px 0;
+    color: #94a3b8;
+}
+
+.register-btn {
+    width: 100%;
+    background: #4f46e5;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    cursor: pointer;
+}
+
+.register-btn:hover {
+    background: #4338ca;
+}
+
+@media(max-width:992px) {
+
+    .auth-container {
+        grid-template-columns: 1fr;
+    }
+
+    .auth-left {
+        display: none;
+    }
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.form-group input {
+    padding: 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    font-size: 14px;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #4f46e5;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    background: #4f46e5;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.login-btn:hover {
+    background: #4338ca;
+}
+
+.auth-links {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.auth-links a {
+    color: #4f46e5;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.auth-links a:hover {
+    text-decoration: underline;
+}
+
+.login-message {
+    margin-top: 16px;
+    text-align: center;
+    color: #dc2626;
+}

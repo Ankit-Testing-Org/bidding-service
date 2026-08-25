@@ -6,4 +6,4 @@ COPY target/*.jar app.jar
 
 EXPOSE 8083
 
-ENTRYPOINT ["java","-jar","app.jar"]
+ENTRYPOINT ["java","-Dspring.profiles.active=local","-jar","app.jar"]

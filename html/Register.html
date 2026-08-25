@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | SmartBid AI</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <link rel="stylesheet" href="css/register.css">
+
+</head>
+
+<body>
+
+<div class="auth-container">
+
+    <div class="auth-left">
+
+        <div class="brand">
+            <div class="brand-icon">📄</div>
+
+            <div>
+                <h1>SmartBid AI</h1>
+                <p>Hospital Procurement & Tender Platform</p>
+            </div>
+        </div>
+
+        <div class="hero-content">
+
+            <span class="hero-badge">
+                Create Account
+            </span>
+
+            <h2>
+                Join SmartBid AI
+            </h2>
+
+            <p>
+                Register to analyse tenders, generate bids,
+                collaborate with reviewers and manage approvals.
+            </p>
+
+        </div>
+
+    </div>
+
+    <div class="auth-right">
+
+        <div class="register-card">
+
+            <h2>Create Account</h2>
+
+            <p class="subtitle">
+                Complete the information below
+            </p>
+
+            <form id="registerForm">
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label>First Name *</label>
+                        <input type="text" id="firstName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Last Name *</label>
+                        <input type="text" id="lastName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Username *</label>
+                        <input type="text" id="userName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Password *</label>
+                        <input type="password" id="password" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Confirm Password *</label>
+                        <input type="password" id="confirmPassword" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Date Of Birth</label>
+                        <input type="date" id="dateOfBirth">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Address Line 1</label>
+                        <input type="text" id="addressLine1">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Address Line 2</label>
+                        <input type="text" id="addressLine2">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Post Code</label>
+                        <input type="text" id="postCode">
+                    </div>
+
+                    <div class="form-group">
+                        <label>City</label>
+                        <input type="text" id="city">
+                    </div>
+
+                    <div class="form-group">
+                        <label>State</label>
+                        <input type="text" id="state">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Country</label>
+                        <input type="text" id="country">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phone Number *</label>
+                        <input type="text"
+                               id="phoneNumber"
+                               maxlength="10"
+                               placeholder="10 digits"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Role *</label>
+
+                        <select id="roleType" required>
+                            <option value="">Select Role</option>
+                            <option value="ADMIN">Administrator</option>
+                            <option value="CONTRACT_OWNER">Contract Owner</option>
+                            <option value="BID_MANAGER">Bid Manager</option>
+                            <option value="REVIEWER">Reviewer</option>
+                            <option value="LEGAL_REVIEWER">Legal Reviewer</option>
+                            <option value="FINANCE_REVIEWER">Finance Reviewer</option>
+                            <option value="COMMERCIAL_REVIEWER">Commercial Reviewer</option>
+                            <option value="MANAGER">Manager</option>
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <button type="submit" class="register-btn">
+                    Create Account
+                </button>
+
+                <button
+                        type="button"
+                        class="login-btn"
+                        onclick="window.location.href='/login'">
+
+                    Back To Login
+
+                </button>
+
+                <div id="registerMessage" class="message"></div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+<script src="js/register.js" defer></script>
+
+</body>
+</html>

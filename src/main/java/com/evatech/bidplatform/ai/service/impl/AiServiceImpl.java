@@ -19,8 +19,11 @@ import com.evatech.bidplatform.user.dto.response.ContractAnalysisSectionType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Service
@@ -30,12 +33,20 @@ public class AiServiceImpl implements AiService {
     private final AiClient aiClient;
     private final ContractAnalysisPromptBuilder contractAnalysisPromptBuilder;
 
+    @Value("${app.mock-ai-enabled:false}")
+    private boolean mockAiEnabled;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public ContractAnalysisResult analyseContract(ContractDocument contractDocument, List<ContractPageText> pages) {
         String prompt = contractAnalysisPromptBuilder.buildPrompt(contractDocument, pages);
-        String aiResponse = aiClient.analysePrompt(prompt);
+        String aiResponse = "";
+        if(mockAiEnabled)
+            aiResponse = loadResourceFile("sample-data/contract-analysis.json");
+        else
+            aiResponse = aiClient.analysePrompt(prompt);
+
         AiContractAnalysisResponse analysisResponse = parseAiResponse(aiResponse);
 
         ContractAnalysisSummary summary = mapToAnalysisSummary(contractDocument, analysisResponse);
@@ -51,7 +62,11 @@ public class AiServiceImpl implements AiService {
     public ContractLotAnalysisResult analyseContractLot(ContractDocument contractDocument, ContractLot contractLot, List<ContractPageText> lotPages, String userComment) {
 
         String prompt = contractAnalysisPromptBuilder.buildLotPrompt(contractDocument, contractLot, lotPages, userComment);
-        String aiResponse = aiClient.analysePrompt(prompt);
+        String aiResponse = "";
+        if(mockAiEnabled)
+            aiResponse = loadResourceFile("sample-data/contract-analysis.json");
+        else
+            aiResponse = aiClient.analysePrompt(prompt);
         AiContractLotAnalysisResponse analysisResponse = parseLotAiResponse(aiResponse);
         List<ContractLotHighlight> highlights = mapToContractLotHighlights(contractLot,
                 analysisResponse);
@@ -66,7 +81,11 @@ public class AiServiceImpl implements AiService {
         String prompt = contractAnalysisPromptBuilder.
                 buildHighlightReanalysisPrompt(contractDocument, highlight, userComment);
 
-        String aiResponse = aiClient.analysePrompt(prompt);
+        String aiResponse = "";
+        if(mockAiEnabled)
+            aiResponse = loadResourceFile("sample-data/contract-analysis.json");
+        else
+            aiResponse = aiClient.analysePrompt(prompt);
 
         return parseHighlightReanalysisResponse(aiResponse);
     }
@@ -240,4 +259,12 @@ public class AiServiceImpl implements AiService {
                 status(AnalysisStatus.COMPLETED).build();
     }
 
+    private String loadResourceFile(String resourcePath) {
+        try {
+            ClassPathResource resource = new ClassPathResource(resourcePath);
+            return new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+        } catch (Exception ex) {
+            throw new RuntimeException("Failed to load resource: " + resourcePath, ex);
+        }
+    }
 }

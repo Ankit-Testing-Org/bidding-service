@@ -10,10 +10,13 @@ import com.evatech.bidplatform.contract.service.ContractService;
 import com.evatech.bidplatform.contract.service.ContractTextExtractionService;
 import com.evatech.bidplatform.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -87,10 +90,30 @@ public class ContractTextExtractionServiceImpl
     /**
      * TODO : LOGIC NEEDS TO BE ADDED
      */
+
     private List<String> extractPagesFromFile(
             ContractDocument contractDocument) {
 
-        List<String> pages = new ArrayList<>();
-        return pages;
+        try {
+
+            ClassPathResource resource =
+                    new ClassPathResource("sample-data/contract-pages.txt");
+
+            String content =
+                    new String(
+                            resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+
+            return Arrays.stream(
+                            content.split("===PAGE==="))
+                    .map(String::trim)
+                    .filter(page -> !page.isBlank())
+                    .toList();
+
+        } catch (Exception ex) {
+
+            throw new RuntimeException(
+                    "Failed to load sample contract pages",
+                    ex);
+        }
     }
 }

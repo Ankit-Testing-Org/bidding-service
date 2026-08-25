@@ -1,0 +1,111 @@
+{
+  "recommendedToBid": true,
+  "bidScore": 84.5,
+  "winProbability": 78.0,
+  "overallRiskLevel": "MEDIUM",
+
+  "executiveSummary": "The lot represents a strong strategic opportunity for suppliers with oncology and specialty medicine capabilities. Most regulatory and technical requirements align with standard pharmaceutical manufacturing operations. However, strict quality assurance obligations and performance commitments increase execution risk.",
+
+  "recommendation": "Proceed with bidding. The supplier appears capable of meeting the majority of requirements. Additional focus should be given to inventory planning, quality compliance and performance guarantee obligations before final submission.",
+
+  "strengths": [
+    "Existing oncology product portfolio aligns with requested medicines",
+    "GMP certified manufacturing facilities",
+    "Vendor has proven experience supplying government healthcare institutions",
+    "Strong annual turnover exceeding tender requirements",
+    "Established cold chain logistics network"
+  ],
+
+  "weaknesses": [
+    "High performance guarantee requirement",
+    "Aggressive delivery timelines",
+    "Strict product quality testing requirements",
+    "Potential pressure on inventory availability"
+  ],
+
+  "missingRequirements": [
+    "Updated Non Conviction Certificate",
+    "Latest audited financial statement",
+    "Recent NABL accredited laboratory reports"
+  ],
+
+  "highlights": [
+    {
+      "category": "STRENGTH",
+      "title": "Strong Product Portfolio Match",
+      "description": "Multiple requested oncology medicines already exist within the supplier's approved product portfolio.",
+      "pageNumber": 30,
+      "reference": "Drug Schedule Table A",
+      "riskLevel": "LOW",
+      "confidenceScore": 97.5,
+      "recommendedAction": "Proceed with bid preparation using existing product registrations.",
+      "bidCapable": true
+    },
+    {
+      "category": "TECHNICAL_REQUIREMENT",
+      "title": "Cold Chain Distribution Capability",
+      "description": "Certain specialty medicines require controlled storage and transportation conditions.",
+      "pageNumber": 31,
+      "reference": "Storage Requirements",
+      "riskLevel": "MEDIUM",
+      "confidenceScore": 94.0,
+      "recommendedAction": "Validate logistics partners and cold chain documentation.",
+      "bidCapable": true
+    },
+    {
+      "category": "COMPLIANCE_REQUIREMENT",
+      "title": "GMP Certification Required",
+      "description": "Valid GMP certification must remain active throughout the contract period.",
+      "pageNumber": 5,
+      "reference": "Clause 6(j)",
+      "riskLevel": "HIGH",
+      "confidenceScore": 99.0,
+      "recommendedAction": "Verify certificate validity dates before submission.",
+      "bidCapable": true
+    },
+    {
+      "category": "MISSING_REQUIREMENT",
+      "title": "Non Conviction Certificate Missing",
+      "description": "Required regulatory compliance document was not identified in submitted documentation.",
+      "pageNumber": 6,
+      "reference": "Clause 6(n)",
+      "riskLevel": "HIGH",
+      "confidenceScore": 95.0,
+      "recommendedAction": "Obtain and upload current Non Conviction Certificate.",
+      "bidCapable": false
+    },
+    {
+      "category": "CAPABILITY_GAP",
+      "title": "Limited Emergency Buffer Stock",
+      "description": "Current inventory levels may not satisfy emergency supply obligations under peak demand scenarios.",
+      "pageNumber": 22,
+      "reference": "Supply Obligation Requirements",
+      "riskLevel": "MEDIUM",
+      "confidenceScore": 88.0,
+      "recommendedAction": "Increase reserve inventory before award stage.",
+      "bidCapable": true
+    },
+    {
+      "category": "WEAKNESS",
+      "title": "Performance Guarantee Exposure",
+      "description": "Performance guarantee obligations create additional financial exposure for contract execution.",
+      "pageNumber": 25,
+      "reference": "Performance Guarantee Clause",
+      "riskLevel": "MEDIUM",
+      "confidenceScore": 92.0,
+      "recommendedAction": "Review guarantee coverage with finance team.",
+      "bidCapable": true
+    },
+    {
+      "category": "RECOMMENDATION",
+      "title": "Proceed With Bid Submission",
+      "description": "Overall evaluation indicates a favorable opportunity with manageable risks and high commercial potential.",
+      "pageNumber": 1,
+      "reference": "Executive Recommendation",
+      "riskLevel": "LOW",
+      "confidenceScore": 96.0,
+      "recommendedAction": "Proceed to bid preparation and document completion.",
+      "bidCapable": true
+    }
+  ]
+}

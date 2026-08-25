@@ -1,0 +1,139 @@
+{
+  "bidTitle": "Supply of Oncology & Specialty Medicines",
+  "bidReferenceNumber": "BID-2026-0001",
+  "customerName": "Health & Family Welfare Department, Government of West Bengal",
+  "submissionDeadline": "2026-04-06",
+  "contractDurationMonths": 24,
+  "estimatedContractValue": 75000000,
+
+  "executiveSummary": "This bid opportunity aligns well with the supplier's existing oncology and specialty medicine portfolio. Most regulatory and technical requirements can be satisfied using existing manufacturing capabilities and product registrations. The opportunity presents strong commercial value with manageable operational risk.",
+
+  "recommendation": "Proceed with bid submission. Complete all mandatory compliance documentation and validate inventory planning before final submission.",
+
+  "bidReadinessScore": 84.5,
+  "winProbability": 78.0,
+
+  "sections": [
+    {
+      "sectionName": "Company Information",
+      "description": "Supplier registration and corporate information.",
+      "fields": [
+        {
+          "fieldName": "Company Name",
+          "fieldValue": "SmartBid Pharma GmbH",
+          "source": "Organization Profile",
+          "confidenceScore": 100
+        },
+        {
+          "fieldName": "Registration Number",
+          "fieldValue": "HRB-567890",
+          "source": "Corporate Registration",
+          "confidenceScore": 100
+        },
+        {
+          "fieldName": "Country",
+          "fieldValue": "Germany",
+          "source": "Organization Profile",
+          "confidenceScore": 100
+        }
+      ]
+    },
+    {
+      "sectionName": "Technical Qualification",
+      "description": "Technical capability and compliance information.",
+      "fields": [
+        {
+          "fieldName": "GMP Certified",
+          "fieldValue": "Yes",
+          "source": "GMP Certificate",
+          "confidenceScore": 98
+        },
+        {
+          "fieldName": "Manufacturing Experience",
+          "fieldValue": "15 Years",
+          "source": "Company Profile",
+          "confidenceScore": 95
+        },
+        {
+          "fieldName": "Government Supply Experience",
+          "fieldValue": "Extensive",
+          "source": "Reference Projects",
+          "confidenceScore": 92
+        }
+      ]
+    },
+    {
+      "sectionName": "Commercial Proposal",
+      "description": "Commercial readiness assessment.",
+      "fields": [
+        {
+          "fieldName": "Annual Turnover",
+          "fieldValue": "EUR 180,000,000",
+          "source": "Financial Statements",
+          "confidenceScore": 99
+        },
+        {
+          "fieldName": "Financial Capacity",
+          "fieldValue": "Meets Requirement",
+          "source": "Audited Reports",
+          "confidenceScore": 98
+        },
+        {
+          "fieldName": "Performance Guarantee Capability",
+          "fieldValue": "Available",
+          "source": "Finance Review",
+          "confidenceScore": 95
+        }
+      ]
+    }
+  ],
+
+  "requiredDocuments": [
+    {
+      "documentName": "Drug Manufacturing License",
+      "mandatory": true,
+      "status": "AVAILABLE"
+    },
+    {
+      "documentName": "GMP Certificate",
+      "mandatory": true,
+      "status": "AVAILABLE"
+    },
+    {
+      "documentName": "GST Registration",
+      "mandatory": true,
+      "status": "AVAILABLE"
+    },
+    {
+      "documentName": "Non Conviction Certificate",
+      "mandatory": true,
+      "status": "MISSING"
+    },
+    {
+      "documentName": "Audited Financial Statements",
+      "mandatory": true,
+      "status": "AVAILABLE"
+    }
+  ],
+
+  "risks": [
+    {
+      "title": "Delayed Delivery Penalty",
+      "riskLevel": "HIGH",
+      "mitigation": "Maintain minimum 10% buffer stock and monitor logistics."
+    },
+    {
+      "title": "Strict Quality Assurance Requirements",
+      "riskLevel": "MEDIUM",
+      "mitigation": "Perform internal QA review before batch release."
+    }
+  ],
+
+  "nextActions": [
+    "Upload Non Conviction Certificate",
+    "Verify product registrations",
+    "Validate inventory availability",
+    "Review performance guarantee obligations",
+    "Submit final bid for approval"
+  ]
+}

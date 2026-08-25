@@ -24,9 +24,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,6 +51,9 @@ public class ContractLotServiceImpl implements ContractLotService {
     private final ContractLotAnalysisMapper contractLotAnalysisMapper;
     private final ProposalService proposalService;
     private final ContractLotQualificationHistoryRepository contractLotQualificationHistoryRepository;
+
+    @Value("${app.mock-ai-enabled:false}")
+    private boolean mockAiEnabled;
 
     @AuditAction(action = "QUALIFY_LOT", entity = "ContractLot")
     @Override
@@ -236,7 +241,12 @@ public class ContractLotServiceImpl implements ContractLotService {
         }
         String contractText = buildContractText(pages);
         String prompt = "DUMMY PROMPT"; //TODO :  NEED TO FIX IT
-        String aiResponse = "DUMMY RESPONSE "; //TODO :  NEED TO FIX IT
+        String aiResponse = "DUMMY RESPONSE ";
+        if(mockAiEnabled)
+            aiResponse = loadResourceFile("contract-lots.json");
+        else
+            aiResponse = "DUMMY RESPONSE "; //TODO :  NEED TO FIX IT
+
         List<ExtractedLotResponse> extractedLots = parseAiResponse(aiResponse);
         if (extractedLots.isEmpty()) {
             return List.of();
@@ -500,4 +510,14 @@ public class ContractLotServiceImpl implements ContractLotService {
             throw new IllegalArgumentException("Contract document id must not be null");
         }
     }
+
+    private String loadResourceFile(String resourcePath) {
+        try {
+            ClassPathResource resource = new ClassPathResource(resourcePath);
+            return new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+        } catch (Exception ex) {
+            throw new RuntimeException("Failed to load resource: " + resourcePath, ex);
+        }
+    }
+
 }

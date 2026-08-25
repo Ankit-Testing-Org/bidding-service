@@ -1,0 +1,98 @@
+.register-card {
+    width: 100%;
+    max-width: 900px;
+}
+
+.subtitle {
+    color: #64748b;
+    margin-bottom: 25px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.form-group input,
+.form-group select {
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #4f46e5;
+}
+
+.full-width {
+    grid-column: span 2;
+}
+
+.register-btn {
+    width: 100%;
+    margin-top: 24px;
+    border: none;
+    background: #4f46e5;
+    color: white;
+    padding: 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.register-btn:hover {
+    background: #4338ca;
+}
+
+.login-btn {
+    width: 100%;
+    margin-top: 12px;
+    border: 1px solid #cbd5e1;
+    background: white;
+    color: #334155;
+    padding: 14px;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+.message {
+    text-align: center;
+    margin-top: 20px;
+    font-weight: 600;
+}
+
+.message.success {
+    color: #16a34a;
+}
+
+.message.error {
+    color: #dc2626;
+}
+
+@media (max-width: 992px) {
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .full-width {
+        grid-column: span 1;
+    }
+}
+

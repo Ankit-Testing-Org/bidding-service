@@ -1,0 +1,181 @@
+{
+  "summary": {
+    "clientName": "Health & Family Welfare Department, Government of West Bengal",
+    "contractValue": 140000000,
+    "currency": "INR",
+    "submissionDeadline": "2026-04-06",
+    "contractStartDate": "2026-05-01",
+    "contractEndDate": "2028-04-30",
+
+    "totalLots": 3,
+    "qualifiedLots": 2,
+
+    "overallBidScore": 82.5,
+    "overallRiskLevel": "MEDIUM",
+
+    "legalScore": 78.0,
+    "complianceScore": 92.0,
+    "commercialScore": 85.0,
+    "penaltyScore": 65.0,
+
+    "executiveSummary": "This tender represents a high-value pharmaceutical procurement opportunity with strong strategic alignment for healthcare and hospital supply operations. The contract duration is two years with optional extension. The bidder must demonstrate regulatory compliance, manufacturing capacity and proven market standing.",
+
+    "recommendation": "Proceed with bid preparation. Focus review efforts on penalty clauses, supply obligations, quality assurance requirements and performance guarantee commitments.",
+
+    "mandatoryDocuments": 28,
+    "criticalClauses": 12,
+    "durationMonths": 24,
+
+    "qualificationStatus": "QUALIFIED",
+    "status": "COMPLETED"
+  },
+
+  "sections": [
+    {
+      "type": "EXECUTIVE_SUMMARY",
+      "title": "Executive Summary",
+      "subtitle": "Overall contract assessment",
+      "highlights": [
+        {
+          "category": "BUSINESS_OPPORTUNITY",
+          "title": "High Value Procurement Opportunity",
+          "description": "Multi-year pharmaceutical procurement contract estimated at INR 140 million.",
+          "pageNumber": 1,
+          "reference": "Tender Introduction",
+          "riskLevel": "LOW",
+          "severityScore": 20,
+          "recommendedAction": "Proceed with bid preparation.",
+          "mandatory": true,
+          "confidenceScore": 0.98,
+          "reviewStatus": "PENDING"
+        }
+      ]
+    },
+    {
+      "type": "COMPLIANCE",
+      "title": "Compliance Requirements",
+      "subtitle": "Mandatory regulatory obligations",
+      "highlights": [
+        {
+          "category": "COMPLIANCE",
+          "title": "Valid GMP Certification Required",
+          "description": "All manufacturing facilities must possess valid GMP certification throughout the tender period.",
+          "pageNumber": 4,
+          "reference": "Clause 6(j)",
+          "riskLevel": "HIGH",
+          "severityScore": 90,
+          "recommendedAction": "Verify certificates before bid submission.",
+          "mandatory": true,
+          "confidenceScore": 0.99,
+          "reviewStatus": "PENDING"
+        },
+        {
+          "category": "COMPLIANCE",
+          "title": "Non Conviction Certificate",
+          "description": "Bidder must submit valid NCC from the relevant regulatory authority.",
+          "pageNumber": 5,
+          "reference": "Clause 6(n)",
+          "riskLevel": "HIGH",
+          "severityScore": 85,
+          "recommendedAction": "Ensure latest NCC documentation is attached.",
+          "mandatory": true,
+          "confidenceScore": 0.97,
+          "reviewStatus": "PENDING"
+        }
+      ]
+    },
+    {
+      "type": "COMMERCIAL",
+      "title": "Commercial Assessment",
+      "subtitle": "Financial and business evaluation",
+      "highlights": [
+        {
+          "category": "COMMERCIAL",
+          "title": "Minimum Turnover Requirement",
+          "description": "Bidders supplying up to two items must demonstrate average annual turnover of INR 10 Crores.",
+          "pageNumber": 7,
+          "reference": "Clause 8",
+          "riskLevel": "MEDIUM",
+          "severityScore": 60,
+          "recommendedAction": "Validate turnover eligibility before bid submission.",
+          "mandatory": true,
+          "confidenceScore": 0.95,
+          "reviewStatus": "PENDING"
+        }
+      ]
+    },
+    {
+      "type": "LEGAL",
+      "title": "Legal Review",
+      "subtitle": "Contractual obligations and liabilities",
+      "highlights": [
+        {
+          "category": "LEGAL",
+          "title": "Performance Bank Guarantee",
+          "description": "Successful bidders must provide Performance Bank Guarantee equal to 5% of contract value subject to tender conditions.",
+          "pageNumber": 25,
+          "reference": "Clause 29",
+          "riskLevel": "MEDIUM",
+          "severityScore": 70,
+          "recommendedAction": "Review financial exposure and guarantee arrangements.",
+          "mandatory": true,
+          "confidenceScore": 0.96,
+          "reviewStatus": "PENDING"
+        }
+      ]
+    },
+    {
+      "type": "RISK_ANALYSIS",
+      "title": "Risk Analysis",
+      "subtitle": "Critical risk areas identified",
+      "highlights": [
+        {
+          "category": "PENALTY",
+          "title": "Delayed Delivery Penalty",
+          "description": "Financial penalties apply for delayed deliveries beyond contractual timelines.",
+          "pageNumber": 22,
+          "reference": "Clause 24",
+          "riskLevel": "HIGH",
+          "severityScore": 95,
+          "recommendedAction": "Assess supply chain readiness and buffer stock planning.",
+          "mandatory": true,
+          "confidenceScore": 0.99,
+          "reviewStatus": "PENDING"
+        },
+        {
+          "category": "PENALTY",
+          "title": "Blacklisting Risk",
+          "description": "Repeated supply failures may result in blacklisting and forfeiture of performance guarantees.",
+          "pageNumber": 21,
+          "reference": "Clause 24(C)",
+          "riskLevel": "HIGH",
+          "severityScore": 100,
+          "recommendedAction": "Escalate for executive review before bid approval.",
+          "mandatory": true,
+          "confidenceScore": 1.0,
+          "reviewStatus": "PENDING"
+        }
+      ]
+    },
+    {
+      "type": "DOCUMENTS",
+      "title": "Required Documents",
+      "subtitle": "Submission checklist",
+      "highlights": [
+        {
+          "category": "DOCUMENT",
+          "title": "Mandatory Supporting Documentation",
+          "description": "Tender requires licenses, certificates, turnover statements, tax filings and technical submissions.",
+          "pageNumber": 8,
+          "reference": "Technical Bid Requirements",
+          "riskLevel": "MEDIUM",
+          "severityScore": 55,
+          "recommendedAction": "Create document readiness checklist.",
+          "mandatory": true,
+          "confidenceScore": 0.96,
+          "reviewStatus": "PENDING"
+        }
+      ]
+    }
+  ]
+}

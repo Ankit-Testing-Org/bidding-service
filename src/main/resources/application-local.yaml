@@ -80,3 +80,6 @@ keycloak:
 self:
   service:
     url: http://localhost:8083/
+
+app:
+  mock-ai-enabled: true

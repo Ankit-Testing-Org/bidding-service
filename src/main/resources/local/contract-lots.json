@@ -1,0 +1,26 @@
+[
+  {
+    "lotNumber": "LOT-001",
+    "lotName": "General Medicines & Pharmaceuticals",
+    "description": "Supply of general medicines and pharmaceutical products including antibiotics, anti-tuberculosis drugs, analgesics, cardiovascular medicines, dermatology products and oral dosage forms. Covers high-volume medicines required across central medical stores, district hospitals and state healthcare facilities.",
+    "startPage": 28,
+    "endPage": 37,
+    "valuation": 25000000
+  },
+  {
+    "lotNumber": "LOT-002",
+    "lotName": "Oncology & Specialty Medicines",
+    "description": "Supply of oncology, immunology, endocrinology, rare disease and specialty medicines including Actinomycin D, Cyclophosphamide, Chlorambucil, Cytosine Arabinoside, Dasatinib, Midostaurin, Ruxolitinib and other critical care specialty drugs requiring enhanced regulatory compliance and handling.",
+    "startPage": 28,
+    "endPage": 37,
+    "valuation": 75000000
+  },
+  {
+    "lotNumber": "LOT-003",
+    "lotName": "Critical Care, ICU & Dialysis Products",
+    "description": "Supply of emergency, ICU, dialysis and life-saving products including dialysis fluids, critical care injections, anticoagulants, infusion products, immunological products and intensive care medicines used by tertiary hospitals and emergency treatment centers.",
+    "startPage": 28,
+    "endPage": 37,
+    "valuation": 40000000
+  }
+]

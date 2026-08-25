@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBid AI | Login</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+
+<body>
+
+<div class="auth-container">
+
+    <div class="auth-left">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                📄
+            </div>
+
+            <div>
+                <h1>SmartBid AI</h1>
+                <p>Hospital Procurement & Tender Platform</p>
+            </div>
+
+        </div>
+
+        <div class="hero-content">
+
+            <span class="hero-badge">
+                AI Tender Intelligence
+            </span>
+
+            <h2>
+                Win More Bids.<br>
+                Reduce Manual Effort.
+            </h2>
+
+            <p>
+                Analyze contracts, qualify lots,
+                generate bid templates and manage
+                complete review and approval workflows.
+            </p>
+
+            <div class="feature-grid">
+
+                <div class="feature-card">
+                    ✅ AI Contract Analysis
+                </div>
+
+                <div class="feature-card">
+                    ✅ Tender Qualification
+                </div>
+
+                <div class="feature-card">
+                    ✅ Bid Template Generation
+                </div>
+
+                <div class="feature-card">
+                    ✅ Smart Review Workflow
+                </div>
+
+                <div class="feature-card">
+                    ✅ Approval Management
+                </div>
+
+                <div class="feature-card">
+                    ✅ Real-Time Reporting
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="auth-right">
+
+        <div class="auth-card">
+
+            <h2>Welcome Back</h2>
+
+            <p class="subtitle">
+                Sign in to continue to SmartBid AI
+            </p>
+
+            <form id="loginForm">
+
+                <div class="form-group">
+                    <label>Username</label>
+
+                    <input
+                            type="text"
+                            id="username"
+                            placeholder="Enter username"
+                            required>
+                </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+
+                    <input
+                            type="password"
+                            id="password"
+                            placeholder="Enter password"
+                            required>
+                </div>
+
+                <button
+                        type="submit"
+                        class="login-btn">
+
+                    Sign In
+
+                </button>
+
+            </form>
+
+            <div class="auth-links">
+
+                <a href="@{/forgot-password}">
+                    Forgot Password?
+                </a>
+
+                <a href="@{/register}">
+                    Create Account
+                </a>
+
+            </div>
+
+            <div
+                    id="loginMessage"
+                    class="login-message">
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="js/login.js" defer></script>
+
+
+</body>
+</html>
