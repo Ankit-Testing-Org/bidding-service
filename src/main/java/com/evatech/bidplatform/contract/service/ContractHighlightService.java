@@ -1,7 +1,7 @@
 package com.evatech.bidplatform.contract.service;
 
-import com.evatech.bidplatform.user.dto.response.ContractAnalysisPageResponse;
-import com.evatech.bidplatform.user.dto.response.ContractHighlightResponse;
+import com.evatech.bidplatform.contract.dto.response.contract.ContractAnalysisPageResponse;
+import com.evatech.bidplatform.contract.dto.response.highlight.ContractHighlightResponse;
 import com.evatech.bidplatform.user.entity.User;
 
 import java.util.List;

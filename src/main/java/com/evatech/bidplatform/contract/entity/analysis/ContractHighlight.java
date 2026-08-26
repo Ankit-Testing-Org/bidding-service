@@ -1,6 +1,6 @@
 package com.evatech.bidplatform.contract.entity.analysis;
 
-import com.evatech.bidplatform.contract.dto.HighlightReviewStatus;
+import com.evatech.bidplatform.contract.dto.response.highlight.HighlightReviewStatus;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
 import com.evatech.bidplatform.contract.entity.RiskLevel;
 import jakarta.persistence.*;

@@ -1,8 +1,8 @@
 package com.evatech.bidplatform.contract.mapper;
 
-import com.evatech.bidplatform.contract.dto.response.ContractLotAnalysisResponse;
-import com.evatech.bidplatform.contract.dto.response.ContractLotAnalysisResultResponse;
-import com.evatech.bidplatform.contract.dto.response.ContractLotHighlightResponse;
+import com.evatech.bidplatform.contract.dto.response.lot.ContractLotAnalysisResponse;
+import com.evatech.bidplatform.contract.dto.response.lot.ContractLotAnalysisResultResponse;
+import com.evatech.bidplatform.contract.dto.response.lot.ContractLotHighlightResponse;
 import com.evatech.bidplatform.contract.entity.analysis.ContractLotAnalysis;
 import com.evatech.bidplatform.contract.entity.analysis.ContractLotHighlight;
 import org.mapstruct.Mapper;

@@ -1,6 +1,6 @@
 package com.evatech.bidplatform.contract.entity.analysis;
 
-import com.evatech.bidplatform.contract.dto.LotAnalysisStatus;
+import com.evatech.bidplatform.contract.dto.response.lot.LotAnalysisStatus;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
 import com.evatech.bidplatform.contract.entity.LotQualificationStatus;
 import jakarta.persistence.*;

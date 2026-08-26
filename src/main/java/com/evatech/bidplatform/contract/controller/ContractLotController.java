@@ -2,16 +2,16 @@ package com.evatech.bidplatform.contract.controller;
 
 
 import com.evatech.bidplatform.ApiResponse;
-import com.evatech.bidplatform.contract.dto.request.ApproveAnalysisRequest;
-import com.evatech.bidplatform.contract.dto.request.ReanalyseLotRequest;
-import com.evatech.bidplatform.contract.dto.response.AnalysisReviewResponse;
-import com.evatech.bidplatform.contract.dto.response.ContractLotAnalysisResultResponse;
-import com.evatech.bidplatform.contract.dto.request.RejectAnalysisRequest;
-import com.evatech.bidplatform.contract.dto.response.ProposalReadinessResponse;
+import com.evatech.bidplatform.contract.dto.request.lot.ApproveAnalysisRequest;
+import com.evatech.bidplatform.contract.dto.request.lot.ReanalyseLotRequest;
+import com.evatech.bidplatform.contract.dto.response.lot.AnalysisReviewResponse;
+import com.evatech.bidplatform.contract.dto.response.lot.ContractLotAnalysisResultResponse;
+import com.evatech.bidplatform.contract.dto.request.lot.RejectAnalysisRequest;
+import com.evatech.bidplatform.contract.dto.response.lot.ProposalReadinessResponse;
 import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
 import com.evatech.bidplatform.contract.mapper.ContractLotMapper;
 import com.evatech.bidplatform.contract.service.ContractLotService;
-import com.evatech.bidplatform.dashboard.dto.contract.response.ContractLotResponse;
+import com.evatech.bidplatform.contract.dto.response.lot.ContractLotResponse;
 import com.evatech.bidplatform.user.entity.User;
 import com.evatech.bidplatform.user.repository.UserRepository;
 import jakarta.validation.Valid;

@@ -1,7 +1,7 @@
 package com.evatech.bidplatform.contract.mapper;
 
 import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
-import com.evatech.bidplatform.dashboard.dto.contract.response.ContractLotResponse;
+import com.evatech.bidplatform.contract.dto.response.lot.ContractLotResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -23,7 +23,7 @@ public interface ContractLotMapper {
 
     @Mapping(target = "highlightCount",
             expression = "java(countHighlights(contractLot))")
-    com.evatech.bidplatform.dashboard.dto.contract.response.ContractLotResponse toResponse(
+    ContractLotResponse toResponse(
             ContractLot contractLot
     );
 

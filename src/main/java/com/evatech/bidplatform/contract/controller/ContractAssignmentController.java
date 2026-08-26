@@ -1,7 +1,7 @@
 package com.evatech.bidplatform.contract.controller;
 
 import com.evatech.bidplatform.ApiResponse;
-import com.evatech.bidplatform.contract.dto.response.ContractResponse;
+import com.evatech.bidplatform.contract.dto.response.contract.ContractResponse;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
 import com.evatech.bidplatform.contract.mapper.ContractMapper;
 import com.evatech.bidplatform.contract.service.ContractService;

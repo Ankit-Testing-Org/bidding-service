@@ -1,7 +1,7 @@
 package com.evatech.bidplatform.contract.service;
 
-import com.evatech.bidplatform.contract.dto.response.ContractLotAnalysisResultResponse;
-import com.evatech.bidplatform.contract.dto.response.ProposalReadinessResponse;
+import com.evatech.bidplatform.contract.dto.response.lot.ContractLotAnalysisResultResponse;
+import com.evatech.bidplatform.contract.dto.response.lot.ProposalReadinessResponse;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
 import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
 import com.evatech.bidplatform.user.entity.User;

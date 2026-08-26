@@ -1,6 +1,6 @@
 package com.evatech.bidplatform.contract.entity.analysis;
 
-import com.evatech.bidplatform.contract.dto.HighlightReviewStatus;
+import com.evatech.bidplatform.contract.dto.response.highlight.HighlightReviewStatus;
 
 import java.time.LocalDateTime;
 import jakarta.persistence.Column;

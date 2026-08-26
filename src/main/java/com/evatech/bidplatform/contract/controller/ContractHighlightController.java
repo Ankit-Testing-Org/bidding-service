@@ -1,10 +1,10 @@
 package com.evatech.bidplatform.contract.controller;
 
 import com.evatech.bidplatform.ApiResponse;
-import com.evatech.bidplatform.contract.dto.request.HighlightReviewRequest;
+import com.evatech.bidplatform.contract.dto.request.highlight.HighlightReviewRequest;
 import com.evatech.bidplatform.contract.service.ContractHighlightService;
 import com.evatech.bidplatform.contract.service.ContractService;
-import com.evatech.bidplatform.user.dto.response.ContractHighlightResponse;
+import com.evatech.bidplatform.contract.dto.response.highlight.ContractHighlightResponse;
 import com.evatech.bidplatform.user.entity.User;
 import com.evatech.bidplatform.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

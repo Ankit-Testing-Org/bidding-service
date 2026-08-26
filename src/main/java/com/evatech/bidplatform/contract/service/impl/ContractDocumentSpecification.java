@@ -1,7 +1,7 @@
 package com.evatech.bidplatform.contract.service.impl;
 
+import com.evatech.bidplatform.contract.dto.request.contract.ContractSearchRequest;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
-import com.evatech.bidplatform.dashboard.dto.contract.request.ContractSearchRequest;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;

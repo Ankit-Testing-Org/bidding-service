@@ -1,10 +1,10 @@
 package com.evatech.bidplatform.contract.service;
 
+import com.evatech.bidplatform.contract.dto.request.contract.ContractSearchRequest;
 import com.evatech.bidplatform.contract.entity.*;
 import com.evatech.bidplatform.contract.entity.analysis.ContractLot;
 import com.evatech.bidplatform.dashboard.dto.ProcessingQueueItemResponse;
-import com.evatech.bidplatform.dashboard.dto.contract.request.ContractSearchRequest;
-import com.evatech.bidplatform.user.dto.response.ContractHighlightResponse;
+import com.evatech.bidplatform.contract.dto.response.highlight.ContractHighlightResponse;
 import com.evatech.bidplatform.user.entity.User;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;

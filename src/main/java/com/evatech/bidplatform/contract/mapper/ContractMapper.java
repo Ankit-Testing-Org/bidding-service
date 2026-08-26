@@ -1,6 +1,6 @@
 package com.evatech.bidplatform.contract.mapper;
 
-import com.evatech.bidplatform.contract.dto.response.ContractResponse;
+import com.evatech.bidplatform.contract.dto.response.contract.ContractResponse;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
 import org.mapstruct.Mapper;
 

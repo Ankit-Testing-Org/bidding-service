@@ -2,9 +2,9 @@ package com.evatech.bidplatform.user.mapper;
 
 import com.evatech.bidplatform.contract.entity.analysis.ContractAnalysisSummary;
 import com.evatech.bidplatform.contract.entity.analysis.ContractHighlight;
-import com.evatech.bidplatform.user.dto.response.ContractAnalysisPageResponse;
-import com.evatech.bidplatform.user.dto.response.ContractHighlightResponse;
-import com.evatech.bidplatform.user.dto.response.ContractSummaryResponse;
+import com.evatech.bidplatform.contract.dto.response.contract.ContractAnalysisPageResponse;
+import com.evatech.bidplatform.contract.dto.response.highlight.ContractHighlightResponse;
+import com.evatech.bidplatform.contract.dto.response.contract.ContractSummaryResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
