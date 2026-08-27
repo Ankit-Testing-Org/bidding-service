@@ -21,9 +21,9 @@ public class AiEntity {
     @Column(name = "contract_id", nullable = false)
     private Long contractId;
 
-    @Column(name = "requested_by", nullable = false)
+    @Column(name = "requested_by", nullable = true)
     private String requestedBy;
 
-    @Column(name = "requested_at", nullable = false)
+    @Column(name = "requested_at", nullable = true)
     private LocalDateTime requestedAt;
 }

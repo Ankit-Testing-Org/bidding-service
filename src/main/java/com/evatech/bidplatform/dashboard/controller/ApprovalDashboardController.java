@@ -1,6 +1,7 @@
 package com.evatech.bidplatform.dashboard.controller;
 
 import com.evatech.bidplatform.ApiResponse;
+import com.evatech.bidplatform.common.controller.AbstractController;
 import com.evatech.bidplatform.dashboard.dto.proposal.response.PageResponse;
 import com.evatech.bidplatform.dashboard.dto.approval.request.ApprovalDecisionRequest;
 import com.evatech.bidplatform.dashboard.dto.approval.request.ApprovalSearchRequest;
@@ -14,7 +15,6 @@ import com.evatech.bidplatform.user.entity.User;
 import com.evatech.bidplatform.user.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,13 +28,9 @@ public class ApprovalDashboardController extends AbstractController {
     private final ApprovalDashboardService approvalDashboardService;
 
     @GetMapping("/dashboard")
-    public ApiResponse<ApprovalDashboardResponse> fetchDashboard(
-            Authentication authentication
-    ) {
+    public ApiResponse<ApprovalDashboardResponse> fetchDashboard() {
         User user = authenticateAndFetchUser(
-                userRepository,
-                authentication
-        );
+                userRepository);
 
         ApprovalDashboardResponse response =
                 approvalDashboardService.fetchApprovalDashboard(user);
@@ -47,13 +43,10 @@ public class ApprovalDashboardController extends AbstractController {
 
     @PostMapping("/search")
     public ApiResponse<PageResponse<ApprovalResponse>> searchApprovals(
-            Authentication authentication,
             @RequestBody @Valid ApprovalSearchRequest request
     ) {
         User user = authenticateAndFetchUser(
-                userRepository,
-                authentication
-        );
+                userRepository);
 
         PageResponse<ApprovalResponse> response =
                 approvalDashboardService.searchApprovals(
@@ -69,13 +62,10 @@ public class ApprovalDashboardController extends AbstractController {
 
     @GetMapping("/{approvalId}")
     public ApiResponse<ApprovalDetailResponse> fetchApproval(
-            Authentication authentication,
             @PathVariable("approvalId") Long approvalId
     ) {
         User user = authenticateAndFetchUser(
-                userRepository,
-                authentication
-        );
+                userRepository);
 
         ApprovalDetailResponse response =
                 approvalDashboardService.fetchApproval(
@@ -91,14 +81,11 @@ public class ApprovalDashboardController extends AbstractController {
 
     @PostMapping("/{approvalId}/decision")
     public ApiResponse<ApprovalDecisionResponse> submitDecision(
-            Authentication authentication,
             @PathVariable("approvalId") Long approvalId,
             @RequestBody @Valid ApprovalDecisionRequest request
     ) {
         User user = authenticateAndFetchUser(
-                userRepository,
-                authentication
-        );
+                userRepository);
 
         ApprovalDecisionResponse response =
                 approvalDashboardService.submitDecision(
@@ -115,13 +102,10 @@ public class ApprovalDashboardController extends AbstractController {
 
     @GetMapping("/{approvalId}/delegates")
     public ApiResponse<List<DelegateUserResponse>> fetchDelegates(
-            Authentication authentication,
             @PathVariable("approvalId") Long approvalId
     ) {
         User user = authenticateAndFetchUser(
-                userRepository,
-                authentication
-        );
+                userRepository);
 
         List<DelegateUserResponse> response =
                 approvalDashboardService.fetchEligibleDelegates(

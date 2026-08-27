@@ -28,7 +28,7 @@ public class ContractPageText {
     private Integer pageNumber;
 
     @Lob
-    @Column(name = "text", nullable = false)
+    @Column(name = "text", nullable = false, columnDefinition = "LONGTEXT")
     private String text;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

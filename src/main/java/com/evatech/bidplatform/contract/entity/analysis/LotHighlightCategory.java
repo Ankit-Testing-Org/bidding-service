@@ -54,7 +54,9 @@ public enum LotHighlightCategory {
 
     OPPORTUNITY,
 
-    // AI Recommendation
+    RECOMMENDATION,
 
-    BID_RECOMMENDATION
+    BID_RECOMMENDATION,
+
+    MISSING_REQUIREMENT
 }

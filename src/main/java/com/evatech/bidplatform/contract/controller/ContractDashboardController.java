@@ -1,6 +1,7 @@
 package com.evatech.bidplatform.contract.controller;
 
 import com.evatech.bidplatform.ApiResponse;
+import com.evatech.bidplatform.common.controller.AbstractController;
 import com.evatech.bidplatform.contract.dto.request.contract.AssignContractRequest;
 import com.evatech.bidplatform.contract.dto.request.contract.ContractSearchRequest;
 import com.evatech.bidplatform.contract.dto.request.contract.UnassignContractRequest;
@@ -24,7 +25,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -44,10 +44,8 @@ public class ContractDashboardController extends AbstractController {
     private final ContractAssignmentMapper contractAssignmentMapper;
 
     @GetMapping("/dashboard")
-    public ApiResponse<ContractsDashboardResponse> getContractDashboard(
-            Authentication authentication
-    ) {
-        User user = authenticateAndFetchUser(userRepository, authentication);
+    public ApiResponse<ContractsDashboardResponse> getContractDashboard() {
+        User user = authenticateAndFetchUser(userRepository);
 
         List<ContractDocument> contractDocuments = contractService.getContractDashboard();
         if(!contractDocuments.isEmpty()) {
@@ -63,12 +61,11 @@ public class ContractDashboardController extends AbstractController {
 
     @GetMapping("/{contractId}")
     public ApiResponse<ContractDetailsResponse> getContractById(
-            Authentication authentication,
             @PathVariable("contractId") Long contractId
     ) {
 
-        User user = authenticateAndFetchUser(userRepository, authentication);
-        List<String> roles = fetchRolesForUser(authentication);
+        User user = authenticateAndFetchUser(userRepository);
+        List<String> roles = fetchRolesForUser();
 
         ContractDocument contractDocument =
                 contractService.getContract(contractId, user, roles);
@@ -81,11 +78,10 @@ public class ContractDashboardController extends AbstractController {
 
     @GetMapping("/{contractId}/lots")
     public ApiResponse<List<ContractLotResponse>> getContractLotsByContractId(
-            Authentication authentication,
             @PathVariable("contractId") Long contractId
     ) {
-        User user = authenticateAndFetchUser(userRepository, authentication);
-        List<String> roles = fetchRolesForUser(authentication);
+        User user = authenticateAndFetchUser(userRepository);
+        List<String> roles = fetchRolesForUser();
 
         List<ContractLot> contractLots = contractLotAccessService.getContractLots(contractId, user, roles);
 
@@ -98,11 +94,10 @@ public class ContractDashboardController extends AbstractController {
 
     @GetMapping("/{contractId}/analysis-access")
     public ApiResponse<ContractAnalysisAccessResponse> getContractAnalysisAccessById(
-            Authentication authentication,
             @PathVariable("contractId") Long contractId
     ) {
-        User user = authenticateAndFetchUser(userRepository, authentication);
-        List<String> roles = fetchRolesForUser(authentication);
+        User user = authenticateAndFetchUser(userRepository);
+        List<String> roles = fetchRolesForUser();
 
         ContractDocument contractDocument =
                 contractService.getContract(contractId, user, roles);
@@ -120,13 +115,12 @@ public class ContractDashboardController extends AbstractController {
 
     @PostMapping("/{contractId}/assign")
     public ApiResponse<AssignContractResponse> getContractByIdAssign(
-            Authentication authentication,
             @PathVariable("contractId") Long contractId,
             @RequestBody AssignContractRequest assignContractRequest
             ) {
 
-        User user = authenticateAndFetchUser(userRepository, authentication);
-        List<String> roles = fetchRolesForUser(authentication);
+        User user = authenticateAndFetchUser(userRepository);
+        List<String> roles = fetchRolesForUser();
 
         ContractDocument contractDocument = contractService.
                 assignContract(contractId, assignContractRequest.assignedTo(),
@@ -144,13 +138,12 @@ public class ContractDashboardController extends AbstractController {
 
     @PostMapping("/{contractId}/unassign")
     public ApiResponse<UnassignContractResponse> getContractByIdunassign(
-            Authentication authentication,
             @PathVariable("contractId") Long contractId,
             @RequestBody UnassignContractRequest unassignContractRequest
     ) {
 
-        User user = authenticateAndFetchUser(userRepository, authentication);
-        List<String> roles = fetchRolesForUser(authentication);
+        User user = authenticateAndFetchUser(userRepository);
+        List<String> roles = fetchRolesForUser();
 
         ContractDocument contractDocument = contractService.
                 unassignContract(contractId, user, roles,
@@ -166,12 +159,11 @@ public class ContractDashboardController extends AbstractController {
 
     @PostMapping("/search")
     public ApiResponse<ContractSearchResponse> getContractsSearch(
-            Authentication authentication,
             @RequestBody ContractSearchRequest contractSearchRequest
             ) {
 
-        User user = authenticateAndFetchUser(userRepository, authentication);
-        List<String> roles = fetchRolesForUser(authentication);
+        User user = authenticateAndFetchUser(userRepository);
+        List<String> roles = fetchRolesForUser();
 
         Page<ContractDocument> page = contractService.searchContracts(user,
                 roles, contractSearchRequest);
@@ -198,12 +190,11 @@ public class ContractDashboardController extends AbstractController {
 
     @GetMapping("/{contractId}/pdf")
     public ResponseEntity<Resource> getContractByIdPdf(
-            Authentication authentication,
             @PathVariable("contractId") Long contractId
     ) {
 
-        User user = authenticateAndFetchUser(userRepository, authentication);
-        List<String> roles = fetchRolesForUser(authentication);
+        User user = authenticateAndFetchUser(userRepository);
+        List<String> roles = fetchRolesForUser();
 
         Resource resource = contractService.retrieveContractPdf(contractId,
                 user, roles);

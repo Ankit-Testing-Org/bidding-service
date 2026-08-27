@@ -19,6 +19,7 @@ import com.evatech.bidplatform.contract.dto.response.contract.ContractAnalysisSe
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AiServiceImpl implements AiService {
@@ -36,19 +38,24 @@ public class AiServiceImpl implements AiService {
     @Value("${app.mock-ai-enabled:false}")
     private boolean mockAiEnabled;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
     @Override
     public ContractAnalysisResult analyseContract(ContractDocument contractDocument, List<ContractPageText> pages) {
         String prompt = contractAnalysisPromptBuilder.buildPrompt(contractDocument, pages);
         String aiResponse = "";
         if(mockAiEnabled)
-            aiResponse = loadResourceFile("sample-data/contract-analysis.json");
+            aiResponse = loadResourceFile("local/sample-data/contract-analysis.json");
         else
             aiResponse = aiClient.analysePrompt(prompt);
 
         AiContractAnalysisResponse analysisResponse = parseAiResponse(aiResponse);
-
+        try {
+            String analysisResponseAsString = objectMapper.writeValueAsString(analysisResponse);
+            log.info("analysisResponseAsString : "+analysisResponseAsString);
+        } catch (JsonProcessingException e) {
+            log.info("Caught error while processing AiContractAnalysisResponse");
+        }
         ContractAnalysisSummary summary = mapToAnalysisSummary(contractDocument, analysisResponse);
         List<ContractAnalysisSection> sections = mapToSections(contractDocument, analysisResponse);
 
@@ -64,10 +71,16 @@ public class AiServiceImpl implements AiService {
         String prompt = contractAnalysisPromptBuilder.buildLotPrompt(contractDocument, contractLot, lotPages, userComment);
         String aiResponse = "";
         if(mockAiEnabled)
-            aiResponse = loadResourceFile("sample-data/contract-analysis.json");
+            aiResponse = loadResourceFile("local/sample-data/contract-lots-analysis.json");
         else
             aiResponse = aiClient.analysePrompt(prompt);
         AiContractLotAnalysisResponse analysisResponse = parseLotAiResponse(aiResponse);
+        try {
+            String analysisResponseAsString = objectMapper.writeValueAsString(analysisResponse);
+            log.info("analyseContractLot : "+analysisResponseAsString);
+        } catch (JsonProcessingException e) {
+            log.info("Caught error while processing analyseContractLot");
+        }
         List<ContractLotHighlight> highlights = mapToContractLotHighlights(contractLot,
                 analysisResponse);
         ContractLotAnalysis analysis = mapToContractLotAnalysis(contractLot,
@@ -83,7 +96,7 @@ public class AiServiceImpl implements AiService {
 
         String aiResponse = "";
         if(mockAiEnabled)
-            aiResponse = loadResourceFile("sample-data/contract-analysis.json");
+            aiResponse = loadResourceFile("local/sample-data/contract-analysis.json");
         else
             aiResponse = aiClient.analysePrompt(prompt);
 
@@ -108,7 +121,11 @@ public class AiServiceImpl implements AiService {
         try {
             return objectMapper.readValue(aiResponse, AiContractLotAnalysisResponse.class);
         } catch (Exception ex) {
-            throw new IllegalStateException("Unable to parse lot analysis response", ex);
+            log.error("Unable to parse lot analysis response");
+            log.error("Response: {}", aiResponse, ex);
+            throw new IllegalStateException(
+                    "Unable to parse lot analysis response",
+                    ex);
         }
     }
 

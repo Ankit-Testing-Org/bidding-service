@@ -1,41 +1,273 @@
-2026-08-26 09:14:21.354 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 9.1.0.Final
-2026-08-26 09:14:21.416 [main] INFO  c.e.b.BiddingServiceApplication - Starting BiddingServiceApplication v0.0.1-SNAPSHOT using Java 17.0.20 with PID 1 (/app/app.jar started by root in /app)
-2026-08-26 09:14:21.418 [main] INFO  c.e.b.BiddingServiceApplication - The following 1 profile is active: "local"
-2026-08-26 09:14:22.413 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2026-08-26 09:14:22.591 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 165 ms. Found 29 JPA repository interfaces.
-2026-08-26 09:14:23.766 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8083 (http)
-2026-08-26 09:14:23.789 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8083"]
-2026-08-26 09:14:23.796 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
-2026-08-26 09:14:23.797 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.22]
-2026-08-26 09:14:23.851 [main] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 2381 ms
-2026-08-26 09:14:24.102 [main] INFO  org.hibernate.orm.jpa - HHH008540: Processing PersistenceUnitInfo [name: default]
-2026-08-26 09:14:24.178 [main] INFO  org.hibernate.orm.core - HHH000001: Hibernate ORM core version 7.4.1.Final
-2026-08-26 09:14:24.633 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
-2026-08-26 09:14:24.695 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
-2026-08-26 09:14:25.186 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5400db7e
-2026-08-26 09:14:25.191 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
-2026-08-26 09:14:25.319 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
-	Database JDBC URL [jdbc:mysql://mysql-local:3306/client?createDatabaseIfNotExist=true]
-	Database driver: MySQL Connector/J
-	Database dialect: MySQLDialect
-	Database version: 8.0.33
-	Default catalog/schema: client/undefined
-	Autocommit mode: undefined/unknown
-	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
-	JDBC fetch size: none
-	Pool: DataSourceConnectionProvider
-	Minimum pool size: undefined/unknown
-	Maximum pool size: undefined/unknown
-2026-08-26 09:14:27.391 [main] INFO  org.hibernate.orm.core - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2026-08-26 09:14:27.604 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
-2026-08-26 09:14:27.717 [main] INFO  o.s.d.j.r.q.QueryEnhancerFactories - Hibernate is in classpath; If applicable, HQL parser will be used.
-2026-08-26 09:14:30.038 [main] INFO  c.e.b.user.config.SecurityConfig - keyCloakUrl https://agreements-lakes-common-yours.trycloudflare.com, keyCloakRealm master, keyCloakUserName admin, keyCloakPassword admin, keyCloakClientId evatech, keyCloakClientSecret iX1xrfeAO6VkdkwmKPNqdxsP7JUrrfEm
-2026-08-26 09:14:30.706 [main] WARN  o.s.b.j.a.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
-2026-08-26 09:14:31.434 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8083"]
-2026-08-26 09:14:31.459 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8083 (http) with context path '/'
-2026-08-26 09:14:31.469 [main] INFO  c.e.b.BiddingServiceApplication - Started BiddingServiceApplication in 10.945 seconds (process running for 11.74)
-2026-08-26 09:15:42.376 [SpringApplicationShutdownHook] INFO  o.s.boot.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
-2026-08-26 09:15:42.390 [tomcat-shutdown] INFO  o.s.boot.tomcat.GracefulShutdown - Graceful shutdown complete
-2026-08-26 09:15:42.398 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
-2026-08-26 09:15:42.400 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
-2026-08-26 09:15:42.407 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-08-27 06:25:06.795 [http-nio-8083-exec-4] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:25:07.604 [http-nio-8083-exec-4] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:25:07.649 [http-nio-8083-exec-4] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:25:12.396 [http-nio-8083-exec-5] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:25:12.401 [http-nio-8083-exec-5] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:25:12.426 [http-nio-8083-exec-5] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:25:15.584 [http-nio-8083-exec-7] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:25:15.589 [http-nio-8083-exec-7] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:25:15.592 [http-nio-8083-exec-7] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:25:20.579 [http-nio-8083-exec-8] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:25:20.587 [http-nio-8083-exec-8] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:25:20.598 [http-nio-8083-exec-8] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:25:25.580 [http-nio-8083-exec-9] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:25:25.585 [http-nio-8083-exec-9] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:25:25.590 [http-nio-8083-exec-9] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:25:30.583 [http-nio-8083-exec-10] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:25:30.588 [http-nio-8083-exec-10] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:25:30.592 [http-nio-8083-exec-10] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:25:35.584 [http-nio-8083-exec-1] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:25:35.591 [http-nio-8083-exec-1] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:25:35.595 [http-nio-8083-exec-1] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:25:40.578 [http-nio-8083-exec-2] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:25:40.588 [http-nio-8083-exec-2] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:25:40.592 [http-nio-8083-exec-2] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:25:45.589 [http-nio-8083-exec-3] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:25:45.620 [http-nio-8083-exec-3] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:25:45.623 [http-nio-8083-exec-3] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:25:50.584 [http-nio-8083-exec-4] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:25:50.591 [http-nio-8083-exec-4] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:25:50.595 [http-nio-8083-exec-4] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:25:55.573 [http-nio-8083-exec-5] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:25:55.580 [http-nio-8083-exec-5] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:25:55.583 [http-nio-8083-exec-5] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:26:00.577 [http-nio-8083-exec-6] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:26:00.581 [http-nio-8083-exec-6] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:26:00.584 [http-nio-8083-exec-6] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:26:05.573 [http-nio-8083-exec-7] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:26:05.576 [http-nio-8083-exec-7] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:26:05.579 [http-nio-8083-exec-7] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:26:10.579 [http-nio-8083-exec-8] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:26:10.582 [http-nio-8083-exec-8] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:26:10.585 [http-nio-8083-exec-8] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:26:15.581 [http-nio-8083-exec-9] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:26:15.585 [http-nio-8083-exec-9] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:26:15.588 [http-nio-8083-exec-9] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:26:20.582 [http-nio-8083-exec-10] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:26:20.589 [http-nio-8083-exec-10] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:26:20.594 [http-nio-8083-exec-10] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:26:25.589 [http-nio-8083-exec-1] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:26:25.595 [http-nio-8083-exec-1] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:26:25.601 [http-nio-8083-exec-1] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:26:30.587 [http-nio-8083-exec-2] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:26:30.591 [http-nio-8083-exec-2] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:26:30.594 [http-nio-8083-exec-2] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:26:35.573 [http-nio-8083-exec-3] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:26:35.576 [http-nio-8083-exec-3] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:26:35.580 [http-nio-8083-exec-3] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:26:40.582 [http-nio-8083-exec-4] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:26:40.585 [http-nio-8083-exec-4] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:26:40.589 [http-nio-8083-exec-4] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:26:45.586 [http-nio-8083-exec-5] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:26:45.594 [http-nio-8083-exec-5] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:26:45.608 [http-nio-8083-exec-5] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:26:50.580 [http-nio-8083-exec-6] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:26:50.583 [http-nio-8083-exec-6] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:26:50.587 [http-nio-8083-exec-6] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:26:55.588 [http-nio-8083-exec-8] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:26:55.593 [http-nio-8083-exec-8] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:26:55.595 [http-nio-8083-exec-8] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:27:00.586 [http-nio-8083-exec-9] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:27:00.591 [http-nio-8083-exec-9] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:27:00.595 [http-nio-8083-exec-9] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:27:05.577 [http-nio-8083-exec-10] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:27:05.579 [http-nio-8083-exec-10] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:27:05.582 [http-nio-8083-exec-10] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:27:10.586 [http-nio-8083-exec-1] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:27:10.592 [http-nio-8083-exec-1] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:27:10.596 [http-nio-8083-exec-1] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:27:15.585 [http-nio-8083-exec-2] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:27:15.589 [http-nio-8083-exec-2] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:27:15.593 [http-nio-8083-exec-2] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:27:20.589 [http-nio-8083-exec-3] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:27:20.594 [http-nio-8083-exec-3] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:27:20.600 [http-nio-8083-exec-3] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:27:25.577 [http-nio-8083-exec-4] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:27:25.581 [http-nio-8083-exec-4] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:27:25.586 [http-nio-8083-exec-4] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:27:30.584 [http-nio-8083-exec-5] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:27:30.589 [http-nio-8083-exec-5] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:27:30.593 [http-nio-8083-exec-5] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:27:35.578 [http-nio-8083-exec-6] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:27:35.582 [http-nio-8083-exec-6] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:27:35.586 [http-nio-8083-exec-6] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:27:40.584 [http-nio-8083-exec-7] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:27:40.588 [http-nio-8083-exec-7] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:27:40.591 [http-nio-8083-exec-7] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:27:45.578 [http-nio-8083-exec-8] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:27:45.584 [http-nio-8083-exec-8] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:27:45.589 [http-nio-8083-exec-8] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:27:50.581 [http-nio-8083-exec-9] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:27:50.585 [http-nio-8083-exec-9] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:27:50.589 [http-nio-8083-exec-9] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:27:55.584 [http-nio-8083-exec-10] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:27:55.587 [http-nio-8083-exec-10] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:27:55.589 [http-nio-8083-exec-10] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:28:00.595 [http-nio-8083-exec-1] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:28:00.599 [http-nio-8083-exec-1] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:28:00.603 [http-nio-8083-exec-1] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:28:05.582 [http-nio-8083-exec-2] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:28:05.586 [http-nio-8083-exec-2] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:28:05.592 [http-nio-8083-exec-2] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:28:10.588 [http-nio-8083-exec-3] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:28:10.592 [http-nio-8083-exec-3] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:28:10.598 [http-nio-8083-exec-3] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:28:15.579 [http-nio-8083-exec-4] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:28:15.582 [http-nio-8083-exec-4] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:28:15.585 [http-nio-8083-exec-4] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:28:20.580 [http-nio-8083-exec-5] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:28:20.583 [http-nio-8083-exec-5] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:28:20.586 [http-nio-8083-exec-5] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:28:25.580 [http-nio-8083-exec-6] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:28:25.585 [http-nio-8083-exec-6] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:28:25.591 [http-nio-8083-exec-6] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:28:30.580 [http-nio-8083-exec-7] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:28:30.584 [http-nio-8083-exec-7] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:28:30.587 [http-nio-8083-exec-7] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:28:35.582 [http-nio-8083-exec-8] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:28:35.585 [http-nio-8083-exec-8] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:28:35.588 [http-nio-8083-exec-8] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:28:40.580 [http-nio-8083-exec-9] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:28:40.585 [http-nio-8083-exec-9] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:28:40.592 [http-nio-8083-exec-9] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:28:45.587 [http-nio-8083-exec-10] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:28:45.595 [http-nio-8083-exec-10] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:28:45.602 [http-nio-8083-exec-10] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:28:50.584 [http-nio-8083-exec-1] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:28:50.586 [http-nio-8083-exec-1] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:28:50.591 [http-nio-8083-exec-1] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:28:55.586 [http-nio-8083-exec-2] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:28:55.589 [http-nio-8083-exec-2] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:28:55.592 [http-nio-8083-exec-2] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:29:00.583 [http-nio-8083-exec-3] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:29:00.586 [http-nio-8083-exec-3] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:29:00.589 [http-nio-8083-exec-3] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:29:05.588 [http-nio-8083-exec-4] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:29:05.595 [http-nio-8083-exec-4] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:29:05.599 [http-nio-8083-exec-4] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:29:10.587 [http-nio-8083-exec-5] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:29:10.590 [http-nio-8083-exec-5] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:29:10.593 [http-nio-8083-exec-5] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:29:15.587 [http-nio-8083-exec-6] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:29:15.594 [http-nio-8083-exec-6] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:29:15.597 [http-nio-8083-exec-6] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:29:20.580 [http-nio-8083-exec-7] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:29:20.589 [http-nio-8083-exec-7] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:29:20.599 [http-nio-8083-exec-7] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:29:25.579 [http-nio-8083-exec-8] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:29:25.585 [http-nio-8083-exec-8] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:29:25.589 [http-nio-8083-exec-8] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:29:30.583 [http-nio-8083-exec-9] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:29:30.587 [http-nio-8083-exec-9] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:29:30.590 [http-nio-8083-exec-9] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:29:35.578 [http-nio-8083-exec-10] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:29:35.583 [http-nio-8083-exec-10] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:29:35.586 [http-nio-8083-exec-10] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:29:40.577 [http-nio-8083-exec-1] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:29:40.582 [http-nio-8083-exec-1] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:29:40.587 [http-nio-8083-exec-1] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:29:45.581 [http-nio-8083-exec-2] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:29:45.587 [http-nio-8083-exec-2] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:29:45.592 [http-nio-8083-exec-2] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:29:50.586 [http-nio-8083-exec-3] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:29:50.588 [http-nio-8083-exec-3] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:29:50.592 [http-nio-8083-exec-3] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:29:55.588 [http-nio-8083-exec-5] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:29:55.594 [http-nio-8083-exec-5] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:29:55.597 [http-nio-8083-exec-5] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:30:00.578 [http-nio-8083-exec-6] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:30:00.581 [http-nio-8083-exec-6] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:30:00.585 [http-nio-8083-exec-6] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:30:05.586 [http-nio-8083-exec-7] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:30:05.599 [http-nio-8083-exec-7] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:30:05.606 [http-nio-8083-exec-7] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:30:11.527 [http-nio-8083-exec-8] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:30:11.532 [http-nio-8083-exec-8] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:30:11.538 [http-nio-8083-exec-8] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:30:16.536 [http-nio-8083-exec-9] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:30:16.538 [http-nio-8083-exec-9] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:30:16.540 [http-nio-8083-exec-9] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:30:21.532 [http-nio-8083-exec-10] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:30:21.536 [http-nio-8083-exec-10] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:30:21.539 [http-nio-8083-exec-10] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:30:26.529 [http-nio-8083-exec-1] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:30:26.534 [http-nio-8083-exec-1] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:30:26.538 [http-nio-8083-exec-1] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:30:31.530 [http-nio-8083-exec-2] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:30:31.533 [http-nio-8083-exec-2] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:30:31.536 [http-nio-8083-exec-2] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:30:36.537 [http-nio-8083-exec-3] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:30:36.542 [http-nio-8083-exec-3] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:30:36.547 [http-nio-8083-exec-3] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:30:41.537 [http-nio-8083-exec-4] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:30:41.541 [http-nio-8083-exec-4] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:30:41.543 [http-nio-8083-exec-4] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:30:46.533 [http-nio-8083-exec-5] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:30:46.536 [http-nio-8083-exec-5] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:30:46.539 [http-nio-8083-exec-5] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:30:54.769 [http-nio-8083-exec-6] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:30:54.779 [http-nio-8083-exec-6] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:30:54.788 [http-nio-8083-exec-6] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:30:56.555 [http-nio-8083-exec-7] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:30:56.557 [http-nio-8083-exec-7] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:30:56.560 [http-nio-8083-exec-7] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:31:01.525 [http-nio-8083-exec-8] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:31:01.529 [http-nio-8083-exec-8] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:31:01.532 [http-nio-8083-exec-8] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:31:06.531 [http-nio-8083-exec-9] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:31:06.534 [http-nio-8083-exec-9] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:31:06.536 [http-nio-8083-exec-9] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:31:14.528 [http-nio-8083-exec-10] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:31:14.535 [http-nio-8083-exec-10] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:31:14.540 [http-nio-8083-exec-10] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:32:14.706 [http-nio-8083-exec-2] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:32:14.708 [http-nio-8083-exec-2] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:32:14.710 [http-nio-8083-exec-2] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:32:26.824 [http-nio-8083-exec-3] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:32:26.847 [http-nio-8083-exec-3] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:32:26.864 [http-nio-8083-exec-3] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:32:30.792 [http-nio-8083-exec-4] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:32:30.800 [http-nio-8083-exec-4] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:32:30.808 [http-nio-8083-exec-4] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:32:36.752 [http-nio-8083-exec-5] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:32:36.755 [http-nio-8083-exec-5] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:32:36.757 [http-nio-8083-exec-5] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:32:41.754 [http-nio-8083-exec-6] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:32:41.758 [http-nio-8083-exec-6] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:32:41.760 [http-nio-8083-exec-6] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:32:46.764 [http-nio-8083-exec-7] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:32:46.767 [http-nio-8083-exec-7] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:32:46.770 [http-nio-8083-exec-7] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:32:51.775 [http-nio-8083-exec-8] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:32:51.777 [http-nio-8083-exec-8] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:32:51.780 [http-nio-8083-exec-8] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:32:56.797 [http-nio-8083-exec-9] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:32:56.800 [http-nio-8083-exec-9] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:32:56.802 [http-nio-8083-exec-9] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:33:01.807 [http-nio-8083-exec-10] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:33:01.810 [http-nio-8083-exec-10] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:33:01.813 [http-nio-8083-exec-10] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:33:06.812 [http-nio-8083-exec-1] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:33:06.815 [http-nio-8083-exec-1] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:33:06.818 [http-nio-8083-exec-1] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:33:11.833 [http-nio-8083-exec-2] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:33:11.838 [http-nio-8083-exec-2] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:33:11.841 [http-nio-8083-exec-2] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:33:16.847 [http-nio-8083-exec-3] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:33:16.850 [http-nio-8083-exec-3] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:33:16.853 [http-nio-8083-exec-3] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:33:21.873 [http-nio-8083-exec-4] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:33:21.879 [http-nio-8083-exec-4] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:33:21.882 [http-nio-8083-exec-4] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:33:26.868 [http-nio-8083-exec-5] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:33:26.871 [http-nio-8083-exec-5] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:33:26.873 [http-nio-8083-exec-5] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:33:31.876 [http-nio-8083-exec-6] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:33:31.880 [http-nio-8083-exec-6] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:33:31.883 [http-nio-8083-exec-6] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:34:14.973 [http-nio-8083-exec-7] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:34:14.977 [http-nio-8083-exec-7] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:34:14.980 [http-nio-8083-exec-7] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]
+2026-08-27 06:35:15.138 [http-nio-8083-exec-9] INFO  c.e.b.MockAuthenticationFilter - MockAuthenticationFilter HIT
+2026-08-27 06:35:15.145 [http-nio-8083-exec-9] INFO  c.e.b.MockAuthenticationFilter - Authentication set: admin
+2026-08-27 06:35:15.150 [http-nio-8083-exec-9] INFO  c.e.b.c.c.AbstractController - Roles [ADMIN]

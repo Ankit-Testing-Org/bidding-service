@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.Authentication;
@@ -22,6 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Component
 @Profile("local")
 @RequiredArgsConstructor
@@ -32,20 +34,42 @@ public class MockAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
-            @NonNull HttpServletResponse response,
+            HttpServletResponse response,
             FilterChain filterChain)
             throws ServletException, IOException {
 
-        String mockUser =
-                request.getHeader("X-Mock-User");
+        log.info("MockAuthenticationFilter HIT");
 
-        Jwt jwt = buildMockJwt(mockUser);
+        String authorization =
+                request.getHeader("Authorization");
 
-        Authentication auth =
+        String user = "admin";
+
+        if (authorization != null &&
+                authorization.startsWith("Bearer ")) {
+
+            String token =
+                    authorization.substring(7);
+
+            user = switch (token) {
+                case "mock-bidder" -> "bidder";
+                case "mock-reviewer" -> "reviewer";
+                case "mock-manager" -> "manager";
+                default -> "admin";
+            };
+        }
+
+        Jwt jwt = buildMockJwt(user);
+
+        JwtAuthenticationToken authentication =
                 new JwtAuthenticationToken(jwt);
 
-        SecurityContextHolder.getContext()
-                .setAuthentication(auth);
+        log.info("Authentication set: {}",
+                authentication.getName());
+
+        SecurityContextHolder
+                .getContext()
+                .setAuthentication(authentication);
 
         filterChain.doFilter(request, response);
     }
@@ -82,8 +106,10 @@ public class MockAuthenticationFilter extends OncePerRequestFilter {
             String username,
             List<String> roles) {
 
+        String userId = username;
+
         Jwt jwt = Jwt.withTokenValue("mock")
-                .subject(UUID.randomUUID().toString())
+                .subject(userId)
                 .claim("email", email)
                 .claim("preferred_username", username)
                 .claim("realm_access",

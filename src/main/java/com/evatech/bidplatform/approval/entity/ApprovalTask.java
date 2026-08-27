@@ -32,7 +32,7 @@ public class ApprovalTask {
     private ApprovalStatus status;
 
     @Lob
-    @Column(name = "comment")
+    @Column(name = "comment", columnDefinition = "LONGTEXT")
     private String comment;
 
     @Column(name = "created_at", nullable = false)

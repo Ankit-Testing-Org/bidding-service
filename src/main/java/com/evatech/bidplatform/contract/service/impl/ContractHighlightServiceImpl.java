@@ -3,21 +3,28 @@ package com.evatech.bidplatform.contract.service.impl;
 import com.evatech.bidplatform.ai.service.AiRequestLoggerService;
 import com.evatech.bidplatform.ai.service.AiService;
 import com.evatech.bidplatform.audit.service.AuditAction;
-import com.evatech.bidplatform.contract.dto.response.highlight.ContractAnalysisResult;
-import com.evatech.bidplatform.contract.dto.response.highlight.ContractAnalysisSection;
-import com.evatech.bidplatform.contract.dto.response.highlight.HighlightReanalysisResponse;
-import com.evatech.bidplatform.contract.dto.response.highlight.HighlightReviewStatus;
-import com.evatech.bidplatform.contract.entity.*;
-import com.evatech.bidplatform.contract.entity.analysis.*;
-import com.evatech.bidplatform.contract.repository.*;
-import com.evatech.bidplatform.contract.service.ContractHighlightService;
-import com.evatech.bidplatform.contract.service.ContractLifecycleService;
 import com.evatech.bidplatform.contract.dto.response.contract.ContractAnalysisPageResponse;
 import com.evatech.bidplatform.contract.dto.response.contract.ContractAnalysisSectionType;
-import com.evatech.bidplatform.contract.dto.response.highlight.ContractHighlightResponse;
+import com.evatech.bidplatform.contract.dto.response.highlight.*;
+import com.evatech.bidplatform.contract.entity.ContractDocument;
+import com.evatech.bidplatform.contract.entity.ContractPageText;
+import com.evatech.bidplatform.contract.entity.ContractStatus;
+import com.evatech.bidplatform.contract.entity.analysis.ContractAnalysisSummary;
+import com.evatech.bidplatform.contract.entity.analysis.ContractHighlight;
+import com.evatech.bidplatform.contract.entity.analysis.ContractHighlightCategory;
+import com.evatech.bidplatform.contract.entity.analysis.ContractHighlightReviewHistory;
+import com.evatech.bidplatform.contract.repository.ContractAnalysisSummaryRepository;
+import com.evatech.bidplatform.contract.repository.ContractDocumentRepository;
+import com.evatech.bidplatform.contract.repository.ContractHighlightRepository;
+import com.evatech.bidplatform.contract.repository.ContractPageTextRepository;
+import com.evatech.bidplatform.contract.service.ContractHighlightService;
+import com.evatech.bidplatform.contract.service.ContractLifecycleService;
 import com.evatech.bidplatform.user.entity.User;
 import com.evatech.bidplatform.user.mapper.ContractAnalysisMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -39,6 +47,7 @@ public class ContractHighlightServiceImpl implements ContractHighlightService {
     private final AiRequestLoggerService aiRequestLoggerService;
     private final ContractAnalysisSummaryRepository contractAnalysisSummaryRepository;
     private final ContractAnalysisMapper contractAnalysisMapper;
+    private final ObjectMapper objectMapper;
 
     @AuditAction(action = "ANALYSE_CONTRACT_HISTORY", entity = "")
     @Override
@@ -68,20 +77,33 @@ public class ContractHighlightServiceImpl implements ContractHighlightService {
         try {
             ContractAnalysisResult analysisResult = aiService.analyseContract(contractDocument, pages);
 
-            aiRequestLoggerService.logRequest(contractDocumentId, contractDocument.getAssignedTo());
+            aiRequestLoggerService.logRequest(contractDocumentId, user.getEmail());
 
             if (alreadyAnalysed || reanalyse) {
                 contractHighlightRepository.deleteByContractDocumentId(contractDocumentId);
                 contractAnalysisSummaryRepository.deleteByContractDocumentId(contractDocumentId);
             }
             ContractAnalysisSummary savedSummary = saveAnalysisSummary(contractDocument, analysisResult.getSummary());
+            if(savedSummary != null) {
+                try {
+                    String savedSummaryAsString = objectMapper.writeValueAsString(savedSummary);
+                    log.info("savedSummaryAsString : "+savedSummaryAsString);
+                } catch (JsonProcessingException e) {
+                    log.info("Caught error while processing savedSummaryAsString");
+                }
+            }
             List<ContractHighlight> savedHighlights = saveHighlights(contractDocument, analysisResult.getSections());
+            try {
+                String savedHighlightsAsString = objectMapper.writeValueAsString(savedHighlights);
+                log.info("savedHighlightsAsString : "+savedHighlightsAsString);
+            } catch (JsonProcessingException e) {
+                log.info("Caught error while processing savedHighlightsAsString");
+            }
             contractLifecycleService.markAnalysed(contractDocumentId, user, roles);
             return contractAnalysisMapper.toPageResponse(contractDocument.getId(), savedSummary, savedHighlights);
 
         } catch (RuntimeException ex) {
             contractLifecycleService.markAnalysisFailed(contractDocumentId, ex.getMessage(), user, roles);
-
             throw ex;
         }
     }
@@ -166,7 +188,7 @@ public class ContractHighlightServiceImpl implements ContractHighlightService {
             return List.of();
         }
 
-        List<ContractHighlight> highlights = analysisSections.stream().filter(section -> section != null).flatMap(section -> toHighlights(contractDocument, section).stream()).toList();
+        List<ContractHighlight> highlights = analysisSections.stream().filter(Objects::nonNull).flatMap(section -> toHighlights(contractDocument, section).stream()).toList();
 
         if (highlights.isEmpty()) {
             return List.of();

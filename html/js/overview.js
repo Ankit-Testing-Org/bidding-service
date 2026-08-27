@@ -752,7 +752,7 @@ async function loadProcessingQueue() {
 
         const response =
             await fetch(
-                "/api/contracts/processing-queue"
+                "/api/dashboard/processing-queue"
             );
 
         const result =

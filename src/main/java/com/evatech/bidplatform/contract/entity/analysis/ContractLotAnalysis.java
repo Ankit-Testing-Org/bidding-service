@@ -31,8 +31,10 @@ public class ContractLotAnalysis {
     private RiskLevel overallRiskLevel;
 
     @Lob
+    @Column(name = "executive_summary", columnDefinition = "LONGTEXT")
     private String executiveSummary;
 
     @Lob
+    @Column(name = "recommendation", columnDefinition = "LONGTEXT")
     private String recommendation;
 }

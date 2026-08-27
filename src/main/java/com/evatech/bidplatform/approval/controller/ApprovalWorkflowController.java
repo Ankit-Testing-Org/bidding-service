@@ -4,11 +4,11 @@ package com.evatech.bidplatform.approval.controller;
 import com.evatech.bidplatform.approval.dto.SubmitWorkflowTaskRequest;
 import com.evatech.bidplatform.approval.entity.workflow.WorkflowTask;
 import com.evatech.bidplatform.approval.service.ApprovalWorkflowService;
+import com.evatech.bidplatform.common.controller.AbstractController;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
 import com.evatech.bidplatform.user.entity.User;
 import com.evatech.bidplatform.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,15 +23,13 @@ public class ApprovalWorkflowController extends AbstractController {
 
     @PostMapping("/{contractId}/submit-for-review")
     public ContractDocument submitForReview(
-            @PathVariable Long contractId,
-            Authentication authentication
-    ) {
-        User user = authenticateAndFetchUser(userRepo, authentication);
-        List<String> roles = fetchRolesForUser(authentication);
+            @PathVariable Long contractId) {
+        User user = authenticateAndFetchUser(userRepo);
+        List<String> roles = fetchRolesForUser();
 
         return approvalWorkflowService.submitForReview(
                 contractId,
-                authentication.getName(),
+                user.getEmail(),
                 user,
                 roles
         );
@@ -39,27 +37,23 @@ public class ApprovalWorkflowController extends AbstractController {
 
     @PostMapping("/tasks/{taskId}/assign-to-me")
     public WorkflowTask assignToMe(
-            @PathVariable Long taskId,
-            Authentication authentication
-    ) {
-        authenticateAndFetchUser(userRepo, authentication);
+            @PathVariable Long taskId) {
+        User user = authenticateAndFetchUser(userRepo);
         return approvalWorkflowService.assignTaskToMe(
                 taskId,
-                authentication.getName()
+                user.getEmail()
         );
     }
 
     @PostMapping("/tasks/{taskId}/submit")
     public WorkflowTask submitTask(
             @PathVariable Long taskId,
-            @RequestBody SubmitWorkflowTaskRequest request,
-            Authentication authentication
-    ) {
-        authenticateAndFetchUser(userRepo, authentication);
+            @RequestBody SubmitWorkflowTaskRequest request) {
+        User user = authenticateAndFetchUser(userRepo);
         return approvalWorkflowService.submitTask(
                 taskId,
                 request.action(),
-                authentication.getName(),
+                user.getEmail(),
                 request.comment()
         );
     }

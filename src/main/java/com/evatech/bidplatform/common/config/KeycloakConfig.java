@@ -1,4 +1,4 @@
-package com.evatech.bidplatform.user.config;
+package com.evatech.bidplatform.common.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.admin.client.Keycloak;
@@ -6,15 +6,14 @@ import org.keycloak.admin.client.KeycloakBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
 
 @Slf4j
 @Configuration
-public class SecurityConfig {
+@Profile("!local")
+public class KeycloakConfig {
 
     @Value("${keycloak.realm}")
     private String keyCloakRealm;
@@ -33,37 +32,6 @@ public class SecurityConfig {
 
     @Value("${keycloak.clientsecret}")
     private String keyCloakClientSecret;
-
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) {
-
-        http
-                .csrf(csrf -> csrf.disable())
-                . cors(cors -> {})   // ✅ IMPORTANT
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/user/register",
-                                "/user/resend/token",
-                                "/user/email/verify",
-                                "/user/update/verify",
-                                "/user/password/send-otp",
-                                "/user/password/reset",
-                                "/user/call-status",
-                                "/user/analyze-audio",
-                                "/user/voice",
-                                "/user/recording-complete",
-                                "/auth/token",
-                                "/webhook/github",
-                                "/reviews",
-                                "/reviews/report"
-                        ).permitAll()
-                        .anyRequest().authenticated()
-                )
-                .oauth2ResourceServer(oauth2 ->
-                        oauth2.jwt(Customizer.withDefaults()));
-
-        return http.build();
-    }
 
     @Bean
     Keycloak keycloak() {

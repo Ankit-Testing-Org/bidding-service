@@ -1,6 +1,7 @@
 package com.evatech.bidplatform.dashboard.controller;
 
 import com.evatech.bidplatform.ApiResponse;
+import com.evatech.bidplatform.common.controller.AbstractController;
 import com.evatech.bidplatform.dashboard.dto.proposal.response.PageResponse;
 import com.evatech.bidplatform.dashboard.dto.summary.request.MyWorkItemSearchRequest;
 import com.evatech.bidplatform.dashboard.dto.summary.response.*;
@@ -9,7 +10,6 @@ import com.evatech.bidplatform.user.entity.User;
 import com.evatech.bidplatform.user.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,13 +23,9 @@ public class MySummaryController extends AbstractController {
     private final MySummaryService mySummaryService;
 
     @GetMapping("/dashboard")
-    public ApiResponse<MySummaryDashboardResponse> fetchDashboard(
-            Authentication authentication
-    ) {
+    public ApiResponse<MySummaryDashboardResponse> fetchDashboard() {
         User user = authenticateAndFetchUser(
-                userRepository,
-                authentication
-        );
+                userRepository);
 
         MySummaryDashboardResponse response =
                 mySummaryService.fetchDashboard(user);
@@ -41,14 +37,10 @@ public class MySummaryController extends AbstractController {
     }
 
     @PostMapping("/work-items/search")
-    public ApiResponse<PageResponse<MyWorkItemResponse>> searchWorkItems(
-            Authentication authentication,
-            @RequestBody @Valid MyWorkItemSearchRequest request
+    public ApiResponse<PageResponse<MyWorkItemResponse>> searchWorkItems(@RequestBody @Valid MyWorkItemSearchRequest request
     ) {
         User user = authenticateAndFetchUser(
-                userRepository,
-                authentication
-        );
+                userRepository);
 
         PageResponse<MyWorkItemResponse> response =
                 mySummaryService.searchWorkItems(
@@ -64,13 +56,10 @@ public class MySummaryController extends AbstractController {
 
     @GetMapping("/work-items/{workItemId}")
     public ApiResponse<MyWorkItemDetailResponse> fetchWorkItem(
-            Authentication authentication,
             @PathVariable("workItemId") Long workItemId
     ) {
         User user = authenticateAndFetchUser(
-                userRepository,
-                authentication
-        );
+                userRepository);
 
         MyWorkItemDetailResponse response =
                 mySummaryService.fetchWorkItem(
@@ -86,11 +75,9 @@ public class MySummaryController extends AbstractController {
 
     @GetMapping("/focus")
     public ApiResponse<MyFocusResponse> fetchFocus(
-            Authentication authentication
     ) {
         User user = authenticateAndFetchUser(
-                userRepository,
-                authentication
+                userRepository
         );
 
         MyFocusResponse response =
@@ -104,16 +91,13 @@ public class MySummaryController extends AbstractController {
 
     @GetMapping("/activities")
     public ApiResponse<List<MyActivityResponse>> fetchActivities(
-            Authentication authentication,
             @RequestParam(
                     name = "limit",
                     defaultValue = "10"
             ) int limit
     ) {
         User user = authenticateAndFetchUser(
-                userRepository,
-                authentication
-        );
+                userRepository);
 
         List<MyActivityResponse> response =
                 mySummaryService.fetchActivities(
@@ -129,16 +113,13 @@ public class MySummaryController extends AbstractController {
 
     @GetMapping("/audits")
     public ApiResponse<List<MyAuditResponse>> fetchAudits(
-            Authentication authentication,
             @RequestParam(
                     name = "limit",
                     defaultValue = "10"
             ) int limit
     ) {
         User user = authenticateAndFetchUser(
-                userRepository,
-                authentication
-        );
+                userRepository);
 
         List<MyAuditResponse> response =
                 mySummaryService.fetchAudits(

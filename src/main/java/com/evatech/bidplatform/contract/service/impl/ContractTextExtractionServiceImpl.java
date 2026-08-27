@@ -98,7 +98,7 @@ public class ContractTextExtractionServiceImpl
         try {
 
             ClassPathResource resource =
-                    new ClassPathResource("sample-data/contract-pages.txt");
+                    new ClassPathResource("local/sample-data/contract-pages.txt");
 
             String content =
                     new String(

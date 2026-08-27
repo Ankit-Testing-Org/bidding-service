@@ -1,6 +1,7 @@
 package com.evatech.bidplatform.ai.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -15,6 +16,7 @@ import java.util.Map;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class AiClient {
 
     @Value("${ai.type}")
@@ -24,6 +26,8 @@ public class AiClient {
     private String apiKey;
 
     private final RestTemplate restTemplate = new RestTemplate();
+
+    private final  ObjectMapper mapper;
 
     public String analysePrompt(String prompt) {
 
@@ -137,7 +141,6 @@ public class AiClient {
 
     private String extractContent(String json) {
         try {
-            ObjectMapper mapper = new ObjectMapper();
             return mapper.readTree(json)
                     .get("choices").get(0)
                     .get("message").get("content")

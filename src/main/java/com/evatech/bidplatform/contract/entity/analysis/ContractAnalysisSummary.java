@@ -73,11 +73,11 @@ public class ContractAnalysisSummary {
     // Executive Dashboard
 
     @Lob
-    @Column(name = "executive_summary")
+    @Column(name = "executive_summary", columnDefinition = "LONGTEXT")
     private String executiveSummary;
 
     @Lob
-    @Column(name = "recommendation")
+    @Column(name = "recommendation", columnDefinition = "LONGTEXT")
     private String recommendation;
 
     @Column(name = "mandatory_documents")
@@ -100,7 +100,7 @@ public class ContractAnalysisSummary {
     @Column(name = "analysis_status")
     private AnalysisStatus status;
 
-    @Column(name = "failure_reason")
+    @Column(name = "failure_reason", columnDefinition = "LONGTEXT")
     private String failureReason;
 
     @Column(name = "analyzed_at")

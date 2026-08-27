@@ -71,18 +71,7 @@ public class ContractLifecycleServiceImpl
                         user,
                         roles
                 );
-
-        if (!ContractStatus.ANALYSIS_IN_PROGRESS.equals(
-                contractDocument.getStatus()
-        )) {
-            throw new IllegalStateException(
-                    "Contract must be in analysis progress "
-                            + "before marking as analysed"
-            );
-        }
-
         contractDocument.setStatus(ContractStatus.ANALYSED);
-
         return contractDocumentRepository.save(contractDocument);
     }
 

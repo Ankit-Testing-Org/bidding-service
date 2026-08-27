@@ -1,4 +1,4 @@
-package com.evatech.bidplatform.user.config;
+package com.evatech.bidplatform.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

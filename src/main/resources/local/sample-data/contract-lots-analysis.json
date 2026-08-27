@@ -1,0 +1,121 @@
+{
+  "recommendedToBid": true,
+  "bidScore": 86.5,
+  "winProbability": 78.0,
+  "overallRiskLevel": "MEDIUM",
+
+  "executiveSummary": "The lot aligns strongly with the supplier's pharmaceutical manufacturing capabilities and existing product portfolio. Most technical and compliance requirements can be satisfied with current certifications and production capacity. Commercial requirements are achievable, although careful attention is required for delivery timelines and stock availability commitments.",
+
+  "recommendation": "Proceed with bid submission. Prioritize verification of inventory planning, GMP certificate validity, and supporting regulatory documentation. Legal review is recommended for delivery penalty clauses and performance obligations.",
+
+  "strengths": [
+    "Existing GMP-certified manufacturing facility.",
+    "Previous successful supply contracts with public healthcare institutions.",
+    "Product portfolio fully covers the medicines listed in this lot.",
+    "Demonstrated financial capacity exceeds tender minimum requirements.",
+    "Current production capacity supports projected annual demand."
+  ],
+
+  "weaknesses": [
+    "Aggressive delivery timelines may create operational pressure.",
+    "Limited buffer stock availability for high-demand items.",
+    "Bid margin may be reduced due to competitive market pricing."
+  ],
+
+  "missingRequirements": [
+    "Updated Non Conviction Certificate.",
+    "Latest audited financial statements.",
+    "Signed manufacturer authorization form."
+  ],
+
+  "highlights": [
+    {
+      "category": "STRENGTH",
+      "title": "Strong Manufacturing Capability",
+      "description": "The bidder operates a GMP-certified production facility capable of delivering the full estimated annual demand for this lot.",
+      "pageNumber": 12,
+      "reference": "Technical Requirements Section",
+      "riskLevel": "LOW",
+      "confidenceScore": 98.0,
+      "recommendedAction": "Reference production capacity in technical proposal.",
+      "bidCapable": true
+    },
+    {
+      "category": "STRENGTH",
+      "title": "Relevant Healthcare Experience",
+      "description": "Supplier has prior experience delivering pharmaceutical products to government healthcare organizations.",
+      "pageNumber": 15,
+      "reference": "Eligibility Criteria",
+      "riskLevel": "LOW",
+      "confidenceScore": 96.0,
+      "recommendedAction": "Include previous contract references in bid response.",
+      "bidCapable": true
+    },
+    {
+      "category": "COMPLIANCE_REQUIREMENT",
+      "title": "GMP Certification Required",
+      "description": "All supplied products must originate from facilities holding valid GMP certification throughout the contract duration.",
+      "pageNumber": 18,
+      "reference": "Clause 6.1",
+      "riskLevel": "HIGH",
+      "confidenceScore": 99.0,
+      "recommendedAction": "Validate GMP certificate validity and include copies with submission.",
+      "bidCapable": true
+    },
+    {
+      "category": "TECHNICAL_REQUIREMENT",
+      "title": "Cold Storage Handling",
+      "description": "Selected products require controlled temperature storage and transportation conditions.",
+      "pageNumber": 22,
+      "reference": "Product Specifications",
+      "riskLevel": "MEDIUM",
+      "confidenceScore": 92.0,
+      "recommendedAction": "Provide cold-chain logistics documentation.",
+      "bidCapable": true
+    },
+    {
+      "category": "WEAKNESS",
+      "title": "Limited Buffer Stock",
+      "description": "Current inventory strategy may not support emergency demand spikes requested by the procuring authority.",
+      "pageNumber": 24,
+      "reference": "Supply Conditions",
+      "riskLevel": "MEDIUM",
+      "confidenceScore": 88.0,
+      "recommendedAction": "Review safety stock planning before contract award.",
+      "bidCapable": true
+    },
+    {
+      "category": "MISSING_REQUIREMENT",
+      "title": "Missing NCC Documentation",
+      "description": "Latest Non Conviction Certificate is not currently available in the bid preparation repository.",
+      "pageNumber": 30,
+      "reference": "Compliance Documents Checklist",
+      "riskLevel": "HIGH",
+      "confidenceScore": 95.0,
+      "recommendedAction": "Obtain and attach updated certificate before submission.",
+      "bidCapable": false
+    },
+    {
+      "category": "CAPABILITY_GAP",
+      "title": "Regional Distribution Coverage",
+      "description": "Current logistics network may require subcontracted distribution support for remote facilities.",
+      "pageNumber": 35,
+      "reference": "Delivery Requirements",
+      "riskLevel": "MEDIUM",
+      "confidenceScore": 84.0,
+      "recommendedAction": "Identify logistics partner prior to bid submission.",
+      "bidCapable": true
+    },
+    {
+      "category": "RECOMMENDATION",
+      "title": "Proceed With Bid Submission",
+      "description": "Overall qualification score and capability assessment indicate a strong bid opportunity with manageable risks.",
+      "pageNumber": 1,
+      "reference": "AI Overall Assessment",
+      "riskLevel": "LOW",
+      "confidenceScore": 97.0,
+      "recommendedAction": "Proceed to bid generation and review workflow.",
+      "bidCapable": true
+    }
+  ]
+}

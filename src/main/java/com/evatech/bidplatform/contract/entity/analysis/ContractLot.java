@@ -88,7 +88,7 @@ public class ContractLot {
     private LocalDateTime analysisFailedAt;
 
     @Lob
-    @Column(name = "analysis_error")
+    @Column(name = "analysis_error", columnDefinition = "LONGTEXT")
     private String analysisError;
 
     @Enumerated(EnumType.STRING)
@@ -102,7 +102,7 @@ public class ContractLot {
     private LocalDateTime reviewedAt;
 
     @Lob
-    @Column(name = "review_comment")
+    @Column(name = "review_comment", columnDefinition = "LONGTEXT")
     private String reviewComment;
 
     @Column(name = "reanalysis_requested_count")

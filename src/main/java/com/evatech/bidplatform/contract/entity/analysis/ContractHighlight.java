@@ -31,7 +31,7 @@ public class ContractHighlight {
     private String title;
 
     @Lob
-    @Column(name = "description", nullable = false)
+    @Column(name = "description",  nullable = false, columnDefinition = "LONGTEXT")
     private String description;
 
     @Column(name = "page_number")
@@ -48,7 +48,7 @@ public class ContractHighlight {
     private Integer severityScore;
 
     @Lob
-    @Column(name = "recommended_action")
+    @Column(name = "recommended_action", columnDefinition = "LONGTEXT")
     private String recommendedAction;
 
     @Column(name = "mandatory")

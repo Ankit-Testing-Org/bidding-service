@@ -2,6 +2,7 @@ package com.evatech.bidplatform.contract.controller;
 
 
 import com.evatech.bidplatform.ApiResponse;
+import com.evatech.bidplatform.common.controller.AbstractController;
 import com.evatech.bidplatform.contract.dto.request.lot.ApproveAnalysisRequest;
 import com.evatech.bidplatform.contract.dto.request.lot.ReanalyseLotRequest;
 import com.evatech.bidplatform.contract.dto.response.lot.AnalysisReviewResponse;
@@ -18,8 +19,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,7 +37,6 @@ public class ContractLotController extends AbstractController {
      */
     @GetMapping("/{contractId}/lots/{lotId}")
     public ApiResponse<ContractLotResponse> fetchContractLot(
-            Authentication authentication,
             @PathVariable("contractId")
             @Positive(message = "Contract ID must be positive")
             Long contractId,
@@ -47,9 +45,7 @@ public class ContractLotController extends AbstractController {
             Long lotId
     ) {
         User user = authenticateAndFetchUser(
-                userRepository,
-                authentication
-        );
+                userRepository);
 
         ContractLot response = contractLotService.extractLot(
                         contractId, user, lotId);
@@ -62,8 +58,6 @@ public class ContractLotController extends AbstractController {
 
     @GetMapping("/{contractId}/lots/{lotId}/analyse")
     public ContractLotAnalysisResultResponse analyseContractLot(
-            Authentication authentication,
-
             @PathVariable("contractId")
             @Positive(message = "Contract ID must be positive")
             Long contractId,
@@ -73,16 +67,14 @@ public class ContractLotController extends AbstractController {
             Long lotId,
 
             @RequestParam(defaultValue = "false") boolean reanalyse) {
-        User user = authenticateAndFetchUser(userRepository, authentication);
-        List<String> roles = fetchRolesForUser(authentication);
+        User user = authenticateAndFetchUser(userRepository);
+        List<String> roles = fetchRolesForUser();
         return contractLotService.analyseContractLot(lotId,
                 reanalyse, user, roles, null);
     }
 
     @PostMapping("/{contractId}/lots/{lotId}/reanalyse")
     public ResponseEntity<ContractLotAnalysisResultResponse> reanalyseLot(
-            Authentication authentication,
-
             @PathVariable("contractId")
             @Positive(message = "Contract ID must be positive")
             Long contractId,
@@ -92,16 +84,15 @@ public class ContractLotController extends AbstractController {
             Long lotId,
             @Valid @RequestBody ReanalyseLotRequest request) {
 
-        User user = authenticateAndFetchUser(userRepository, authentication);
-        List<String> roles = fetchRolesForUser(authentication);
+        User user = authenticateAndFetchUser(userRepository);
+        List<String> roles = fetchRolesForUser();
         ContractLotAnalysisResultResponse result = contractLotService.reanalyseLot(
                 lotId, request.getUserComment(), user, roles);
         return ResponseEntity.ok(result);
     }
 
     @PostMapping("/{contractId}/lots/{lotId}/qualification")
-    public ApiResponse<ContractLotResponse> qualificationLot(Authentication authentication,
-                                                             @PathVariable("contractId")
+    public ApiResponse<ContractLotResponse> qualificationLot(@PathVariable("contractId")
                                                              @Positive(message = "Contract ID must be positive")
                                                              Long contractId,
 
@@ -109,8 +100,8 @@ public class ContractLotController extends AbstractController {
                                                                  @Positive(message = "Lot ID must be positive")
                                                                  Long lotId) {
 
-        User user = authenticateAndFetchUser(userRepository, authentication);
-        List<String> roles = fetchRolesForUser(authentication);
+        User user = authenticateAndFetchUser(userRepository);
+        List<String> roles = fetchRolesForUser();
         ContractLot contractLot = contractLotService.qualifyLot(contractId, lotId, user,
                 roles);
 
@@ -118,16 +109,15 @@ public class ContractLotController extends AbstractController {
     }
 
     @PostMapping("/{contractId}/lots/{lotId}/unqualification")
-    public ApiResponse<ContractLotResponse> unqualificationLot(Authentication authentication,
-                                                               @PathVariable("contractId")
+    public ApiResponse<ContractLotResponse> unqualificationLot(@PathVariable("contractId")
                                                                @Positive(message = "Contract ID must be positive")
                                                                Long contractId,
                                                                @PathVariable("lotId")
                                                                @Positive(message = "Lot ID must be positive")
                                                                    Long lotId) {
 
-        User user = authenticateAndFetchUser(userRepository, authentication);
-        List<String> roles = fetchRolesForUser(authentication);
+        User user = authenticateAndFetchUser(userRepository);
+        List<String> roles = fetchRolesForUser();
         ContractLot contractLot = contractLotService.unqualifyLot(contractId, lotId, user,
                 roles);
 
@@ -135,23 +125,21 @@ public class ContractLotController extends AbstractController {
     }
 
     @GetMapping("/{contractId}/lots/qualification")
-    public ApiResponse<List<ContractLotResponse>> getQualifiedLots(Authentication authentication,
-                                                                   @PathVariable("contractId")
+    public ApiResponse<List<ContractLotResponse>> getQualifiedLots(@PathVariable("contractId")
                                                                    @Positive(message = "Contract ID must be positive")
                                                                    Long contractId) {
 
-        User user = authenticateAndFetchUser(userRepository, authentication);
+        User user = authenticateAndFetchUser(userRepository);
         List<ContractLot> contractLots = contractLotService.getQualifiedLots(contractId, user);
         return ApiResponse.success("Qualified lots fetched successfully", contractLotMapper.toResponseList(contractLots));
     }
 
     @GetMapping("/{contractId}/lots/unqualified")
-    public ApiResponse<List<ContractLotResponse>> getUnqualifiedLots(Authentication authentication,
-                                                                     @PathVariable("contractId")
+    public ApiResponse<List<ContractLotResponse>> getUnqualifiedLots(@PathVariable("contractId")
                                                                      @Positive(message = "Contract ID must be positive")
                                                                      Long contractId){
 
-        User user = authenticateAndFetchUser(userRepository, authentication);
+        User user = authenticateAndFetchUser(userRepository);
         List<ContractLot> contractLots = contractLotService.getUnqualifiedLots(contractId, user);
         return ApiResponse.success("UnQualified lots fetched successfully", contractLotMapper.toResponseList(contractLots));
     }
@@ -161,13 +149,12 @@ public class ContractLotController extends AbstractController {
      */
     @GetMapping("/{contractId}/lots/readiness")
     public ApiResponse<ProposalReadinessResponse> fetchProposalReadiness(
-            Authentication authentication,
             @PathVariable("contractId")
             @Positive(message = "Contract ID must be positive")
             Long contractId
     ) {
-        User user = authenticateAndFetchUser(userRepository, authentication);
-        List<String> roles = fetchRolesForUser(authentication);
+        User user = authenticateAndFetchUser(userRepository);
+        List<String> roles = fetchRolesForUser();
 
         ProposalReadinessResponse response =
                 contractLotService.fetchProposalReadiness(contractId, user, roles);
@@ -178,7 +165,6 @@ public class ContractLotController extends AbstractController {
 
     @PostMapping("/{contractId}/lots/{lotId}/analysis/approve")
     public ResponseEntity<AnalysisReviewResponse> approveAnalysis(
-            Authentication authentication,
             @PathVariable("contractId")
             @Positive(message = "Contract ID must be positive")
             Long contractId,
@@ -187,7 +173,7 @@ public class ContractLotController extends AbstractController {
             Long lotId,
             @RequestBody ApproveAnalysisRequest request) {
 
-        User user = authenticateAndFetchUser(userRepository, authentication);
+        User user = authenticateAndFetchUser(userRepository);
         ContractLot lot =
                 contractLotService.approveAnalysis(lotId, user, request.comment());
 
@@ -203,9 +189,9 @@ public class ContractLotController extends AbstractController {
             @PathVariable("lotId")
             @Positive(message = "Lot ID must be positive")
             Long lotId,
-            @RequestBody RejectAnalysisRequest request,
-            @AuthenticationPrincipal User user) {
+            @RequestBody RejectAnalysisRequest request) {
 
+        User user = authenticateAndFetchUser(userRepository);
         ContractLot lot =
                 contractLotService.rejectAnalysis(lotId, request.comment(), user);
 

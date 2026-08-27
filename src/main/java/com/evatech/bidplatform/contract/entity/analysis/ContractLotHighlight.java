@@ -31,7 +31,7 @@ public class ContractLotHighlight {
     private String title;
 
     @Lob
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", columnDefinition = "LONGTEXT")
     private String description;
 
     @Column(name = "page_number")
@@ -45,7 +45,7 @@ public class ContractLotHighlight {
     private Double confidenceScore;
 
     @Lob
-    @Column(name = "recommended_action")
+    @Column(name = "recommended_action", columnDefinition = "LONGTEXT")
     private String recommendedAction;
 
     @Column(name = "is_bid_capable")

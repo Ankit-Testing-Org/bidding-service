@@ -1,6 +1,7 @@
 package com.evatech.bidplatform.dashboard.controller;
 
 import com.evatech.bidplatform.ApiResponse;
+import com.evatech.bidplatform.common.controller.AbstractController;
 import com.evatech.bidplatform.contract.entity.ContractDocument;
 import com.evatech.bidplatform.contract.service.ContractService;
 import com.evatech.bidplatform.dashboard.dto.ProposalRequest;
@@ -34,11 +35,10 @@ public class ProposalController extends AbstractController {
     private final ProposalDetailMapper proposalDetailMapper;
 
     @PostMapping("/create")
-    public ApiResponse<ProposalResponse> createProposal(Authentication authentication,
-                                                        @RequestBody @Valid ProposalRequest request) {
+    public ApiResponse<ProposalResponse> createProposal(@RequestBody @Valid ProposalRequest request) {
 
-        User user = authenticateAndFetchUser(userRepository, authentication);
-        List<String> roles = fetchRolesForUser(authentication);
+        User user = authenticateAndFetchUser(userRepository);
+        List<String> roles = fetchRolesForUser();
 
         ContractDocument contract = contractService.getContract(request.contractDocumentId(), user, roles);
 
@@ -49,11 +49,10 @@ public class ProposalController extends AbstractController {
     }
 
     @PutMapping("/{proposalId}/update")
-    public ApiResponse<ProposalResponse> updateProposal(Authentication authentication,
-                                                        @PathVariable Long proposalId,
+    public ApiResponse<ProposalResponse> updateProposal(@PathVariable Long proposalId,
                                                         @RequestBody @Valid ProposalRequest request) {
-        User user = authenticateAndFetchUser(userRepository, authentication);
-        List<String> roles = fetchRolesForUser(authentication);
+        User user = authenticateAndFetchUser(userRepository);
+        List<String> roles = fetchRolesForUser();
 
         ContractDocument contract = contractService.getContract(request.contractDocumentId(), user, roles);
 
@@ -64,12 +63,11 @@ public class ProposalController extends AbstractController {
     }
 
     @PostMapping("/{proposalId}/submit")
-    public ApiResponse<ProposalResponse> submitProposal(Authentication authentication,
-                                                        @PathVariable Long proposalId,
+    public ApiResponse<ProposalResponse> submitProposal(@PathVariable Long proposalId,
                                                         @PathVariable Long contractDocumentId)  {
 
-        User user = authenticateAndFetchUser(userRepository, authentication);
-        List<String> roles = fetchRolesForUser(authentication);
+        User user = authenticateAndFetchUser(userRepository);
+        List<String> roles = fetchRolesForUser();
 
         ContractDocument contract = contractService.getContract(contractDocumentId, user, roles);
 
@@ -81,12 +79,11 @@ public class ProposalController extends AbstractController {
     }
 
     @PostMapping("/{proposalId}/won")
-    public ApiResponse<ProposalResponse> markAsWon(Authentication authentication,
-                                                   @PathVariable Long proposalId,
+    public ApiResponse<ProposalResponse> markAsWon(@PathVariable Long proposalId,
                                                    @PathVariable Long contractDocumentId) {
 
-        User user = authenticateAndFetchUser(userRepository, authentication);
-        List<String> roles = fetchRolesForUser(authentication);
+        User user = authenticateAndFetchUser(userRepository);
+        List<String> roles = fetchRolesForUser();
 
         ContractDocument contract = contractService.getContract(contractDocumentId, user, roles);
 
@@ -98,12 +95,11 @@ public class ProposalController extends AbstractController {
     }
 
     @PostMapping("/{proposalId}/lost")
-    public ApiResponse<ProposalResponse> markAslost(Authentication authentication,
-                                                    @PathVariable Long proposalId,
+    public ApiResponse<ProposalResponse> markAslost(@PathVariable Long proposalId,
                                                     @PathVariable Long contractDocumentId) {
 
-        User user = authenticateAndFetchUser(userRepository, authentication);
-        List<String> roles = fetchRolesForUser(authentication);
+        User user = authenticateAndFetchUser(userRepository);
+        List<String> roles = fetchRolesForUser();
 
         ContractDocument contract = contractService.getContract(contractDocumentId, user, roles);
 
@@ -115,12 +111,11 @@ public class ProposalController extends AbstractController {
     }
 
     @PostMapping("/{proposalId}/withdraw")
-    public ApiResponse<ProposalResponse> withdrawProposal(Authentication authentication,
-                                                          @PathVariable Long proposalId,
+    public ApiResponse<ProposalResponse> withdrawProposal(@PathVariable Long proposalId,
                                                           @PathVariable Long contractDocumentId) {
 
-        User user = authenticateAndFetchUser(userRepository, authentication);
-        List<String> roles = fetchRolesForUser(authentication);
+        User user = authenticateAndFetchUser(userRepository);
+        List<String> roles = fetchRolesForUser();
         ContractDocument contract = contractService.getContract(contractDocumentId, user, roles);
         Proposal proposal = proposalService.getProposal(proposalId, contract);
 
@@ -130,8 +125,8 @@ public class ProposalController extends AbstractController {
     }
 
     @GetMapping("/dashboard")
-    public ApiResponse<ProposalDashboardResponse> fetchProposal(Authentication authentication) {
-        authenticateAndFetchUser(userRepository, authentication);
+    public ApiResponse<ProposalDashboardResponse> fetchProposal() {
+        authenticateAndFetchUser(userRepository);
 
         ProposalDashboardResponse dashboardResponse = proposalService.getProposalDashboard();
         if(dashboardResponse == null) {
@@ -143,10 +138,9 @@ public class ProposalController extends AbstractController {
 
     @PostMapping("/search")
     public ApiResponse<PageResponse<ProposalResponse>> searchProposals(
-            Authentication authentication,
             @RequestBody ProposalSearchRequest request
     ) {
-        authenticateAndFetchUser(userRepository, authentication);
+        authenticateAndFetchUser(userRepository);
 
         PageResponse<ProposalResponse> response = proposalService.searchProposals(request);
         if(response == null) {
@@ -157,9 +151,8 @@ public class ProposalController extends AbstractController {
     }
 
     @GetMapping("/{proposalId}")
-    public ApiResponse<ProposalResponse> fetchProposalById(Authentication authentication,
-                                                                    @PathVariable Long proposalId) {
-        authenticateAndFetchUser(userRepository, authentication);
+    public ApiResponse<ProposalResponse> fetchProposalById(@PathVariable Long proposalId) {
+        authenticateAndFetchUser(userRepository);
 
         Proposal proposal = proposalService.getProposal(proposalId, null);
         if(proposal == null) {
@@ -170,9 +163,8 @@ public class ProposalController extends AbstractController {
     }
 
     @GetMapping("/api/proposals/{proposalId}/history")
-    public ApiResponse<ProposalDetailResponse> fetchProposalByIdWithHistory(Authentication authentication,
-                                                                            @PathVariable Long proposalId) {
-        authenticateAndFetchUser(userRepository, authentication);
+    public ApiResponse<ProposalDetailResponse> fetchProposalByIdWithHistory(@PathVariable Long proposalId) {
+        authenticateAndFetchUser(userRepository);
 
         Proposal proposal = proposalService.getProposal(proposalId, null);
         if(proposal == null) {

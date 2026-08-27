@@ -48,9 +48,11 @@ public class WorkflowTask {
     private String taskTitle;
 
     @Lob
+    @Column(name = "task_description", columnDefinition = "LONGTEXT")
     private String taskDescription;
 
     @Lob
+    @Column(name = "comment", columnDefinition = "LONGTEXT")
     private String comment;
 
     @Column(nullable = false)

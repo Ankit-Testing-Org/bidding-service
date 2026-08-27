@@ -49,7 +49,7 @@ public class ContractLotServiceImpl implements ContractLotService {
     private final ContractLotAnalysisMapper contractLotAnalysisMapper;
     private final ProposalService proposalService;
     private final ContractLotQualificationHistoryRepository contractLotQualificationHistoryRepository;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
     @Value("${app.mock-ai-enabled:false}")
     private boolean mockAiEnabled;
@@ -302,7 +302,7 @@ public class ContractLotServiceImpl implements ContractLotService {
         String prompt = "DUMMY PROMPT"; //TODO :  NEED TO FIX IT
         String aiResponse = "DUMMY RESPONSE ";
         if(mockAiEnabled)
-            aiResponse = loadResourceFile("contract-lots.json");
+            aiResponse = loadResourceFile("local/sample-data/contract-lots.json");
         else
             aiResponse = "DUMMY RESPONSE "; //TODO :  NEED TO FIX IT
 
@@ -505,15 +505,17 @@ public class ContractLotServiceImpl implements ContractLotService {
                     createdAt(LocalDateTime.now()).
                     valuation(extractedLot.getValuation()).
                     build();
+            contractLot = contractLotRepository.save(contractLot);
 
             ContractLotQualificationHistory history = new ContractLotQualificationHistory();
             history.setNewStatus(ContractLotQualificationStatus.PENDING);
             history.setComment("Lot is extracted");
             history.setChangedAt(LocalDateTime.now());
             history.setChangedBy(user.getEmail());
+            history.setContractLot(contractLot);
             contractLotQualificationHistoryRepository.save(history);
 
-            savedLots.add(contractLotRepository.save(contractLot));
+            savedLots.add(contractLot);
         }
 
         return savedLots;

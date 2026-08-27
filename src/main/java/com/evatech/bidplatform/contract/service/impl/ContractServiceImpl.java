@@ -242,10 +242,7 @@ public class ContractServiceImpl implements ContractService {
                         List.of(
                                 ContractStatus.UPLOADED,
                                 ContractStatus.TEXT_EXTRACTED,
-                                ContractStatus.ANALYSIS_IN_PROGRESS,
-                                ContractStatus.ANALYSED,
-                                ContractStatus.SUBMITTED_FOR_REVIEW,
-                                ContractStatus.FAILED
+                                ContractStatus.ANALYSIS_IN_PROGRESS
                                 )
                         );
 

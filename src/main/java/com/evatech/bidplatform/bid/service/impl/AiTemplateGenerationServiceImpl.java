@@ -23,7 +23,7 @@ public class AiTemplateGenerationServiceImpl
 
     private final BidTemplatePromptBuilder promptBuilder;
     private final AiService aiService;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
     @Value("${app.mock-ai-enabled:false}")
     private boolean mockAiEnabled;
@@ -36,7 +36,7 @@ public class AiTemplateGenerationServiceImpl
         String prompt = promptBuilder.build(contract, qualifiedLots);
         log.info("Generating bid template using AI for contract {}", contract.getId());
         if (mockAiEnabled) {
-            return loadSampleResponse("sample-data/bid-template-response.json");
+            return loadSampleResponse("local/sample-data/bid-template-response.json");
         }
         return aiService.generateBidTemplate(prompt);
     }

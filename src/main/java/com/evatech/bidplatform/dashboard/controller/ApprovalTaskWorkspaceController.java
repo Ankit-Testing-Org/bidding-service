@@ -1,6 +1,7 @@
 package com.evatech.bidplatform.dashboard.controller;
 
 import com.evatech.bidplatform.ApiResponse;
+import com.evatech.bidplatform.common.controller.AbstractController;
 import com.evatech.bidplatform.dashboard.dto.approval.task.request.ApprovalTaskDecisionRequest;
 import com.evatech.bidplatform.dashboard.dto.approval.task.request.ClarificationRequest;
 import com.evatech.bidplatform.dashboard.dto.approval.task.request.ReassignApprovalTaskRequest;
@@ -17,7 +18,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,15 +34,11 @@ public class ApprovalTaskWorkspaceController extends AbstractController {
 
     @GetMapping("/workspace")
     public ApiResponse<ApprovalTaskWorkspaceResponse> fetchWorkspace(
-            Authentication authentication,
             @RequestParam("search")
             @NotBlank(message = "Contract ID, task ID, or contract number is required")
             String search
     ) {
-        User user = authenticateAndFetchUser(
-                userRepository,
-                authentication
-        );
+        User user = authenticateAndFetchUser(userRepository);
 
         ApprovalTaskWorkspaceResponse response =
                 approvalTaskWorkspaceService.fetchWorkspace(
@@ -58,15 +54,11 @@ public class ApprovalTaskWorkspaceController extends AbstractController {
 
     @PostMapping("/{taskId}/assign-to-me")
     public ApiResponse<AssignApprovalTaskResponse> assignTaskToMe(
-            Authentication authentication,
             @PathVariable("taskId")
             @Positive(message = "Task ID must be positive")
             Long taskId
     ) {
-        User user = authenticateAndFetchUser(
-                userRepository,
-                authentication
-        );
+        User user = authenticateAndFetchUser(userRepository);
 
         AssignApprovalTaskResponse response =
                 approvalTaskWorkspaceService.assignTaskToMe(
@@ -82,16 +74,12 @@ public class ApprovalTaskWorkspaceController extends AbstractController {
 
     @PostMapping("/{taskId}/decision")
     public ApiResponse<ApprovalDecisionResponse> submitDecision(
-            Authentication authentication,
             @PathVariable("taskId")
             @Positive(message = "Task ID must be positive")
             Long taskId,
             @RequestBody @Valid ApprovalTaskDecisionRequest request
     ) {
-        User user = authenticateAndFetchUser(
-                userRepository,
-                authentication
-        );
+        User user = authenticateAndFetchUser(userRepository);
 
         ApprovalDecisionResponse response =
                 approvalTaskWorkspaceService.submitDecision(
@@ -108,16 +96,12 @@ public class ApprovalTaskWorkspaceController extends AbstractController {
 
     @PostMapping("/{taskId}/clarification")
     public ApiResponse<ClarificationResponse> requestClarification(
-            Authentication authentication,
             @PathVariable("taskId")
             @Positive(message = "Task ID must be positive")
             Long taskId,
             @RequestBody @Valid ClarificationRequest request
     ) {
-        User user = authenticateAndFetchUser(
-                userRepository,
-                authentication
-        );
+        User user = authenticateAndFetchUser(userRepository);
 
         ClarificationResponse response =
                 approvalTaskWorkspaceService.requestClarification(
@@ -134,16 +118,12 @@ public class ApprovalTaskWorkspaceController extends AbstractController {
 
     @PostMapping("/{taskId}/reassign")
     public ApiResponse<ReassignApprovalTaskResponse> reassignTask(
-            Authentication authentication,
             @PathVariable("taskId")
             @Positive(message = "Task ID must be positive")
             Long taskId,
             @RequestBody @Valid ReassignApprovalTaskRequest request
     ) {
-        User user = authenticateAndFetchUser(
-                userRepository,
-                authentication
-        );
+        User user = authenticateAndFetchUser(userRepository);
 
         ReassignApprovalTaskResponse response =
                 approvalTaskWorkspaceService.reassignTask(
@@ -160,15 +140,11 @@ public class ApprovalTaskWorkspaceController extends AbstractController {
 
     @GetMapping("/{taskId}/eligible-users")
     public ApiResponse<List<EligibleApproverResponse>> fetchEligibleUsers(
-            Authentication authentication,
             @PathVariable("taskId")
             @Positive(message = "Task ID must be positive")
             Long taskId
     ) {
-        User user = authenticateAndFetchUser(
-                userRepository,
-                authentication
-        );
+        User user = authenticateAndFetchUser(userRepository);
 
         List<EligibleApproverResponse> response =
                 approvalTaskWorkspaceService.fetchEligibleApprovers(

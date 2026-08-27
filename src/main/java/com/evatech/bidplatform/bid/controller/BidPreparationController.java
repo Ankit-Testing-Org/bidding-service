@@ -6,7 +6,7 @@ import com.evatech.bidplatform.bid.dto.request.GenerateBidDocumentRequest;
 import com.evatech.bidplatform.bid.dto.request.SubmitBidForApprovalRequest;
 import com.evatech.bidplatform.bid.dto.response.*;
 import com.evatech.bidplatform.bid.entity.BidDocumentType;
-import com.evatech.bidplatform.contract.controller.AbstractController;
+import com.evatech.bidplatform.common.controller.AbstractController;
 import com.evatech.bidplatform.dashboard.service.BidPreparationService;
 import com.evatech.bidplatform.user.entity.User;
 import com.evatech.bidplatform.user.repository.UserRepository;
@@ -42,15 +42,12 @@ public class BidPreparationController extends AbstractController {
 
     @GetMapping("/documents/latest")
     public ApiResponse<LatestBidDocumentResponse> getLatestBidDocument(
-            Authentication authentication,
             @PathVariable Long contractId) {
 
         User user = authenticateAndFetchUser(
-                userRepository,
-                authentication
-        );
+                userRepository);
 
-        List<String> roles = fetchRolesForUser(authentication);
+        List<String> roles = fetchRolesForUser();
 
         LatestBidDocumentResponse response =
                 bidPreparationService.getLatestBidDocument(
@@ -68,16 +65,13 @@ public class BidPreparationController extends AbstractController {
 
     @PostMapping("/documents/generate")
     public ApiResponse<GeneratedBidDocumentResponse> generateBidDocument(
-            Authentication authentication,
             @PathVariable Long contractId,
             @Valid @RequestBody GenerateBidDocumentRequest request) {
 
         User user = authenticateAndFetchUser(
-                userRepository,
-                authentication
-        );
+                userRepository);
 
-        List<String> roles = fetchRolesForUser(authentication);
+        List<String> roles = fetchRolesForUser();
 
         GeneratedBidDocumentResponse response =
                 bidPreparationService.generateBidDocument(
@@ -95,16 +89,13 @@ public class BidPreparationController extends AbstractController {
 
     @GetMapping("/documents/{documentId}/download")
     public ResponseEntity<Resource> downloadBidDocument(
-            Authentication authentication,
             @PathVariable Long contractId,
             @PathVariable Long documentId) {
 
         User user = authenticateAndFetchUser(
-                userRepository,
-                authentication
-        );
+                userRepository);
 
-        List<String> roles = fetchRolesForUser(authentication);
+        List<String> roles = fetchRolesForUser();
 
         Resource resource = bidPreparationService.downloadDocument(
                 contractId,
@@ -133,16 +124,13 @@ public class BidPreparationController extends AbstractController {
 
     @GetMapping("/documents/{documentId}/preview")
     public ResponseEntity<Resource> previewBidDocument(
-            Authentication authentication,
             @PathVariable Long contractId,
             @PathVariable Long documentId) {
 
         User user = authenticateAndFetchUser(
-                userRepository,
-                authentication
-        );
+                userRepository);
 
-        List<String> roles = fetchRolesForUser(authentication);
+        List<String> roles = fetchRolesForUser();
 
         BidDocumentDetailsResponse document =
                 bidPreparationService.getDocumentDetails(
@@ -186,7 +174,6 @@ public class BidPreparationController extends AbstractController {
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
     public ApiResponse<UploadedBidDocumentResponse> uploadCompletedBid(
-            Authentication authentication,
             @PathVariable Long contractId,
             @RequestParam("file") MultipartFile file,
             @RequestParam(
@@ -201,11 +188,9 @@ public class BidPreparationController extends AbstractController {
             BidDocumentType documentType) {
 
         User user = authenticateAndFetchUser(
-                userRepository,
-                authentication
-        );
+                userRepository);
 
-        List<String> roles = fetchRolesForUser(authentication);
+        List<String> roles = fetchRolesForUser();
 
         UploadedBidDocumentResponse response =
                 bidPreparationService.uploadCompletedBid(
@@ -230,11 +215,9 @@ public class BidPreparationController extends AbstractController {
             @Valid @RequestBody SubmitBidForApprovalRequest request) {
 
         User user = authenticateAndFetchUser(
-                userRepository,
-                authentication
-        );
+                userRepository);
 
-        List<String> roles = fetchRolesForUser(authentication);
+        List<String> roles = fetchRolesForUser();
 
         SubmitBidForApprovalResponse response =
                 bidPreparationService.submitForApproval(
@@ -252,15 +235,12 @@ public class BidPreparationController extends AbstractController {
 
     @GetMapping("/preparation-status")
     public ApiResponse<BidPreparationStatusResponse> getPreparationStatus(
-            Authentication authentication,
             @PathVariable Long contractId) {
 
         User user = authenticateAndFetchUser(
-                userRepository,
-                authentication
-        );
+                userRepository);
 
-        List<String> roles = fetchRolesForUser(authentication);
+        List<String> roles = fetchRolesForUser();
 
         BidPreparationStatusResponse response =
                 bidPreparationService.getPreparationStatus(

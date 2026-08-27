@@ -44,7 +44,7 @@ public class ContractAnalysisOrchestrator {
             contractLifecycleService.updateContractDocumentStatus(contract.getId(), contract,
                     ContractStatus.ANALYSED, user, roles);
 
-            sendSuccessEmail(contract);
+            //sendSuccessEmail(contract);
 
         } catch (Exception ex) {
             log.error("Contract analysis failed for {}", contract.getId(), ex);
@@ -52,8 +52,7 @@ public class ContractAnalysisOrchestrator {
             contract.setProcessingCompletedAt(LocalDateTime.now());
             contractLifecycleService.updateContractDocumentStatus(contract.getId(), contract,
                     ContractStatus.FAILED, user, roles);
-
-            sendFailureEmail(contract, ex);
+            //sendFailureEmail(contract, ex);
         }
     }
 
